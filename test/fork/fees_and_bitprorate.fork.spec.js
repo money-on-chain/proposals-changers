@@ -1,4 +1,4 @@
-// test/fork/remove_panic_button.fork.spec.js
+// test/fork/fees_and_bitprorate.fork.spec.js
 import { expect } from 'chai';
 import hre from 'hardhat';
 import fs from 'fs';
@@ -21,7 +21,7 @@ const MAP_TX = {
 
 function loadCfg() {
   const net = process.env.FORK_NETWORK_NAME || hre.network.name;
-  const p = path.join(process.cwd(), `config/remove_panic_button/deployConfig-${net}.json`);
+  const p = path.join(process.cwd(), `config/fees_and_bitprorate/deployConfig-${net}.json`);
   if (!fs.existsSync(p)) throw new Error(`Config not found: ${p}`);
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
@@ -77,11 +77,6 @@ const INRATE_ABI = [
   'function getCommissionRateByTxType(uint8) view returns (uint256)',
 ];
 
-const MOC_ABI = [
-  // algunos MoC deployments tienen esto, otros no; no lo usamos estrictamente
-  'function makeUnstoppable() external',
-];
-
 const GOVERNOR_ABI = [
   // patrón clásico de Money on Chain Governance
   'function executeChange(address changer) external',
@@ -95,8 +90,7 @@ describe('Forked — RemovePanicButtonProposal', function () {
 
     // Attach a los contratos vivos en el fork
     const inrate = new ethers.Contract(cfg.MoCInrate, INRATE_ABI, ethers.provider);
-    const moc    = new ethers.Contract(cfg.MoC,       MOC_ABI,   ethers.provider);
-
+    
     // Pre-state (best effort)
     const preRate = await readWithFallback(inrate, [
       'bitProRate()', 'riskProRate()', 'getBitProRate()',
@@ -104,12 +98,12 @@ describe('Forked — RemovePanicButtonProposal', function () {
     const commGetter = await detectCommissionGetter(inrate);
 
     // Deploy changer apuntando a los contratos reales
-    const Changer = await ethers.getContractFactory('RemovePanicButtonProposal');
+    const Changer = await ethers.getContractFactory('FeesAndBitprorateProposal');
     const commissions = Object.entries(MAP_TX).map(([k, txType]) => ({
       txType,
       fee: toRay(cfg.commissionRates[k]),
     }));
-    const changer = await Changer.deploy(cfg.MoCInrate, cfg.MoC, toRay(cfg.bitProRate), commissions);
+    const changer = await Changer.deploy(cfg.MoCInrate, toRay(cfg.bitProRate), commissions);
 
     // Ejecutar via Governor, impersonando al owner
     const govSigner = await impersonate(cfg.governorOwnerAddress);
@@ -120,16 +114,14 @@ describe('Forked — RemovePanicButtonProposal', function () {
 
     // Fuse quemado en el changer (siempre chequeable)
     expect(await changer.mocInrate()).to.equal(ethers.ZeroAddress);
-    expect(await changer.moc()).to.equal(ethers.ZeroAddress);
-
+    
     // Eventos del changer (siempre chequeables)
-    const iface = (await ethers.getContractFactory('RemovePanicButtonProposal')).interface;
+    const iface = (await ethers.getContractFactory('FeesAndBitprorateProposal')).interface;
     const names = rc.logs
       .filter((l) => l.address.toLowerCase() === changer.target.toLowerCase())
       .map((log) => { try { return iface.parseLog(log).name; } catch { return 'UNKNOWN'; } });
 
-    expect(names).to.include('BitProRateSet');
-    expect(names).to.include('PanicButtonRemoved');
+    expect(names).to.include('BitProRateSet');    
     expect(names).to.include('ExecutedOnce');
 
     // Validación best-effort del rate (solo si existe getter on-chain)
@@ -157,12 +149,12 @@ describe('Forked — RemovePanicButtonProposal', function () {
   it('direct changer.execute() should revert (access control)', async () => {
     const cfg = loadCfg();
 
-    const Changer = await ethers.getContractFactory('RemovePanicButtonProposal');
+    const Changer = await ethers.getContractFactory('FeesAndBitprorateProposal');
     const commissions = Object.entries(MAP_TX).map(([k, txType]) => ({
       txType,
       fee: toRay(cfg.commissionRates[k]),
     }));
-    const changer = await Changer.deploy(cfg.MoCInrate, cfg.MoC, toRay(cfg.bitProRate), commissions);
+    const changer = await Changer.deploy(cfg.MoCInrate, toRay(cfg.bitProRate), commissions);
 
     // 🔁 Nuevo matcher en HH3: use `.revert(ethers)` (no `.reverted`)
     await expect(changer.execute()).to.revert(ethers);
