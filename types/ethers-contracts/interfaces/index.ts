@@ -3,3 +3,5 @@
 /* eslint-disable */
 export type { IChangeContract } from './IChangeContract.js';
 export type { IGovernor } from './IGovernor.js';
+export type { IMoC } from './IMoC.js';
+export type { IMoCInrate } from './IMoCInrate.js';

@@ -26,7 +26,7 @@ function selectedNetworkName(hre) {
 function loadConfig(networkName) {
   const cfgPath =
     process.env.DEPLOY_CONFIG_PATH ??
-    path.join(__dirname, `../../config/remove_panic_button/deployConfig-${networkName}.json`);
+    path.join(__dirname, `../../config/fees_and_bitprorate/deployConfig-${networkName}.json`);
   if (!fs.existsSync(cfgPath)) throw new Error(`Config not found: ${cfgPath}`);
   return { cfgPath, cfg: JSON.parse(fs.readFileSync(cfgPath, "utf8")) };
 }
@@ -40,7 +40,7 @@ async function main() {
   if (!address) throw new Error("Missing address: set VERIFY_ADDRESS or cfg.changerAddress");
 
   const commissions = Object.keys(MAP_TX).map((k) => [MAP_TX[k], toRay(cfg.commissionRates[k])]);
-  const constructorArgs = [cfg.MoCInrate, cfg.MoC, toRay(cfg.bitProRate), commissions];
+  const constructorArgs = [cfg.MoCInrate, toRay(cfg.bitProRate), commissions];
 
   console.log("Verifying...");
   console.log("  Network:", net);

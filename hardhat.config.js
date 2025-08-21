@@ -1,19 +1,18 @@
 // hardhat.config.js (ESM)
 //import 'dotenv/config';
-import 'dotenv-safe/config';
-//import '@nomicfoundation/hardhat-ethers';
-//import '@nomicfoundation/hardhat-ethers-chai-matchers';
 
-import * as hardhatEthersMod from '@nomicfoundation/hardhat-ethers';
-import * as toolboxMochaEthersMod from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatEthers from "@nomicfoundation/hardhat-ethers";
+import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatVerify from "@nomicfoundation/hardhat-verify";
+import { configVariable } from 'hardhat/config';
 
-const hardhatEthers = hardhatEthersMod.default ?? hardhatEthersMod;
-const hardhatToolboxMochaEthers = toolboxMochaEthersMod.default ?? toolboxMochaEthersMod;
 
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
 
 
 export default {
-  plugins: [hardhatEthers, hardhatToolboxMochaEthers],
+  plugins: [hardhatEthers, hardhatToolboxMochaEthers, hardhatVerify],
   solidity: {
     compilers: [
       {
@@ -25,7 +24,14 @@ export default {
   networks: {
     // Red local/embebida (opcional)
     hardhat: {
-      type: 'edr-simulated', // la nueva “hardhat network” en Hardhat v3
+      type: 'edr-simulated',
+      forking: {
+        url: configVariable('FORK_URL'),                    // <- needit
+        blockNumber: process.env.FORK_BLOCK ? Number(process.env.FORK_BLOCK) : undefined,
+        // headers y timeout opcionales si usás un RPC público que a veces demora:
+        // httpHeaders: { /* ... */ },
+        // timeout: 120000,
+      },
     },
 
     // RSK Testnet (HTTP RPC)
@@ -36,16 +42,7 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       // gasPrice: 60000000n, // opcional (wei)
     },
-
-    // RSK Testnet (HTTP RPC)
-    rskTestnet: {
-      type: 'http',                         
-      url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
-      chainId: 31,
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      // gasPrice: 60000000n, // opcional (wei)
-    },
-
+    
     // RSK Mainnet (HTTP RPC)
     rskMainnet: {
       type: 'http',                        
@@ -54,36 +51,33 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
-  /*etherscan: {
-    apiKey: {
-      rskAlphaTestnet: 'abc',
-      rskMainnet: 'abc',
+  // ✅ En HH3 se usa `verify`, no `etherscan` toplevel
+  verify: {
+    // opcional: desactivar Etherscan si no lo usás
+    etherscan: { enabled: false },
+    // opcional: explicitar Blockscout (default: enabled)
+    blockscout: { enabled: true },
+  },
+  chainDescriptors: {
+    31: {
+      name: "Rootstock Testnet",
+      blockExplorers: {
+        blockscout: {
+          name: "Rootstock Testnet Blockscout",
+          url: "https://rootstock-testnet.blockscout.com",
+          apiUrl: "https://rootstock-testnet.blockscout.com/api",
+        },
+      },
     },
-    customChains: [
-      {
-        network: 'rskAlphaTestnet',
-        chainId: 31,
-        urls: {
-          apiURL: 'https://rootstock-testnet.blockscout.com/api',
-          browserURL: 'https://rootstock-testnet.blockscout.com',
+    30: {
+      name: "Rootstock Mainnet",
+      blockExplorers: {
+        blockscout: {
+          name: "Rootstock Blockscout",
+          url: "https://rootstock.blockscout.com",
+          apiUrl: "https://rootstock.blockscout.com/api",
         },
       },
-      {
-        network: 'rskTestnet',
-        chainId: 31,
-        urls: {
-          apiURL: 'https://rootstock-testnet.blockscout.com/api',
-          browserURL: 'https://rootstock-testnet.blockscout.com',
-        },
-      },
-      {
-        network: 'rskMainnet',
-        chainId: 30,
-        urls: {
-          apiURL: 'https://rootstock.blockscout.com/api',
-          browserURL: 'https://rootstock.blockscout.com',
-        },
-      },
-    ],
-  },*/
+    },
+  },
 };

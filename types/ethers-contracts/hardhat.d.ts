@@ -10,41 +10,45 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'IMoCInrateMinimal', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IMoCInrateMinimal__factory>
-getContractFactory(name: 'IMoCMinimal', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IMoCMinimal__factory>
+  getContractFactory(name: 'FeesAndBitprorateProposal', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FeesAndBitprorateProposal__factory>
 getContractFactory(name: 'RemovePanicButtonProposal', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.RemovePanicButtonProposal__factory>
 getContractFactory(name: 'IChangeContract', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IChangeContract__factory>
 getContractFactory(name: 'IGovernor', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IGovernor__factory>
+getContractFactory(name: 'IMoC', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IMoC__factory>
+getContractFactory(name: 'IMoCInrate', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IMoCInrate__factory>
 getContractFactory(name: 'MoCInrateMock', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MoCInrateMock__factory>
 getContractFactory(name: 'MoCMock', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MoCMock__factory>
 getContractFactory(name: 'MockGovernor', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MockGovernor__factory>
 getContractFactory(name: 'MocHelper', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MocHelper__factory>
 
-  getContractAt(name: 'IMoCInrateMinimal', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IMoCInrateMinimal>
-getContractAt(name: 'IMoCMinimal', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IMoCMinimal>
+  getContractAt(name: 'FeesAndBitprorateProposal', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FeesAndBitprorateProposal>
 getContractAt(name: 'RemovePanicButtonProposal', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.RemovePanicButtonProposal>
 getContractAt(name: 'IChangeContract', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IChangeContract>
 getContractAt(name: 'IGovernor', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IGovernor>
+getContractAt(name: 'IMoC', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IMoC>
+getContractAt(name: 'IMoCInrate', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IMoCInrate>
 getContractAt(name: 'MoCInrateMock', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MoCInrateMock>
 getContractAt(name: 'MoCMock', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MoCMock>
 getContractAt(name: 'MockGovernor', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MockGovernor>
 getContractAt(name: 'MocHelper', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MocHelper>
 
-  deployContract(name: 'IMoCInrateMinimal', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCInrateMinimal>
-deployContract(name: 'IMoCMinimal', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCMinimal>
+  deployContract(name: 'FeesAndBitprorateProposal', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposal>
 deployContract(name: 'RemovePanicButtonProposal', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RemovePanicButtonProposal>
 deployContract(name: 'IChangeContract', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IChangeContract>
 deployContract(name: 'IGovernor', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IGovernor>
+deployContract(name: 'IMoC', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoC>
+deployContract(name: 'IMoCInrate', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCInrate>
 deployContract(name: 'MoCInrateMock', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCInrateMock>
 deployContract(name: 'MoCMock', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCMock>
 deployContract(name: 'MockGovernor', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockGovernor>
 deployContract(name: 'MocHelper', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MocHelper>
 
-  deployContract(name: 'IMoCInrateMinimal', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCInrateMinimal>
-deployContract(name: 'IMoCMinimal', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCMinimal>
+  deployContract(name: 'FeesAndBitprorateProposal', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposal>
 deployContract(name: 'RemovePanicButtonProposal', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.RemovePanicButtonProposal>
 deployContract(name: 'IChangeContract', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IChangeContract>
 deployContract(name: 'IGovernor', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IGovernor>
+deployContract(name: 'IMoC', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoC>
+deployContract(name: 'IMoCInrate', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IMoCInrate>
 deployContract(name: 'MoCInrateMock', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCInrateMock>
 deployContract(name: 'MoCMock', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCMock>
 deployContract(name: 'MockGovernor', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockGovernor>
