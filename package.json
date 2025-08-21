@@ -1,0 +1,29 @@
+{
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "@openzeppelin/contracts-upgradeable": "^5.4.0",
+    "chai": "^5.3.1",
+    "dotenv": "^17.2.1",
+    "dotenv-safe": "^9.1.0",
+    "ethers": "^6.15.0",
+    "hardhat": "^3.0.0"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "test": "hardhat test",
+    "deploy:alpha-testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/deploy.js --network rskAlphaTestnet",
+    "deploy:testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/deploy.js --network rskTestnet",
+    "deploy:mainnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/deploy.js --network rskMainnet",
+    "validate:prevote:alpha-testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/validate_prevote.js --network rskAlphaTestnet",
+    "validate:prevote:testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/validate_prevote.js --network rskTestnet",
+    "validate:prevote:mainnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/validate_prevote.js --network rskMainnet",
+    "verify:alpha-testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/verify.js --network rskAlphaTestnet",
+    "verify:testnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/verify.js --network rskTestnet",
+    "verify:mainnet:remove-panic-button": "npx hardhat run scripts/remove_panic_button/verify.js --network rskMainnet"
+  },
+  "type": "module"
+}
