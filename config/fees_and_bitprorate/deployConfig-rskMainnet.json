@@ -1,0 +1,21 @@
+{
+  "MoCInrate": "0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3",
+  "bitProRate": "0.000098",
+  "commissionRates": {
+    "MINT_BPRO_FEES_RBTC": "0.0015",
+    "REDEEM_BPRO_FEES_RBTC": "0.0015",
+    "MINT_DOC_FEES_RBTC": "0.0015",
+    "REDEEM_DOC_FEES_RBTC": "0.0015",
+    "MINT_BTCX_FEES_RBTC": "0.0015",
+    "REDEEM_BTCX_FEES_RBTC": "0.0015",
+    "MINT_BPRO_FEES_MOC": "0.0012",
+    "REDEEM_BPRO_FEES_MOC": "0.0012",
+    "MINT_DOC_FEES_MOC": "0.0012",
+    "REDEEM_DOC_FEES_MOC": "0.0012",
+    "MINT_BTCX_FEES_MOC": "0.0012",
+    "REDEEM_BTCX_FEES_MOC": "0.0012"
+  },
+  "Governor": "0x3b8853DF65AfBd94853E6D77ee0Ab5590F41bB08",
+  "governorOwnerAddress": "0x65a5681bE95d212F0c90eAd40170D8277de81169",
+  "changerAddress": ""
+}

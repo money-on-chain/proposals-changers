@@ -42,6 +42,15 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       // gasPrice: 60000000n, // opcional (wei)
     },
+
+    // RSK Testnet (HTTP RPC)
+    rskTestnet: {
+      type: 'http',                         
+      url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
+      chainId: 31,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      // gasPrice: 60000000n, // opcional (wei)
+    },
     
     // RSK Mainnet (HTTP RPC)
     rskMainnet: {
