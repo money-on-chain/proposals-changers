@@ -26,78 +26,76 @@ function loadCfg() {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
-// Devuelve el primer getter que exista/funcione. Si ninguno, retorna null.
+/** Calls the first existing getter; returns null if none is available. */
 async function readWithFallback(contract, candidates) {
   for (const frag of candidates) {
     try {
-      const fn = contract.getFunction(frag); // throws si no existe
+      const fn = contract.getFunction(frag); // throws if not present
       const out = await fn();
       if (out !== undefined && out !== null) return out;
-    } catch (_) { /* try next */ }
+    } catch {}
   }
   return null;
 }
 
-// Nombre de getter para comisiones que encuentre en vivo
+/** Tries different commission getter names used across deployments. */
 async function detectCommissionGetter(inrate) {
   const candidates = [
-    'commissionByTxType(uint8)',
-    'commissionRateByTxType(uint8)',
-    'getCommissionRateByTxType(uint8)',
+    'commissionRatesByTxType(uint8)',
   ];
   for (const sig of candidates) {
     try {
       const fn = inrate.getFunction(sig);
-      // Smoke test: llamar con txType=1 en static
-      await fn(1);
+      await fn(1); // smoke test
       return sig;
-    } catch (_) {}
+    } catch {}
   }
   return null;
 }
 
-// Impersona una cuenta en Hardhat (fork)
-async function impersonate(address) {
-  await hre.network.provider.request({ method: 'hardhat_impersonateAccount', params: [address] });
+/** Hardhat v3: prefer ethers.provider.send over hre.network.provider.request */
+async function impersonate(address, topUpHex = '0x3635C9ADC5DEA00000') {
+  await ethers.provider.send('hardhat_impersonateAccount', [address]);
+  if (topUpHex) {
+    await ethers.provider.send('hardhat_setBalance', [address, topUpHex]);
+  }
   return await ethers.getSigner(address);
 }
 
-// --- ABI mínimos (solo lo que usamos para el fork) -------------------------
+// --- Minimal ABIs used on fork ---------------------------------------------
 
 const INRATE_ABI = [
-  // setters usados por el changer (no los llamamos directamente en fork)
+  // setters used by the changer (not called directly here)
   'function setBitProRate(uint256 newBitProRate) external',
   'function setCommissionRateByTxType(uint8 txType, uint256 value) external',
-  // posibles getters (algunos pueden no existir en on-chain)
+
+  // possible getters (some deployments differ)
   'function bitProRate() view returns (uint256)',
-  'function riskProRate() view returns (uint256)',
-  'function getBitProRate() view returns (uint256)',
-  'function commissionByTxType(uint8) view returns (uint256)',
-  'function commissionRateByTxType(uint8) view returns (uint256)',
-  'function getCommissionRateByTxType(uint8) view returns (uint256)',
+  'function riskProRate() view returns (uint256)',  
+  'function commissionRatesByTxType(uint8) view returns (uint256)'  
 ];
 
 const GOVERNOR_ABI = [
-  // patrón clásico de Money on Chain Governance
+  // classic Money on Chain governor signature
   'function executeChange(address changer) external',
 ];
 
 // --- Tests -----------------------------------------------------------------
 
-describe('Forked — RemovePanicButtonProposal', function () {
+describe('Forked — FeesAndBitprorateProposal', function () {
   it('executes through Governor (delegatecall) and updates live contracts (if ABI matches)', async () => {
     const cfg = loadCfg();
 
-    // Attach a los contratos vivos en el fork
+    // Attach to live MoCInrate on the fork
     const inrate = new ethers.Contract(cfg.MoCInrate, INRATE_ABI, ethers.provider);
-    
-    // Pre-state (best effort)
+
+    // Pre-state (best-effort)
     const preRate = await readWithFallback(inrate, [
       'bitProRate()', 'riskProRate()', 'getBitProRate()',
     ]);
     const commGetter = await detectCommissionGetter(inrate);
 
-    // Deploy changer apuntando a los contratos reales
+    // Deploy changer targeting live addresses
     const Changer = await ethers.getContractFactory('FeesAndBitprorateProposal');
     const commissions = Object.entries(MAP_TX).map(([k, txType]) => ({
       txType,
@@ -105,26 +103,26 @@ describe('Forked — RemovePanicButtonProposal', function () {
     }));
     const changer = await Changer.deploy(cfg.MoCInrate, toRay(cfg.bitProRate), commissions);
 
-    // Ejecutar via Governor, impersonando al owner
+    // Execute through Governor, impersonating its owner
     const govSigner = await impersonate(cfg.governorOwnerAddress);
     const governor  = new ethers.Contract(cfg.Governor, GOVERNOR_ABI, govSigner);
 
     const tx = await governor.executeChange(changer.target);
     const rc = await tx.wait();
 
-    // Fuse quemado en el changer (siempre chequeable)
+    // Changer fuse must be burned
     expect(await changer.mocInrate()).to.equal(ethers.ZeroAddress);
-    
-    // Eventos del changer (siempre chequeables)
+
+    // Changer events
     const iface = (await ethers.getContractFactory('FeesAndBitprorateProposal')).interface;
     const names = rc.logs
       .filter((l) => l.address.toLowerCase() === changer.target.toLowerCase())
       .map((log) => { try { return iface.parseLog(log).name; } catch { return 'UNKNOWN'; } });
 
-    expect(names).to.include('BitProRateSet');    
+    expect(names).to.include('BitProRateSet');
     expect(names).to.include('ExecutedOnce');
 
-    // Validación best-effort del rate (solo si existe getter on-chain)
+    // Post-state checks (best-effort)
     const postRate = await readWithFallback(inrate, [
       'bitProRate()', 'riskProRate()', 'getBitProRate()',
     ]);
@@ -135,7 +133,6 @@ describe('Forked — RemovePanicButtonProposal', function () {
       console.warn('[warn] No readable getter for bitProRate on forked target — skipping assertion');
     }
 
-    // Validación best-effort de comisiones
     if (commGetter) {
       for (const { txType, fee } of commissions) {
         const got = await inrate.getFunction(commGetter)(txType);
@@ -156,9 +153,7 @@ describe('Forked — RemovePanicButtonProposal', function () {
     }));
     const changer = await Changer.deploy(cfg.MoCInrate, toRay(cfg.bitProRate), commissions);
 
-    // 🔁 Nuevo matcher en HH3: use `.revert(ethers)` (no `.reverted`)
+    // New matcher in HH3: `.revert(ethers)` (not `.reverted`)
     await expect(changer.execute()).to.revert(ethers);
-    // Si querés chequear el reason exacto (si lo hay):
-    // await expect(changer.execute()).to.revertWith(ethers, 'Only governor');
   });
 });
