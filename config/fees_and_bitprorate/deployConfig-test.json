@@ -1,22 +1,21 @@
 {
-    "MoCInrate": "0x8CA7685F69B4bb96D221049Ac84e2F9363ca7F2c",    
-    "bitProRate": "0.000098",
-    "commissionRates": {
-      "MINT_BPRO_FEES_RBTC": "0.0015",
-      "REDEEM_BPRO_FEES_RBTC": "0.0015",
-      "MINT_DOC_FEES_RBTC": "0.0015",
-      "REDEEM_DOC_FEES_RBTC": "0.0015",
-      "MINT_BTCX_FEES_RBTC": "0.0015",
-      "REDEEM_BTCX_FEES_RBTC": "0.0015",
-      "MINT_BPRO_FEES_MOC": "0.0012",
-      "REDEEM_BPRO_FEES_MOC": "0.0012",
-      "MINT_DOC_FEES_MOC": "0.0012",
-      "REDEEM_DOC_FEES_MOC": "0.0012",
-      "MINT_BTCX_FEES_MOC": "0.0012",
-      "REDEEM_BTCX_FEES_MOC": "0.0012"
-    },
-    "Governor": "0x7b716178771057195bB511f0B1F7198EEE62Bc22",
-    "governorOwnerAddress": "0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3",
-    "changerAddress": ""
-  }
-  
+  "MoCInrate": "0x8CA7685F69B4bb96D221049Ac84e2F9363ca7F2c",
+  "bitProRate": "0.000098",
+  "commissionRates": {
+    "MINT_BPRO_FEES_RBTC": "0.0015",
+    "REDEEM_BPRO_FEES_RBTC": "0.0015",
+    "MINT_DOC_FEES_RBTC": "0.0015",
+    "REDEEM_DOC_FEES_RBTC": "0.0015",
+    "MINT_BTCX_FEES_RBTC": "0.0015",
+    "REDEEM_BTCX_FEES_RBTC": "0.0015",
+    "MINT_BPRO_FEES_MOC": "0.0012",
+    "REDEEM_BPRO_FEES_MOC": "0.0012",
+    "MINT_DOC_FEES_MOC": "0.0012",
+    "REDEEM_DOC_FEES_MOC": "0.0012",
+    "MINT_BTCX_FEES_MOC": "0.0012",
+    "REDEEM_BTCX_FEES_MOC": "0.0012"
+  },
+  "Governor": "0x7b716178771057195bB511f0B1F7198EEE62Bc22",
+  "governorOwnerAddress": "0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3",
+  "changerAddress": ""
+}

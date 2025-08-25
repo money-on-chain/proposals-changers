@@ -19,6 +19,7 @@ getContractFactory(name: 'IMoCInrate', signerOrOptions?: ethers.Signer | Factory
 getContractFactory(name: 'MoCInrateMock', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MoCInrateMock__factory>
 getContractFactory(name: 'MoCMock', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MoCMock__factory>
 getContractFactory(name: 'MockGovernor', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MockGovernor__factory>
+getContractFactory(name: 'FeesAndBitprorateProposalTest', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FeesAndBitprorateProposalTest__factory>
 getContractFactory(name: 'MocHelper', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MocHelper__factory>
 
   getContractAt(name: 'FeesAndBitprorateProposal', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FeesAndBitprorateProposal>
@@ -30,6 +31,7 @@ getContractAt(name: 'IMoCInrate', address: string | ethers.Addressable, signer?:
 getContractAt(name: 'MoCInrateMock', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MoCInrateMock>
 getContractAt(name: 'MoCMock', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MoCMock>
 getContractAt(name: 'MockGovernor', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MockGovernor>
+getContractAt(name: 'FeesAndBitprorateProposalTest', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FeesAndBitprorateProposalTest>
 getContractAt(name: 'MocHelper', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MocHelper>
 
   deployContract(name: 'FeesAndBitprorateProposal', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposal>
@@ -41,6 +43,7 @@ deployContract(name: 'IMoCInrate', signerOrOptions?: ethers.Signer | DeployContr
 deployContract(name: 'MoCInrateMock', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCInrateMock>
 deployContract(name: 'MoCMock', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCMock>
 deployContract(name: 'MockGovernor', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockGovernor>
+deployContract(name: 'FeesAndBitprorateProposalTest', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposalTest>
 deployContract(name: 'MocHelper', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MocHelper>
 
   deployContract(name: 'FeesAndBitprorateProposal', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposal>
@@ -52,6 +55,7 @@ deployContract(name: 'IMoCInrate', args: any[], signerOrOptions?: ethers.Signer 
 deployContract(name: 'MoCInrateMock', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCInrateMock>
 deployContract(name: 'MoCMock', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MoCMock>
 deployContract(name: 'MockGovernor', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockGovernor>
+deployContract(name: 'FeesAndBitprorateProposalTest', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FeesAndBitprorateProposalTest>
 deployContract(name: 'MocHelper', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MocHelper>
 
     // default types

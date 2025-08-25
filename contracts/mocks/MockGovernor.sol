@@ -1,25 +1,31 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 
-/**
- * @dev Minimal governor mock for tests.
- * Adapts to common Governed patterns by exposing a few typical selectors.
- * Tweak the function names if your Governed expects a different one.
- */
+/// @title MockGovernor
+/// @author Money On Chain
+/// @notice Minimal governor mock for tests. Adapts to common Governed patterns by exposing a few typical selectors.
 contract MockGovernor {
-  mapping(address => bool) public authorized;
+    /// @notice Mapping of authorized changers
+    mapping(address => bool) public authorized;
 
-  function setAuthorized(address changer, bool isAuth) external {
-    authorized[changer] = isAuth;
-  }
+    /// @notice Sets the authorization status for a changer
+    /// @param changer The address of the changer
+    /// @param isAuth Whether the changer is authorized
+    function setAuthorized(address changer, bool isAuth) external {
+        authorized[changer] = isAuth;
+    }
 
-  // Most common pattern
-  function isAuthorizedChanger(address changer) external view returns (bool) {
-    return authorized[changer];
-  }
+    /// @notice Checks if a changer is authorized (common pattern)
+    /// @param changer The address of the changer
+    /// @return True if authorized, false otherwise
+    function isAuthorizedChanger(address changer) external view returns (bool) {
+        return authorized[changer];
+    }
 
-  // Alternative names some Governed variants use
-  function isAuthorized(address changer) external view returns (bool) {
-    return authorized[changer];
-  }
+    /// @notice Checks if a changer is authorized (alternative name)
+    /// @param changer The address of the changer
+    /// @return True if authorized, false otherwise
+    function isAuthorized(address changer) external view returns (bool) {
+        return authorized[changer];
+    }
 }

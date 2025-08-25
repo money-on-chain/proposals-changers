@@ -1,22 +1,19 @@
-// hardhat.config.js (ESM)
-//import 'dotenv/config';
+import type { HardhatUserConfig } from "hardhat/config";
 
 import hardhatEthers from "@nomicfoundation/hardhat-ethers";
-import hardhatToolboxMochaEthers from '@nomicfoundation/hardhat-toolbox-mocha-ethers';
+import hardhatToolboxMochaEthers from "@nomicfoundation/hardhat-toolbox-mocha-ethers";
 import hardhatVerify from "@nomicfoundation/hardhat-verify";
-import { configVariable } from 'hardhat/config';
+import { configVariable } from "hardhat/config";
 
-
-import { config as dotenvConfig } from 'dotenv';
+import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
-
-export default {
+const config: HardhatUserConfig = {
   plugins: [hardhatEthers, hardhatToolboxMochaEthers, hardhatVerify],
   solidity: {
     compilers: [
       {
-        version: '0.8.24',
+        version: "0.8.24",
         settings: { optimizer: { enabled: true, runs: 200 } },
       },
     ],
@@ -24,9 +21,9 @@ export default {
   networks: {
     // Red local/embebida (opcional)
     hardhat: {
-      type: 'edr-simulated',
+      type: "edr-simulated",
       forking: {
-        url: configVariable('FORK_URL'),                    // <- needit
+        url: configVariable("FORK_URL"), // <- needit
         blockNumber: process.env.FORK_BLOCK ? Number(process.env.FORK_BLOCK) : undefined,
         // headers y timeout opcionales si usás un RPC público que a veces demora:
         // httpHeaders: { /* ... */ },
@@ -36,7 +33,7 @@ export default {
 
     // RSK Testnet (HTTP RPC)
     rskAlphaTestnet: {
-      type: 'http',                         
+      type: "http",
       url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
@@ -45,16 +42,16 @@ export default {
 
     // RSK Testnet (HTTP RPC)
     rskTestnet: {
-      type: 'http',                         
+      type: "http",
       url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       // gasPrice: 60000000n, // opcional (wei)
     },
-    
+
     // RSK Mainnet (HTTP RPC)
     rskMainnet: {
-      type: 'http',                        
+      type: "http",
       url: process.env.RPC_URL_RSK_MAINNET,
       chainId: 30,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
@@ -90,3 +87,5 @@ export default {
     },
   },
 };
+
+export default config;

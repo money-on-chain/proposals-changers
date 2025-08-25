@@ -6,14 +6,20 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface IMoCInrateInterface extends Interface {
-    getFunction(nameOrSignature: "setBitProRate" | "setCommissionRateByTxType"): FunctionFragment;
+    getFunction(nameOrSignature: "bitProRate" | "commissionRatesByTxType" | "governor" | "setBitProRate" | "setCommissionRateByTxType"): FunctionFragment;
 
     
 
-    encodeFunctionData(functionFragment: 'setBitProRate', values: [BigNumberish]): string;
+    encodeFunctionData(functionFragment: 'bitProRate', values?: undefined): string;
+encodeFunctionData(functionFragment: 'commissionRatesByTxType', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'governor', values?: undefined): string;
+encodeFunctionData(functionFragment: 'setBitProRate', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setCommissionRateByTxType', values: [BigNumberish, BigNumberish]): string;
 
-    decodeFunctionResult(functionFragment: 'setBitProRate', data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: 'bitProRate', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'commissionRatesByTxType', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'governor', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'setBitProRate', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setCommissionRateByTxType', data: BytesLike): Result;
   }
 
@@ -53,6 +59,30 @@ decodeFunctionResult(functionFragment: 'setCommissionRateByTxType', data: BytesL
 
     
     
+    bitProRate: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    commissionRatesByTxType: TypedContractMethod<
+      [txType: BigNumberish, ],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    governor: TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >
+    
+
+    
     setBitProRate: TypedContractMethod<
       [newBitProRate: BigNumberish, ],
       [void],
@@ -71,7 +101,22 @@ decodeFunctionResult(functionFragment: 'setCommissionRateByTxType', data: BytesL
 
     getFunction<T extends ContractMethod = ContractMethod>(key: string | FunctionFragment): T;
 
-    getFunction(nameOrSignature: 'setBitProRate'): TypedContractMethod<
+    getFunction(nameOrSignature: 'bitProRate'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'commissionRatesByTxType'): TypedContractMethod<
+      [txType: BigNumberish, ],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'governor'): TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'setBitProRate'): TypedContractMethod<
       [newBitProRate: BigNumberish, ],
       [void],
       'nonpayable'
