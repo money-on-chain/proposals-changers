@@ -5,3 +5,4 @@ export { IChangeContract__factory } from './IChangeContract__factory.js';
 export { IGovernor__factory } from './IGovernor__factory.js';
 export { IMoC__factory } from './IMoC__factory.js';
 export { IMoCInrate__factory } from './IMoCInrate__factory.js';
+export { IMoCv2__factory } from './IMoCv2__factory.js';

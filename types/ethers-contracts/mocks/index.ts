@@ -3,4 +3,5 @@
 /* eslint-disable */
 export type { MoCInrateMock } from './MoCInrateMock.js';
 export type { MoCMock } from './MoCMock.js';
+export type { MoCv2Mock } from './MoCv2Mock.js';
 export type { MockGovernor } from './MockGovernor.js';

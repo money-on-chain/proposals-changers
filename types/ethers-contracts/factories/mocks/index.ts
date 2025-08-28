@@ -3,4 +3,5 @@
 /* eslint-disable */
 export { MoCInrateMock__factory } from './MoCInrateMock__factory.js';
 export { MoCMock__factory } from './MoCMock__factory.js';
+export { MoCv2Mock__factory } from './MoCv2Mock__factory.js';
 export { MockGovernor__factory } from './MockGovernor__factory.js';

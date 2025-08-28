@@ -10,26 +10,37 @@ export declare namespace FeesAndBitprorateProposal {
 
     export type CommissionRatesStructOutput = [txType: bigint, fee: bigint] & {txType: bigint, fee: bigint }
   
+
+    export type RocV2FeeUpdateStruct = {key: BigNumberish, value: BigNumberish}
+
+    export type RocV2FeeUpdateStructOutput = [key: bigint, value: bigint] & {key: bigint, value: bigint }
+  
     }
 
   export interface FeesAndBitprorateProposalInterface extends Interface {
-    getFunction(nameOrSignature: "COMMISSION_RATES_ARRAY_MAX_LENGTH" | "bitProRate" | "commissionRates" | "commissionRatesLength" | "execute" | "mocInrate"): FunctionFragment;
+    getFunction(nameOrSignature: "COMMISSION_RATES_ARRAY_MAX_LENGTH" | "bitProRate" | "commissionRatesBlobRaw" | "execute" | "getCommissionRates" | "getRocV2Fees" | "mocInrate" | "rocV2" | "rocV2FeeBlobRaw"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "BitProRateSet" | "CommissionRateSet" | "ExecutedOnce"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "BitProRateSet" | "CommissionRateSet" | "ExecutedOnce" | "RocV2FeeApplied"): EventFragment;
 
     encodeFunctionData(functionFragment: 'COMMISSION_RATES_ARRAY_MAX_LENGTH', values?: undefined): string;
 encodeFunctionData(functionFragment: 'bitProRate', values?: undefined): string;
-encodeFunctionData(functionFragment: 'commissionRates', values: [BigNumberish]): string;
-encodeFunctionData(functionFragment: 'commissionRatesLength', values?: undefined): string;
+encodeFunctionData(functionFragment: 'commissionRatesBlobRaw', values?: undefined): string;
 encodeFunctionData(functionFragment: 'execute', values?: undefined): string;
+encodeFunctionData(functionFragment: 'getCommissionRates', values?: undefined): string;
+encodeFunctionData(functionFragment: 'getRocV2Fees', values?: undefined): string;
 encodeFunctionData(functionFragment: 'mocInrate', values?: undefined): string;
+encodeFunctionData(functionFragment: 'rocV2', values?: undefined): string;
+encodeFunctionData(functionFragment: 'rocV2FeeBlobRaw', values?: undefined): string;
 
     decodeFunctionResult(functionFragment: 'COMMISSION_RATES_ARRAY_MAX_LENGTH', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'bitProRate', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'commissionRates', data: BytesLike): Result;
-decodeFunctionResult(functionFragment: 'commissionRatesLength', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'commissionRatesBlobRaw', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'execute', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'getCommissionRates', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'getRocV2Fees', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'mocInrate', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'rocV2', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'rocV2FeeBlobRaw', data: BytesLike): Result;
   }
 
   
@@ -61,6 +72,18 @@ decodeFunctionResult(functionFragment: 'mocInrate', data: BytesLike): Result;
       export type InputTuple = [];
       export type OutputTuple = [];
       export interface OutputObject {};
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace RocV2FeeAppliedEvent {
+      export type InputTuple = [key: BigNumberish, value: BigNumberish];
+      export type OutputTuple = [key: bigint, value: bigint];
+      export interface OutputObject {key: bigint, value: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -119,17 +142,9 @@ decodeFunctionResult(functionFragment: 'mocInrate', data: BytesLike): Result;
     
 
     
-    commissionRates: TypedContractMethod<
-      [arg0: BigNumberish, ],
-      [[bigint, bigint] & {txType: bigint, fee: bigint }],
-      'view'
-    >
-    
-
-    
-    commissionRatesLength: TypedContractMethod<
+    commissionRatesBlobRaw: TypedContractMethod<
       [],
-      [bigint],
+      [string],
       'view'
     >
     
@@ -143,7 +158,39 @@ decodeFunctionResult(functionFragment: 'mocInrate', data: BytesLike): Result;
     
 
     
+    getCommissionRates: TypedContractMethod<
+      [],
+      [FeesAndBitprorateProposal.CommissionRatesStructOutput[]],
+      'view'
+    >
+    
+
+    
+    getRocV2Fees: TypedContractMethod<
+      [],
+      [FeesAndBitprorateProposal.RocV2FeeUpdateStructOutput[]],
+      'view'
+    >
+    
+
+    
     mocInrate: TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >
+    
+
+    
+    rocV2: TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >
+    
+
+    
+    rocV2FeeBlobRaw: TypedContractMethod<
       [],
       [string],
       'view'
@@ -163,14 +210,9 @@ getFunction(nameOrSignature: 'bitProRate'): TypedContractMethod<
       [bigint],
       'view'
     >;
-getFunction(nameOrSignature: 'commissionRates'): TypedContractMethod<
-      [arg0: BigNumberish, ],
-      [[bigint, bigint] & {txType: bigint, fee: bigint }],
-      'view'
-    >;
-getFunction(nameOrSignature: 'commissionRatesLength'): TypedContractMethod<
+getFunction(nameOrSignature: 'commissionRatesBlobRaw'): TypedContractMethod<
       [],
-      [bigint],
+      [string],
       'view'
     >;
 getFunction(nameOrSignature: 'execute'): TypedContractMethod<
@@ -178,7 +220,27 @@ getFunction(nameOrSignature: 'execute'): TypedContractMethod<
       [void],
       'nonpayable'
     >;
+getFunction(nameOrSignature: 'getCommissionRates'): TypedContractMethod<
+      [],
+      [FeesAndBitprorateProposal.CommissionRatesStructOutput[]],
+      'view'
+    >;
+getFunction(nameOrSignature: 'getRocV2Fees'): TypedContractMethod<
+      [],
+      [FeesAndBitprorateProposal.RocV2FeeUpdateStructOutput[]],
+      'view'
+    >;
 getFunction(nameOrSignature: 'mocInrate'): TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'rocV2'): TypedContractMethod<
+      [],
+      [string],
+      'view'
+    >;
+getFunction(nameOrSignature: 'rocV2FeeBlobRaw'): TypedContractMethod<
       [],
       [string],
       'view'
@@ -187,6 +249,7 @@ getFunction(nameOrSignature: 'mocInrate'): TypedContractMethod<
     getEvent(key: 'BitProRateSet'): TypedContractEvent<BitProRateSetEvent.InputTuple, BitProRateSetEvent.OutputTuple, BitProRateSetEvent.OutputObject>;
 getEvent(key: 'CommissionRateSet'): TypedContractEvent<CommissionRateSetEvent.InputTuple, CommissionRateSetEvent.OutputTuple, CommissionRateSetEvent.OutputObject>;
 getEvent(key: 'ExecutedOnce'): TypedContractEvent<ExecutedOnceEvent.InputTuple, ExecutedOnceEvent.OutputTuple, ExecutedOnceEvent.OutputObject>;
+getEvent(key: 'RocV2FeeApplied'): TypedContractEvent<RocV2FeeAppliedEvent.InputTuple, RocV2FeeAppliedEvent.OutputTuple, RocV2FeeAppliedEvent.OutputObject>;
 
     filters: {
       
@@ -200,6 +263,10 @@ getEvent(key: 'ExecutedOnce'): TypedContractEvent<ExecutedOnceEvent.InputTuple, 
 
       'ExecutedOnce()': TypedContractEvent<ExecutedOnceEvent.InputTuple, ExecutedOnceEvent.OutputTuple, ExecutedOnceEvent.OutputObject>;
       ExecutedOnce: TypedContractEvent<ExecutedOnceEvent.InputTuple, ExecutedOnceEvent.OutputTuple, ExecutedOnceEvent.OutputObject>;
+    
+
+      'RocV2FeeApplied(uint8,uint256)': TypedContractEvent<RocV2FeeAppliedEvent.InputTuple, RocV2FeeAppliedEvent.OutputTuple, RocV2FeeAppliedEvent.OutputObject>;
+      RocV2FeeApplied: TypedContractEvent<RocV2FeeAppliedEvent.InputTuple, RocV2FeeAppliedEvent.OutputTuple, RocV2FeeAppliedEvent.OutputObject>;
     
     };
   }
