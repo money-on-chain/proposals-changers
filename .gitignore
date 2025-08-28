@@ -5,3 +5,4 @@ artifacts
 dist
 coverage
 typechain-types
+types/
