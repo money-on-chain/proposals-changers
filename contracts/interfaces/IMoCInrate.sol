@@ -5,4 +5,7 @@ pragma solidity 0.8.24;
 interface IMoCInrate {
     function setBitProRate(uint256 newBitProRate) external;
     function setCommissionRateByTxType(uint8 txType, uint256 value) external;
+    function bitProRate() external view returns (uint256);
+    function commissionRatesByTxType(uint8 txType) external view returns (uint256);
+    function governor() external view returns (address);
 }

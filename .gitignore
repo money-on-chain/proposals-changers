@@ -5,3 +5,5 @@ artifacts
 dist
 coverage
 typechain-types
+types/
+lib/

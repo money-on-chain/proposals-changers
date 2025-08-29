@@ -1,7 +1,7 @@
 {
   "MoCInrate": "0x8CA7685F69B4bb96D221049Ac84e2F9363ca7F2c",
   "RocV2": "0xf5008675cF2b677682C8dfF7f1ae149643781169",
-  "bitProRate": "0.0001432111",
+  "bitProRate": "0.000143211085680495",
   "commissionRates": {
     "MINT_BPRO_FEES_RBTC": "0.0015",
     "REDEEM_BPRO_FEES_RBTC": "0.0015",
@@ -24,9 +24,9 @@
     "SwapTCforTPFee": "0.0015",
     "RedeemTCandTPFee": "0.0015",
     "MintTCandTPFee": "0.0015",
-    "FeeTokenPct": "0.6666"
+    "FeeTokenPct": "0.666666666666666666"
   },
   "Governor": "0x7b716178771057195bB511f0B1F7198EEE62Bc22",
   "governorOwnerAddress": "0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3",
-  "changerAddress": "0xEAD4347003F2741cFc1b03eFe1Eb8089F87Ed848"
+  "changerAddress": "0x6EC8B73325201dD7E3aA2DBA58af91FA5756Ac06"
 }

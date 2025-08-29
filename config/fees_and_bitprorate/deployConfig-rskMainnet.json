@@ -1,6 +1,7 @@
 {
   "MoCInrate": "0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3",
-  "bitProRate": "0.000098",
+  "RocV2": "0xA27024Ed70035E46dba712609fc2Afa1c97aA36A",
+  "bitProRate": "0.000143211085680495",
   "commissionRates": {
     "MINT_BPRO_FEES_RBTC": "0.0015",
     "REDEEM_BPRO_FEES_RBTC": "0.0015",
@@ -8,14 +9,24 @@
     "REDEEM_DOC_FEES_RBTC": "0.0015",
     "MINT_BTCX_FEES_RBTC": "0.0015",
     "REDEEM_BTCX_FEES_RBTC": "0.0015",
-    "MINT_BPRO_FEES_MOC": "0.0012",
-    "REDEEM_BPRO_FEES_MOC": "0.0012",
-    "MINT_DOC_FEES_MOC": "0.0012",
-    "REDEEM_DOC_FEES_MOC": "0.0012",
-    "MINT_BTCX_FEES_MOC": "0.0012",
-    "REDEEM_BTCX_FEES_MOC": "0.0012"
+    "MINT_BPRO_FEES_MOC": "0.0010",
+    "REDEEM_BPRO_FEES_MOC": "0.0010",
+    "MINT_DOC_FEES_MOC": "0.0010",
+    "REDEEM_DOC_FEES_MOC": "0.0010",
+    "MINT_BTCX_FEES_MOC": "0.0010",
+    "REDEEM_BTCX_FEES_MOC": "0.0010"
+  },
+  "rocV2Fees": {
+    "TcMintFee": "0.0015",
+    "TcRedeemFee": "0.0015",
+    "SwapTPforTPFee": "0.0015",
+    "SwapTPforTCFee": "0.0015",
+    "SwapTCforTPFee": "0.0015",
+    "RedeemTCandTPFee": "0.0015",
+    "MintTCandTPFee": "0.0015",
+    "FeeTokenPct": "0.666666666666666666"
   },
   "Governor": "0x3b8853DF65AfBd94853E6D77ee0Ab5590F41bB08",
   "governorOwnerAddress": "0x65a5681bE95d212F0c90eAd40170D8277de81169",
-  "changerAddress": ""
+  "changerAddress": "0xEb45E0451157175F1da5252B88AC0c903b1740D8"
 }

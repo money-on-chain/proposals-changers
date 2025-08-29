@@ -108,9 +108,7 @@ contract FeesAndBitprorateProposal is IChangeContract {
         require(_commissionRates.length > 0, "commissionRates empty");
         require(_commissionRates.length <= COMMISSION_RATES_ARRAY_MAX_LENGTH, "commissionRates too long");
         require(_rocV2Fees.length > 0, "rocV2Fees empty");
-        require(_rocV2Fees.length <= COMMISSION_RATES_ARRAY_MAX_LENGTH, "rocV2Fees too long");
-
-        // Optional domain guard: cap to 100% if that makes sense for your protocol.
+        require(_rocV2Fees.length <= COMMISSION_RATES_ARRAY_MAX_LENGTH, "rocV2Fees too long");        
         require(_bitProRate <= PREC, "rate > 100%");
 
         // Pack MoC V1 commissions.
