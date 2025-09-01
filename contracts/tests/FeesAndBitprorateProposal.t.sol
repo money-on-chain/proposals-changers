@@ -26,77 +26,8 @@ contract FeesAndBitprorateProposalTest is Test {
         address rocV2Addr = 0xA27024Ed70035E46dba712609fc2Afa1c97aA36A;
         mocInrate = IMoCInrate(mocInrateAddr);
         rocV2 = IMoCv2(rocV2Addr);
-
-        // bitProRate: "0.000143211085680495" to 18 decimals
-        uint256 bitProRate = 143211085680495;
-
-        // Commission rates (txType, fee) from deployConfig
-        uint8[12] memory txTypes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-        uint256[12] memory fees = [
-            uint256(1_500_000_000_000_000), // 0.0015 * 1e18
-            1_500_000_000_000_000,
-            1_500_000_000_000_000,
-            1_500_000_000_000_000,
-            1_500_000_000_000_000,
-            1_500_000_000_000_000,
-            1_000_000_000_000_000, // 0.0010 * 1e18
-            1_000_000_000_000_000,
-            1_000_000_000_000_000,
-            1_000_000_000_000_000,
-            1_000_000_000_000_000,
-            1_000_000_000_000_000
-        ];
-        FeesAndBitprorateProposal.CommissionRates[]
-            memory rates = new FeesAndBitprorateProposal.CommissionRates[](12);
-        for (uint8 i = 0; i < 12; i++) {
-            rates[i] = FeesAndBitprorateProposal.CommissionRates({
-                txType: txTypes[i],
-                fee: fees[i]
-            });
-        }
-
-        // ROC V2 fees from deployConfig
-        FeesAndBitprorateProposal.RocV2FeeUpdate[]
-            memory rocFees = new FeesAndBitprorateProposal.RocV2FeeUpdate[](8);
-        rocFees[0] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.TcMintFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[1] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.TcRedeemFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[2] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.SwapTPforTPFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[3] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.SwapTPforTCFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[4] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.SwapTCforTPFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[5] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.RedeemTCandTPFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[6] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.MintTCandTPFee,
-            value: 1_500_000_000_000_000
-        });
-        rocFees[7] = FeesAndBitprorateProposal.RocV2FeeUpdate({
-            key: FeesAndBitprorateProposal.RocV2FeeKey.FeeTokenPct,
-            value: 666_666_666_666_666_666
-        });
-
-        proposal = new FeesAndBitprorateProposal(
-            mocInrate,
-            rocV2,
-            bitProRate,
-            rates,
-            rocFees
+        proposal = FeesAndBitprorateProposal(
+            0xEb45E0451157175F1da5252B88AC0c903b1740D8
         );
     }
 
@@ -124,7 +55,7 @@ contract FeesAndBitprorateProposalTest is Test {
             1_000_000_000_000_000
         ];
         for (uint8 i = 0; i < 12; i++) {
-            assert(rates[i].txType == i);
+            assert(rates[i].txType == i + 1); // txType starts at 1
             assert(rates[i].fee == expectedFees[i]);
         }
         FeesAndBitprorateProposal.RocV2FeeUpdate[] memory fees = proposal
@@ -185,7 +116,7 @@ contract FeesAndBitprorateProposalTest is Test {
             1_000_000_000_000_000
         ];
         for (uint8 i = 0; i < 12; i++) {
-            assertEq(mocInrate.commissionRatesByTxType(i), expectedFees[i]);
+            assertEq(mocInrate.commissionRatesByTxType(i + 1), expectedFees[i]); // txType starts at 1
         }
 
         // Check ROC V2 fees set on rocV2
