@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Validates the on-chain storage of the deployed changer *before* governance vote.
  * Config resolution:
@@ -9,6 +9,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import hre from "hardhat";
 
 const __filename = fileURLToPath(import.meta.url);

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Post-vote validator: checks that the governance changer effects were actually applied on-chain.
  *
@@ -22,6 +22,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import hre from "hardhat";
 
 const __filename = fileURLToPath(import.meta.url);

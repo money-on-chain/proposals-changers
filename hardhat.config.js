@@ -4,9 +4,9 @@
 import hardhatEthers from "@nomicfoundation/hardhat-ethers";
 import hardhatToolboxMochaEthers from "@nomicfoundation/hardhat-toolbox-mocha-ethers";
 import hardhatVerify from "@nomicfoundation/hardhat-verify";
+import { config as dotenvConfig } from "dotenv";
 import { configVariable } from "hardhat/config";
 
-import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 export default {

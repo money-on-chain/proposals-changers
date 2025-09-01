@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Deploys the FeesAndBitprorateProposal changer using parameters from a JSON file.
  * Config resolution order:
@@ -32,6 +32,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import hre from "hardhat";
 
 const __filename = fileURLToPath(import.meta.url);

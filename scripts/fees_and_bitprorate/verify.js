@@ -1,9 +1,10 @@
 // scripts/fees_and_bitprorate/verify.js (ESM)
-import hre from "hardhat";
-import { verifyContract } from "@nomicfoundation/hardhat-verify/verify";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import { verifyContract } from "@nomicfoundation/hardhat-verify/verify";
+import hre from "hardhat";
 
 /**
  * Verifies FeesAndBitprorateProposal on Blockscout/Etherscan-compatible explorers.

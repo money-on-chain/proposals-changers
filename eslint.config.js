@@ -1,10 +1,10 @@
 // eslint.config.js
 import js from "@eslint/js";
-import tseslint from "typescript-eslint";
+import eslintConfigPrettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import n from "eslint-plugin-n";
-import eslintConfigPrettier from "eslint-config-prettier";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default [
   // 1) Ignorar generados y artefactos

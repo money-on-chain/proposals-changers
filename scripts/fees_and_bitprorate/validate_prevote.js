@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Validates the on-chain, constructor-loaded state of the deployed changer *before* governance vote.
  *
@@ -20,6 +20,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import hre from "hardhat";
 
 const __filename = fileURLToPath(import.meta.url);
