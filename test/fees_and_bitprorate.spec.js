@@ -1,6 +1,7 @@
 // test/fees_and_bitprorate.spec.js
-import { expect } from "chai";
 import hre from "hardhat";
+
+import { expect } from "chai";
 
 // HH3: get ethers from the active connection
 const { ethers } = await hre.network.connect();

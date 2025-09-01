@@ -1,13 +1,13 @@
 // eslint.config.js
 import js from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
+import tseslint from "typescript-eslint";
 import importPlugin from "eslint-plugin-import";
 import n from "eslint-plugin-n";
+import eslintConfigPrettier from "eslint-config-prettier";
 import globals from "globals";
-import tseslint from "typescript-eslint";
 
 export default [
-  // 1) Ignorar generados y artefactos
+  // 1) Ignorados (artefactos, generados y este propio archivo)
   {
     ignores: [
       "node_modules/",
@@ -20,29 +20,46 @@ export default [
       "typechain*/",
       "types/ethers-contracts/**",
       "**/*.d.ts",
+      "eslint.config.*",
     ],
   },
 
-  // 2) Base JS + TS (sin type-check para que sea rápido/estable)
+  // 2) Base JS y TS (sin type-check para velocidad/estabilidad)
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
-  // 3) Node + import plugin
+  // 3) Plugin de imports recomendado
   importPlugin.flatConfigs.recommended,
+
+  // 4) Entorno Node + resolvers + módulos especiales (Hardhat)
   {
     plugins: { n },
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
-      // Globals de Node para scripts y config (process, console, etc.)
       globals: {
-        ...globals.node,
+        ...globals.node, // habilita process, console, __dirname, etc.
       },
+    },
+    settings: {
+      // Cómo resolver imports
+      "import/resolver": {
+        node: { extensions: [".js", ".cjs", ".mjs", ".ts"] },
+        typescript: { alwaysTryTypes: true },
+      },
+      // Paquetes a tratar como "core modules" (no intentar resolver ruta)
+      "import/core-modules": [
+        "hardhat",
+        "hardhat/config",
+        "@nomicfoundation/hardhat-ethers",
+        "@nomicfoundation/hardhat-toolbox-mocha-ethers",
+        "@nomicfoundation/hardhat-verify",
+        "@nomicfoundation/hardhat-verify/verify",
+      ],
     },
     rules: {
       "n/no-missing-import": "off",
       "n/no-unsupported-features/es-syntax": "off",
-      // Orden de imports (ajustá si querés)
       "import/order": [
         "warn",
         {
@@ -51,41 +68,62 @@ export default [
           groups: ["builtin", "external", "internal", ["parent", "sibling", "index"]],
         },
       ],
-      // Si te molesta, podés desactivar no-console para scripts de CLI:
-      // "no-console": "off",
     },
   },
 
-  // 4) Overrides específicos
-  // a) Tests: habilita globals de Mocha/Jest
+  // 5) Reglas SOLO para TypeScript
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
+
+  // 6) Reglas SOLO para JavaScript (no aplicar reglas TS en .js)
+  {
+    files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+    },
+  },
+
+  // 7) Tests (Mocha): habilitar globals y relajar algunas reglas
   {
     files: ["test/**/*.{js,ts,tsx}", "tests/**/*.{js,ts,tsx}"],
     languageOptions: {
       globals: {
         ...globals.node,
         ...globals.mocha, // describe, it, before, after...
-        // ...globals.jest // si usás jest
       },
     },
     rules: {
-      // ejemplos: relajar reglas verbosas en tests
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
       "no-empty": "off",
     },
   },
-  // b) Config/CLI scripts: permitir console
+
+  // 8) Scripts/CLI/Configs de Hardhat: permitir console, etc.
   {
     files: [
       "hardhat.config.{js,ts}",
       "scripts/**/*.{js,ts,mjs,cjs}",
       "tasks/**/*.{js,ts,mjs,cjs}",
-      "scripts/**/*.js",
     ],
     rules: {
       "no-console": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-unused-vars": "off",
+      "no-empty": "off",
     },
   },
 
-  // 5) Desactiva choques con Prettier
+  // 9) Desactivar choques con Prettier
   eslintConfigPrettier,
 ];
