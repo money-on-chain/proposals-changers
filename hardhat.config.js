@@ -28,7 +28,7 @@ export default {
       forking: {
         url: configVariable('FORK_URL'),                    // <- needit
         blockNumber: process.env.FORK_BLOCK ? Number(process.env.FORK_BLOCK) : undefined,
-        // headers y timeout opcionales si usás un RPC público que a veces demora:
+        // headers y timeout optional if you use a public RPC that sometimes delays:
         // httpHeaders: { /* ... */ },
         // timeout: 120000,
       },
@@ -40,7 +40,7 @@ export default {
       url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      // gasPrice: 60000000n, // opcional (wei)
+      // gasPrice: 60000000n, // optional (wei)
     },
 
     // RSK Testnet (HTTP RPC)
@@ -49,7 +49,7 @@ export default {
       url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      // gasPrice: 60000000n, // opcional (wei)
+      // gasPrice: 60000000n, // optional (wei)
     },
     
     // RSK Mainnet (HTTP RPC)
@@ -60,11 +60,11 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
-  // ✅ En HH3 se usa `verify`, no `etherscan` toplevel
+  // ✅ En HH3 use verify
   verify: {
-    // opcional: desactivar Etherscan si no lo usás
+    // optional: disable Etherscan if you don't use it
     etherscan: { enabled: false },
-    // opcional: explicitar Blockscout (default: enabled)
+    // optional: explicitly enable Blockscout (default: enabled)
     blockscout: { enabled: true },
   },
   chainDescriptors: {
