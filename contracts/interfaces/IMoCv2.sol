@@ -1,17 +1,44 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-/// @notice Minimal interface for MoC v2 contract (only methods used by changers)
+/**
+ * @title IMoCv2
+ * @notice Minimal interface for MoC v2 contract (only methods used by changers)
+ */
 interface IMoCv2 {
+    /// @notice Returns the TC interest rate (1e18 precision).
+    function tcInterestRate() external view returns (uint256);
+    /// @notice Returns the TC mint fee (1e18 precision).
+    function tcMintFee() external view returns (uint256);
+    /// @notice Returns the TC redeem fee (1e18 precision).
+    function tcRedeemFee() external view returns (uint256);
+    /// @notice Returns the swap TP for TP fee (1e18 precision).
+    function swapTPforTPFee() external view returns (uint256);
+    /// @notice Returns the swap TP for TC fee (1e18 precision).
+    function swapTPforTCFee() external view returns (uint256);
+    /// @notice Returns the swap TC for TP fee (1e18 precision).
+    function swapTCforTPFee() external view returns (uint256);
+    /// @notice Returns the redeem TC and TP fee (1e18 precision).
+    function redeemTCandTPFee() external view returns (uint256);
+    /// @notice Returns the mint TC and TP fee (1e18 precision).
+    function mintTCandTPFee() external view returns (uint256);
+    /// @notice Returns the fee token percentage (1e18 precision).
+    function feeTokenPct() external view returns (uint256);
+
+    /**
+     * @dev sets the interest rate for Collateral Tokens (TC).
+     * @param tcInterestRate_ new interest rate for Collateral Tokens [PREC]
+     * 0% = 0; 1% = 10 ** 16; 100% = 10 ** 18
+     */
     function setTCInterestRate(uint256 tcInterestRate_) external;
-    
+
     /**
      * @dev sets the fee charged on Token Collateral mint.
      * @param tcMintFee_ addition fee pct applied on Collateral Tokens mint [PREC]
      * 0% = 0; 1% = 10 ** 16; 100% = 10 ** 18
      */
     function setTcMintFee(uint256 tcMintFee_) external;
-    
+
     /**
      * @dev sets the fee charged on Token Collateral redeem.
      * @param tcRedeemFee_ addition fee pct applied on Collateral Tokens redeem [PREC]

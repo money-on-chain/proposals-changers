@@ -6,11 +6,14 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface IMoCv2Interface extends Interface {
-    getFunction(nameOrSignature: "setFeeTokenPct" | "setMintTCandTPFee" | "setRedeemTCandTPFee" | "setSwapTCforTPFee" | "setSwapTPforTCFee" | "setSwapTPforTPFee" | "setTCInterestRate" | "setTcMintFee" | "setTcRedeemFee"): FunctionFragment;
+    getFunction(nameOrSignature: "feeTokenPct" | "mintTCandTPFee" | "redeemTCandTPFee" | "setFeeTokenPct" | "setMintTCandTPFee" | "setRedeemTCandTPFee" | "setSwapTCforTPFee" | "setSwapTPforTCFee" | "setSwapTPforTPFee" | "setTCInterestRate" | "setTcMintFee" | "setTcRedeemFee" | "swapTCforTPFee" | "swapTPforTCFee" | "swapTPforTPFee" | "tcInterestRate" | "tcMintFee" | "tcRedeemFee"): FunctionFragment;
 
     
 
-    encodeFunctionData(functionFragment: 'setFeeTokenPct', values: [BigNumberish]): string;
+    encodeFunctionData(functionFragment: 'feeTokenPct', values?: undefined): string;
+encodeFunctionData(functionFragment: 'mintTCandTPFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'redeemTCandTPFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'setFeeTokenPct', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setMintTCandTPFee', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setRedeemTCandTPFee', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setSwapTCforTPFee', values: [BigNumberish]): string;
@@ -19,8 +22,17 @@ encodeFunctionData(functionFragment: 'setSwapTPforTPFee', values: [BigNumberish]
 encodeFunctionData(functionFragment: 'setTCInterestRate', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setTcMintFee', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setTcRedeemFee', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'swapTCforTPFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'swapTPforTCFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'swapTPforTPFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'tcInterestRate', values?: undefined): string;
+encodeFunctionData(functionFragment: 'tcMintFee', values?: undefined): string;
+encodeFunctionData(functionFragment: 'tcRedeemFee', values?: undefined): string;
 
-    decodeFunctionResult(functionFragment: 'setFeeTokenPct', data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: 'feeTokenPct', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'mintTCandTPFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'redeemTCandTPFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'setFeeTokenPct', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setMintTCandTPFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setRedeemTCandTPFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setSwapTCforTPFee', data: BytesLike): Result;
@@ -29,6 +41,12 @@ decodeFunctionResult(functionFragment: 'setSwapTPforTPFee', data: BytesLike): Re
 decodeFunctionResult(functionFragment: 'setTCInterestRate', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setTcMintFee', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setTcRedeemFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'swapTCforTPFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'swapTPforTCFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'swapTPforTPFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'tcInterestRate', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'tcMintFee', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'tcRedeemFee', data: BytesLike): Result;
   }
 
   
@@ -66,6 +84,30 @@ decodeFunctionResult(functionFragment: 'setTcRedeemFee', data: BytesLike): Resul
 
 
     
+    
+    feeTokenPct: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    mintTCandTPFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    redeemTCandTPFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
     
     setFeeTokenPct: TypedContractMethod<
       [feeTokenPct_: BigNumberish, ],
@@ -138,10 +180,73 @@ decodeFunctionResult(functionFragment: 'setTcRedeemFee', data: BytesLike): Resul
     >
     
 
+    
+    swapTCforTPFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    swapTPforTCFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    swapTPforTPFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    tcInterestRate: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    tcMintFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
+    tcRedeemFee: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
 
     getFunction<T extends ContractMethod = ContractMethod>(key: string | FunctionFragment): T;
 
-    getFunction(nameOrSignature: 'setFeeTokenPct'): TypedContractMethod<
+    getFunction(nameOrSignature: 'feeTokenPct'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'mintTCandTPFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'redeemTCandTPFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'setFeeTokenPct'): TypedContractMethod<
       [feeTokenPct_: BigNumberish, ],
       [void],
       'nonpayable'
@@ -185,6 +290,36 @@ getFunction(nameOrSignature: 'setTcRedeemFee'): TypedContractMethod<
       [tcRedeemFee_: BigNumberish, ],
       [void],
       'nonpayable'
+    >;
+getFunction(nameOrSignature: 'swapTCforTPFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'swapTPforTCFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'swapTPforTPFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'tcInterestRate'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'tcMintFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
+getFunction(nameOrSignature: 'tcRedeemFee'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
     >;
 
     
