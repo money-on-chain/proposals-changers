@@ -5,6 +5,7 @@ This repository collects contracts for proposed **changers** of the Money on Cha
 ## Included proposals
 
 ### Proposal 20250826 - 2025/08/26 - Fee reduction
+
 See: [docs/P20250826.md](docs/P20250826.md)
 
 ## Project structure
@@ -46,6 +47,7 @@ npm run test
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/validate_prevote.js --network <network>
 ```
+
 Checks on-chain storage of the changer matches the local configuration.
 
 ## Contract verification
@@ -53,6 +55,7 @@ Checks on-chain storage of the changer matches the local configuration.
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/verify.js --network <network>
 ```
+
 Optionally set `VERIFY_ADDRESS` to explicitly specify the address to verify.
 
 ## After-vote validation
@@ -60,6 +63,7 @@ Optionally set `VERIFY_ADDRESS` to explicitly specify the address to verify.
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network <network>
 ```
+
 Checks on-chain storage of the changer matches the local configuration.
 
 ## Notes

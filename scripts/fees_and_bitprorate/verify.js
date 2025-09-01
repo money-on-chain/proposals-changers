@@ -66,12 +66,18 @@ function toRay(value) {
 
 // MoC V1 commission txType map (uint8 ids)
 const MAP_TX_V1 = {
-  MINT_BPRO_FEES_RBTC: 1,  REDEEM_BPRO_FEES_RBTC: 2,
-  MINT_DOC_FEES_RBTC: 3,   REDEEM_DOC_FEES_RBTC: 4,
-  MINT_BTCX_FEES_RBTC: 5,  REDEEM_BTCX_FEES_RBTC: 6,
-  MINT_BPRO_FEES_MOC: 7,   REDEEM_BPRO_FEES_MOC: 8,
-  MINT_DOC_FEES_MOC: 9,    REDEEM_DOC_FEES_MOC: 10,
-  MINT_BTCX_FEES_MOC: 11,  REDEEM_BTCX_FEES_MOC: 12,
+  MINT_BPRO_FEES_RBTC: 1,
+  REDEEM_BPRO_FEES_RBTC: 2,
+  MINT_DOC_FEES_RBTC: 3,
+  REDEEM_DOC_FEES_RBTC: 4,
+  MINT_BTCX_FEES_RBTC: 5,
+  REDEEM_BTCX_FEES_RBTC: 6,
+  MINT_BPRO_FEES_MOC: 7,
+  REDEEM_BPRO_FEES_MOC: 8,
+  MINT_DOC_FEES_MOC: 9,
+  REDEEM_DOC_FEES_MOC: 10,
+  MINT_BTCX_FEES_MOC: 11,
+  REDEEM_BTCX_FEES_MOC: 12,
 };
 
 // ROC V2 fee enum mapping (RocV2FeeKey)
@@ -144,7 +150,7 @@ async function main() {
 
   // Build constructor args EXACTLY like deploy.js
   const commissionsV1 = buildCommissionsV1(cfg);
-  const feesRocV2     = buildRocV2Fees(cfg);
+  const feesRocV2 = buildRocV2Fees(cfg);
 
   const constructorArgs = [
     cfg.MoCInrate,
@@ -175,7 +181,7 @@ async function main() {
       constructorArgs,
       provider, // "blockscout" for Rootstock explorers
     },
-    hre
+    hre,
   );
 
   console.log("✔ Verification request submitted.");

@@ -6,7 +6,18 @@ import importPlugin from "eslint-plugin-import";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
-  { ignores: ["node_modules/", "dist/", "build/", "artifacts/", "cache/", "out/", "typechain*/", "**/*.d.ts"] },
+  {
+    ignores: [
+      "node_modules/",
+      "dist/",
+      "build/",
+      "artifacts/",
+      "cache/",
+      "out/",
+      "typechain*/",
+      "**/*.d.ts",
+    ],
+  },
 
   js.configs.recommended,
   ...tseslint.configs.recommended, // rápido, sin type-check

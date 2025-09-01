@@ -19,35 +19,38 @@
  *  - 1 if any mismatch or hard error occurs
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import hre from 'hardhat';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import hre from "hardhat";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
-const repoRoot   = path.resolve(__dirname, '..', '..');
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, "..", "..");
 
 // ---- Network + config helpers ----------------------------------------------
 
 function selectedNetworkName(hre) {
   // Prefer CLI --network, then HARDHAT_NETWORK, else "hardhat"
-  return hre.globalOptions?.network ?? process.env.HARDHAT_NETWORK ?? 'hardhat';
+  return hre.globalOptions?.network ?? process.env.HARDHAT_NETWORK ?? "hardhat";
 }
 
 function defaultConfigPath(repoRoot, networkName) {
-  return path.join(repoRoot, 'config', 'fees_and_bitprorate', `deployConfig-${networkName}.json`);
+  return path.join(repoRoot, "config", "fees_and_bitprorate", `deployConfig-${networkName}.json`);
 }
 
 function resolveConfigPath(hre, repoRoot) {
   const fromEnv = process.env.DEPLOY_CONFIG_PATH;
-  return fromEnv ? (path.isAbsolute(fromEnv) ? fromEnv : path.resolve(fromEnv))
-                 : defaultConfigPath(repoRoot, selectedNetworkName(hre));
+  return fromEnv
+    ? path.isAbsolute(fromEnv)
+      ? fromEnv
+      : path.resolve(fromEnv)
+    : defaultConfigPath(repoRoot, selectedNetworkName(hre));
 }
 
 function loadConfigOrDie(cfgPath) {
   if (!fs.existsSync(cfgPath)) throw new Error(`Config not found: ${cfgPath}`);
-  return JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+  return JSON.parse(fs.readFileSync(cfgPath, "utf8"));
 }
 
 const eqAddr = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
@@ -56,24 +59,30 @@ const eqAddr = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
 
 // MoC V1 tx-type ids (must match the protocol)
 const MAP_TX = {
-  MINT_BPRO_FEES_RBTC: 1,  REDEEM_BPRO_FEES_RBTC: 2,
-  MINT_DOC_FEES_RBTC: 3,   REDEEM_DOC_FEES_RBTC: 4,
-  MINT_BTCX_FEES_RBTC: 5,  REDEEM_BTCX_FEES_RBTC: 6,
-  MINT_BPRO_FEES_MOC: 7,   REDEEM_BPRO_FEES_MOC: 8,
-  MINT_DOC_FEES_MOC: 9,    REDEEM_DOC_FEES_MOC: 10,
-  MINT_BTCX_FEES_MOC: 11,  REDEEM_BTCX_FEES_MOC: 12,
+  MINT_BPRO_FEES_RBTC: 1,
+  REDEEM_BPRO_FEES_RBTC: 2,
+  MINT_DOC_FEES_RBTC: 3,
+  REDEEM_DOC_FEES_RBTC: 4,
+  MINT_BTCX_FEES_RBTC: 5,
+  REDEEM_BTCX_FEES_RBTC: 6,
+  MINT_BPRO_FEES_MOC: 7,
+  REDEEM_BPRO_FEES_MOC: 8,
+  MINT_DOC_FEES_MOC: 9,
+  REDEEM_DOC_FEES_MOC: 10,
+  MINT_BTCX_FEES_MOC: 11,
+  REDEEM_BTCX_FEES_MOC: 12,
 };
 
 // ROC V2 fee keys expected in config. Keep them in sync with deploy/verify scripts.
 const ROCV2_KEYS = [
-  'TcMintFee',
-  'TcRedeemFee',
-  'SwapTPforTPFee',
-  'SwapTPforTCFee',
-  'SwapTCforTPFee',
-  'RedeemTCandTPFee',
-  'MintTCandTPFee',
-  'FeeTokenPct',
+  "TcMintFee",
+  "TcRedeemFee",
+  "SwapTPforTPFee",
+  "SwapTPforTCFee",
+  "SwapTCforTPFee",
+  "RedeemTCandTPFee",
+  "MintTCandTPFee",
+  "FeeTokenPct",
 ];
 
 // ---- Read helpers (best-effort getters) ------------------------------------
@@ -100,9 +109,7 @@ async function readWithFallback(contract, candidates) {
  * Returns the best getter signature for MoC V1 commission by txType.
  */
 async function detectMoCCommissionGetter(inrate) {
-  const candidates = [    
-    'commissionRatesByTxType(uint8)', 
-  ];
+  const candidates = ["commissionRatesByTxType(uint8)"];
   for (const sig of candidates) {
     try {
       const fn = inrate.getFunction(sig);
@@ -117,32 +124,32 @@ async function detectMoCCommissionGetter(inrate) {
 // ---- ABIs (read-only) ------------------------------------------------------
 
 const INRATE_ABI = [
-  'function bitProRate() view returns (uint256)',    
-  'function commissionRatesByTxType(uint8) view returns (uint256)',
+  "function bitProRate() view returns (uint256)",
+  "function commissionRatesByTxType(uint8) view returns (uint256)",
 ];
 
 const ROCV2_ABI = [
-  'function tcInterestRate() view returns (uint256)',  
-  'function tcMintFee() view returns (uint256)',
-  'function tcRedeemFee() view returns (uint256)',
-  'function swapTPforTPFee() view returns (uint256)',
-  'function swapTPforTCFee() view returns (uint256)',
-  'function swapTCforTPFee() view returns (uint256)',
-  'function redeemTCandTPFee() view returns (uint256)',
-  'function mintTCandTPFee() view returns (uint256)',
-  'function feeTokenPct() view returns (uint256)',
+  "function tcInterestRate() view returns (uint256)",
+  "function tcMintFee() view returns (uint256)",
+  "function tcRedeemFee() view returns (uint256)",
+  "function swapTPforTPFee() view returns (uint256)",
+  "function swapTPforTCFee() view returns (uint256)",
+  "function swapTCforTPFee() view returns (uint256)",
+  "function redeemTCandTPFee() view returns (uint256)",
+  "function mintTCandTPFee() view returns (uint256)",
+  "function feeTokenPct() view returns (uint256)",
 ];
 
 // map fee key -> candidate getter signatures
 const ROCV2_FEE_GETTERS = {
-  TcMintFee:          ['tcMintFee()'],
-  TcRedeemFee:        ['tcRedeemFee()'],
-  SwapTPforTPFee:     ['swapTPforTPFee()'],
-  SwapTPforTCFee:     ['swapTPforTCFee()'],
-  SwapTCforTPFee:     ['swapTCforTPFee()'],
-  RedeemTCandTPFee:   ['redeemTCandTPFee()'],
-  MintTCandTPFee:     ['mintTCandTPFee()'],
-  FeeTokenPct:        ['feeTokenPct()'],
+  TcMintFee: ["tcMintFee()"],
+  TcRedeemFee: ["tcRedeemFee()"],
+  SwapTPforTPFee: ["swapTPforTPFee()"],
+  SwapTPforTCFee: ["swapTPforTCFee()"],
+  SwapTCforTPFee: ["swapTCforTPFee()"],
+  RedeemTCandTPFee: ["redeemTCandTPFee()"],
+  MintTCandTPFee: ["mintTCandTPFee()"],
+  FeeTokenPct: ["feeTokenPct()"],
 };
 
 // ---- numeric helpers -------------------------------------------------------
@@ -160,16 +167,17 @@ function fmtRay(ethers, vBig) {
 async function main() {
   const { ethers } = await hre.network.connect();
 
-  const net     = selectedNetworkName(hre);
+  const net = selectedNetworkName(hre);
   const cfgPath = resolveConfigPath(hre, repoRoot);
-  const cfg     = loadConfigOrDie(cfgPath);
+  const cfg = loadConfigOrDie(cfgPath);
 
   // Resolve addresses
   const inrateAddr = cfg.MoCInrate;
-  const rocV2Addr  = cfg.RocV2 ?? cfg.MoCv2 ?? cfg.ROCv2;
+  const rocV2Addr = cfg.RocV2 ?? cfg.MoCv2 ?? cfg.ROCv2;
 
   if (!inrateAddr) throw new Error(`MoCInrate missing in ${cfgPath}`);
-  if (!rocV2Addr)  console.warn('WARN: RocV2 address not found in config; ROC v2 checks will be skipped.');
+  if (!rocV2Addr)
+    console.warn("WARN: RocV2 address not found in config; ROC v2 checks will be skipped.");
 
   // Expected values
   const expRate = toRayBig(ethers, cfg.bitProRate);
@@ -194,28 +202,34 @@ async function main() {
 
   // Instances (read-only)
   const inrate = new ethers.Contract(inrateAddr, INRATE_ABI, ethers.provider);
-  const rocV2  = rocV2Addr ? new ethers.Contract(rocV2Addr, ROCV2_ABI, ethers.provider) : null;
+  const rocV2 = rocV2Addr ? new ethers.Contract(rocV2Addr, ROCV2_ABI, ethers.provider) : null;
 
-  console.log('=== Validate AFTER vote (effects on-chain) ===');
-  console.log('Network   :', net);
-  console.log('Config    :', cfgPath);
-  console.log('MoCInrate :', inrateAddr);
-  console.log('ROC v2    :', rocV2Addr ?? '(skipped)');
+  console.log("=== Validate AFTER vote (effects on-chain) ===");
+  console.log("Network   :", net);
+  console.log("Config    :", cfgPath);
+  console.log("MoCInrate :", inrateAddr);
+  console.log("ROC v2    :", rocV2Addr ?? "(skipped)");
 
   let failures = 0;
 
   // ---- MoC V1: bitPro rate
   {
     const rate = await readWithFallback(inrate, [
-      'bitProRate()', 'riskProRate()', 'getBitProRate()',
+      "bitProRate()",
+      "riskProRate()",
+      "getBitProRate()",
     ]);
     if (rate === null) {
-      console.warn('WARN MoC V1: no readable getter for bitProRate — skipping assertion');
+      console.warn("WARN MoC V1: no readable getter for bitProRate — skipping assertion");
     } else {
       const ok = rate === expRate;
-      console.log(ok
-        ? `OK   MoC V1: bitProRate == ${fmtRay(ethers, rate)}`
-        : `ERROR MoC V1: bitProRate on-chain=${fmtRay(ethers, rate)} expected=${fmtRay(ethers, expRate)}`
+      console.log(
+        ok
+          ? `OK   MoC V1: bitProRate == ${fmtRay(ethers, rate)}`
+          : `ERROR MoC V1: bitProRate on-chain=${fmtRay(ethers, rate)} expected=${fmtRay(
+              ethers,
+              expRate,
+            )}`,
       );
       if (!ok) failures++;
     }
@@ -225,15 +239,19 @@ async function main() {
   {
     const getter = await detectMoCCommissionGetter(inrate);
     if (!getter) {
-      console.warn('WARN MoC V1: no readable commission getter — skipping commission checks');
+      console.warn("WARN MoC V1: no readable commission getter — skipping commission checks");
     } else {
       for (const { key, txType, fee } of expectedCommissions) {
         try {
           const got = await inrate.getFunction(getter)(txType);
-          const ok  = got === fee;
-          console.log(ok
-            ? `OK   MoC V1: ${key} (tx=${txType}) fee == ${fmtRay(ethers, got)}`
-            : `ERROR MoC V1: ${key} (tx=${txType}) on=${fmtRay(ethers, got)} exp=${fmtRay(ethers, fee)}`
+          const ok = got === fee;
+          console.log(
+            ok
+              ? `OK   MoC V1: ${key} (tx=${txType}) fee == ${fmtRay(ethers, got)}`
+              : `ERROR MoC V1: ${key} (tx=${txType}) on=${fmtRay(ethers, got)} exp=${fmtRay(
+                  ethers,
+                  fee,
+                )}`,
           );
           if (!ok) failures++;
         } catch (e) {
@@ -246,15 +264,19 @@ async function main() {
   // ---- ROC V2: interest rate
   if (rocV2) {
     const ir = await readWithFallback(rocV2, [
-      'tcInterestRate()', 'getTCInterestRate()', 'interestRate()', 'getInterestRate()',
+      "tcInterestRate()",
+      "getTCInterestRate()",
+      "interestRate()",
+      "getInterestRate()",
     ]);
     if (ir === null) {
-      console.warn('WARN ROC v2: no readable interest rate getter — skipping assertion');
+      console.warn("WARN ROC v2: no readable interest rate getter — skipping assertion");
     } else {
       const ok = ir === expRate;
-      console.log(ok
-        ? `OK   ROC v2: interestRate == ${fmtRay(ethers, ir)}`
-        : `ERROR ROC v2: interestRate on=${fmtRay(ethers, ir)} exp=${fmtRay(ethers, expRate)}`
+      console.log(
+        ok
+          ? `OK   ROC v2: interestRate == ${fmtRay(ethers, ir)}`
+          : `ERROR ROC v2: interestRate on=${fmtRay(ethers, ir)} exp=${fmtRay(ethers, expRate)}`,
       );
       if (!ok) failures++;
     }
@@ -270,21 +292,22 @@ async function main() {
         continue;
       }
       const ok = got === value;
-      console.log(ok
-        ? `OK   ROC v2: ${key} == ${fmtRay(ethers, got)}`
-        : `ERROR ROC v2: ${key} on=${fmtRay(ethers, got)} exp=${fmtRay(ethers, value)}`
+      console.log(
+        ok
+          ? `OK   ROC v2: ${key} == ${fmtRay(ethers, got)}`
+          : `ERROR ROC v2: ${key} on=${fmtRay(ethers, got)} exp=${fmtRay(ethers, value)}`,
       );
       if (!ok) failures++;
     }
   } else if (rocV2 && !expectedV2Fees.length) {
-    console.warn('WARN ROC v2: no rocV2Fees provided in config — skipping fee checks');
+    console.warn("WARN ROC v2: no rocV2Fees provided in config — skipping fee checks");
   }
 
   if (failures > 0) {
     console.log(`\n❌ Validation finished with ${failures} mismatches.`);
     process.exit(1);
   } else {
-    console.log('\n✅ All checked values match on-chain.');
+    console.log("\n✅ All checked values match on-chain.");
   }
 }
 
