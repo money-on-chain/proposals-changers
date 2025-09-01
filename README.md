@@ -4,7 +4,7 @@ This repository collects contracts for proposed **changers** of the Money on Cha
 
 ## Included proposals
 
-### Proposal 20250826 - Fee reduction
+### Proposal 20250826 - 2025/08/26 - Fee reduction
 See: [docs/P20250826.md](docs/P20250826.md)
 
 ## Project structure
