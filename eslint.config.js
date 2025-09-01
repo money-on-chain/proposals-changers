@@ -111,11 +111,7 @@ export default [
 
   // 8) Scripts/CLI/Configs de Hardhat: permitir console, etc.
   {
-    files: [
-      "hardhat.config.{js,ts}",
-      "scripts/**/*.{js,ts,mjs,cjs}",
-      "tasks/**/*.{js,ts,mjs,cjs}",
-    ],
+    files: ["hardhat.config.{js,ts}", "scripts/**/*.{js,ts,mjs,cjs}", "tasks/**/*.{js,ts,mjs,cjs}"],
     rules: {
       "no-console": "off",
       "@typescript-eslint/no-unused-vars": "off",

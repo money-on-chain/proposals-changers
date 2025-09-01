@@ -1,4 +1,3 @@
- 
 /**
  * Validates the on-chain storage of the deployed changer *before* governance vote.
  * Config resolution:
@@ -10,7 +9,6 @@ import fs from "fs";
 import hre from "hardhat";
 import path from "path";
 import { fileURLToPath } from "url";
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

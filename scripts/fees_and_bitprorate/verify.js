@@ -5,7 +5,6 @@ import hre from "hardhat";
 import path from "path";
 import { fileURLToPath } from "url";
 
-
 /**
  * Verifies FeesAndBitprorateProposal on Blockscout/Etherscan-compatible explorers.
  * Constructor args MUST be built exactly as in deploy.js for byte-for-byte match.

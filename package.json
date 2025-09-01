@@ -31,10 +31,12 @@
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",
-    "lint": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs && solhint 'contracts/**/*.sol'",
-    "lint:fix": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs --fix",
+    "lint": "eslint 'scripts/**/*.{ts,js,cjs,mjs}' 'tasks/**/*.{ts,js,cjs,mjs}' 'test/**/*.{ts,js,cjs,mjs}' 'hardhat.config.{ts,js}' && solhint 'contracts/**/*.sol'",
+    "lint:fix": "eslint 'scripts/**/*.{ts,js,cjs,mjs}' 'tasks/**/*.{ts,js,cjs,mjs}' 'test/**/*.{ts,js,cjs,mjs}' 'hardhat.config.{ts,js}' --fix",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
+    "fix:all": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs --fix && prettier . --write",
+    "check:all": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs && prettier . --check",
     "deploy:alpha-testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskAlphaTestnet",
     "deploy:testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskTestnet",
     "deploy:mainnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskMainnet",
@@ -51,7 +53,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,cjs,mjs}": [
-      "eslint --fix --max-warnings=0"
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
     ],
     "contracts/**/*.sol": [
       "prettier --write",
