@@ -9,3 +9,5 @@ types/
 lib/
 types/
 .idea/
+out/
+typechain*/
