@@ -4,4 +4,5 @@
 export * as changers from './changers/index.js';
 export * as interfaces from './interfaces/index.js';
 export * as mocks from './mocks/index.js';
+export * as tests from './tests/index.js';
 export * as utils from './utils/index.js';

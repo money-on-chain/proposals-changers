@@ -99,7 +99,7 @@ describe("FeesAndBitprorateProposal", function () {
     try {
       changer.getFunction("getCommissionRates()"); // throws if not present
       hasGetCommissions = true;
-    } catch (_) {}
+    } catch {}
 
     if (hasGetCommissions) {
       const decoded = await changer.getCommissionRates(); // array of { txType, fee }
@@ -118,7 +118,7 @@ describe("FeesAndBitprorateProposal", function () {
     try {
       changer.getFunction("getRocV2Fee()");
       hasGetRocFees = true;
-    } catch (_) {}
+    } catch {}
 
     if (hasGetRocFees) {
       const decodedRoc = await changer.getRocV2Fee(); // array of { key, value }
