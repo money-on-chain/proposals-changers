@@ -5,20 +5,23 @@ This repository collects contracts for proposed **changers** of the Money on Cha
 ## Included proposals
 
 ### Proposal 20250826 - 2025/08/26 - Fee reduction
+
 See: [docs/P20250826.md](docs/P20250826.md)
 
 ## Project structure
 
 - **contracts/** – changer contracts and minimal interfaces.
 - **config/fees_and_bitprorate/** – network parameters in `deployConfig-<network>.json`. After a successful deploy the `changerAddress` is updated.
-- **scripts/fees_and_bitprorate/** – `deploy.js`, `validate_prevote.js` and `verify.js` scripts for deployment, pre-vote validation and Blockscout verification.
-- **test/** – unit tests (`*.spec.js`) and fork tests (`test/fork/*.fork.spec.js`).
+- **scripts/fees_and_bitprorate/** – `deploy.js`, `validate_prevote.js`, `verify.js` and `validate_aftervote.js` scripts for deployment, pre-vote validation and Blockscout verification.
+- **test/** – unit tests (`*.spec.js`).
 
 ## Requirements
 
 - Node.js >= 22.10 `nvm use`
 - Dependencies: `npm install`
-- Hardhat v3, ES Modules enabled
+- set .env `cp .env.example .env`
+- Compile: `npm run compile`
+
 
 ## Running tests example
 
@@ -46,6 +49,7 @@ npm run test
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/validate_prevote.js --network <network>
 ```
+
 Checks on-chain storage of the changer matches the local configuration.
 
 ## Contract verification
@@ -53,6 +57,7 @@ Checks on-chain storage of the changer matches the local configuration.
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/verify.js --network <network>
 ```
+
 Optionally set `VERIFY_ADDRESS` to explicitly specify the address to verify.
 
 ## After-vote validation
@@ -60,9 +65,18 @@ Optionally set `VERIFY_ADDRESS` to explicitly specify the address to verify.
 ```bash
 npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network <network>
 ```
+
+## Forking test
+
+The forking test are part of integral test
+
+```bash
+npm run test
+```
+
 Checks on-chain storage of the changer matches the local configuration.
 
 ## Notes
 
-- Fork tests require `FORK_URL` (and optionally `FORK_BLOCK`) configured in `hardhat.config.js`.
+- Fork tests require `FORK_URL` (and optionally `FORK_BLOCK`) configured in .env
 - Scripts use ES Modules and Hardhat v3.

@@ -9,3 +9,6 @@ types/
 lib/
 types/
 .idea/
+out/
+typechain*/
+types/ethers-contracts/
