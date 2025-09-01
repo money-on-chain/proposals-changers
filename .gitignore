@@ -6,3 +6,9 @@ dist
 coverage
 typechain-types
 types/
+lib/
+types/
+.idea/
+out/
+typechain*/
+types/ethers-contracts/

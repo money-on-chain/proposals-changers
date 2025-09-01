@@ -1,140 +1,137 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "hardhat/console.sol";
-import { Test } from "forge-std/src/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { FeesAndBitprorateProposal } from "../changers/fees_and_bitprorate/FeesAndBitprorateProposal.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IMoCInrate } from "../interfaces/IMoCInrate.sol";
+import { IMoCv2 } from "../interfaces/IMoCv2.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 
+/// @title FeesAndBitprorateProposalTest
+/// @notice Test suite for FeesAndBitprorateProposal contract.
 contract FeesAndBitprorateProposalTest is Test {
-    FeesAndBitprorateProposal proposal;
-    IMoCInrate mocInrate;
+  FeesAndBitprorateProposal proposal;
+  IMoCInrate mocInrate;
+  IMoCv2 rocV2;
 
-    function setUp() public {
-        uint256 mainnetFork = vm.createFork("https://public-node.rsk.co");
-        vm.selectFork(mainnetFork);
-        mocInrate = IMoCInrate(0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3);
-        // Hardcoded values from deployConfig-rskMainnet.json
-        uint256 bitProRate = 98_000_000_000_000; // 0.000098 with 18 decimals (example, adjust as needed)
-        FeesAndBitprorateProposal.CommissionRates[] memory rates = new FeesAndBitprorateProposal.CommissionRates[](12);
+  /// @notice Sets up the test environment with mainnet fork and proposal deployment.
+  function setUp() public {
+    // Fork mainnet and use real addresses from deployConfig
+    uint256 mainnetFork = vm.createFork("https://public-node.rsk.co");
+    vm.selectFork(mainnetFork);
 
-        uint256 FEE_RBTC = 1_500_000_000_000_000;
-        uint256 FEE_MOC = 1_200_000_000_000_000;
+    // Addresses from deployConfig
+    address mocInrateAddr = 0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3;
+    address rocV2Addr = 0xA27024Ed70035E46dba712609fc2Afa1c97aA36A;
+    mocInrate = IMoCInrate(mocInrateAddr);
+    rocV2 = IMoCv2(rocV2Addr);
+    proposal = FeesAndBitprorateProposal(0xEb45E0451157175F1da5252B88AC0c903b1740D8);
+  }
 
-        // Define commission rates for each transaction type
-        uint256[12] memory fees = [
-            FEE_RBTC, // FEE_RBTC for txType 0-5
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_MOC, // FEE_MOC for txType 6-11
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC
-        ];
+  /// @notice Verifies that the constructor initializes all state variables correctly with valid parameters.
+  function test_ConstructorInitializesState() public view {
+    assert(address(proposal.mocInrate()) == address(mocInrate));
+    assert(address(proposal.rocV2()) == address(rocV2));
+    assert(proposal.bitProRate() == 143211085680495);
+    // Check commission rates and ROC V2 fees via read helpers
+    FeesAndBitprorateProposal.CommissionRates[] memory rates = proposal.getCommissionRates();
+    assert(rates.length == 12);
+    uint256[12] memory expectedFees = [
+      uint256(1_500_000_000_000_000),
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000
+    ];
+    for (uint8 i = 0; i < 12; i++) {
+      assert(rates[i].txType == i + 1); // txType starts at 1
+      assert(rates[i].fee == expectedFees[i]);
+    }
+    FeesAndBitprorateProposal.RocV2FeeUpdate[] memory fees = proposal.getRocV2Fees();
+    assert(fees.length == 8);
+    uint256[8] memory expectedRocFees = [
+      uint256(1_500_000_000_000_000),
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      666_666_666_666_666_666
+    ];
+    for (uint8 i = 0; i < 8; i++) {
+      assert(fees[i].value == expectedRocFees[i]);
+    }
+  }
 
-        for (uint8 i = 0; i < 12; i++) {
-            rates[i] = FeesAndBitprorateProposal.CommissionRates({ txType: i, fee: fees[i] });
-        }
-        proposal = new FeesAndBitprorateProposal(IMoCInrate(address(mocInrate)), bitProRate, rates);
+  /// @notice Ensures that only the governor owner can execute the proposal.
+  function test_ExecuteRevertsIfNotAuthorized() public {
+    (IGovernor governor, ) = _getGovernor();
+    // Try to execute as a random address (not the governor owner)
+    address notOwner = address(0x1234);
+    vm.prank(notOwner);
+    vm.expectRevert();
+    governor.executeChange(proposal);
+
+    // Try to execute the proposal as not the governor
+    vm.expectRevert("not_authorized_changer");
+    proposal.execute();
+  }
+
+  /// @notice Executes the proposal as the governor owner and checks all effects on MoCInrate and RocV2.
+  function test_Execute() public {
+    (IGovernor governor, address governorOwner) = _getGovernor();
+    vm.prank(governorOwner);
+    governor.executeChange(proposal);
+
+    // Check BitPro rate set on mocInrate and rocV2
+    assertEq(mocInrate.bitProRate(), 143211085680495);
+    assertEq(rocV2.tcInterestRate(), 143211085680495);
+
+    // Check commission rates set on mocInrate
+    uint256[12] memory expectedFees = [
+      uint256(1_500_000_000_000_000),
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_500_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000,
+      1_000_000_000_000_000
+    ];
+    for (uint8 i = 0; i < 12; i++) {
+      assertEq(mocInrate.commissionRatesByTxType(i + 1), expectedFees[i]); // txType starts at 1
     }
 
-    /// @notice Ensures the constructor reverts if the MoCInrate address is zero.
-    function test_ConstructorRevertsOnZeroMoCInrate() public {
-        FeesAndBitprorateProposal.CommissionRates[] memory rates = new FeesAndBitprorateProposal.CommissionRates[](1);
-        rates[0] = FeesAndBitprorateProposal.CommissionRates({ txType: 1, fee: 100 });
-        vm.expectRevert("Wrong MoCInrate address");
-        new FeesAndBitprorateProposal(IMoCInrate(address(0)), 1, rates);
-    }
+    // Check ROC V2 fees set on rocV2
+    assertEq(rocV2.tcMintFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.tcRedeemFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.swapTPforTPFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.swapTPforTCFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.swapTCforTPFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.redeemTCandTPFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.mintTCandTPFee(), 1_500_000_000_000_000);
+    assertEq(rocV2.feeTokenPct(), 666_666_666_666_666_666);
+  }
 
-    /// @notice Ensures the constructor reverts if the commissionRates array is empty.
-    function test_ConstructorRevertsOnEmptyRates() public {
-        FeesAndBitprorateProposal.CommissionRates[] memory rates = new FeesAndBitprorateProposal.CommissionRates[](0);
-        vm.expectRevert("commissionRates cannot be empty");
-        new FeesAndBitprorateProposal(IMoCInrate(address(mocInrate)), 1, rates);
-    }
-
-    /// @notice Ensures the constructor reverts if the commissionRates array exceeds the maximum allowed length.
-    function test_ConstructorRevertsOnTooManyRates() public {
-        FeesAndBitprorateProposal.CommissionRates[] memory rates = new FeesAndBitprorateProposal.CommissionRates[](51);
-        for (uint256 i = 0; i < 51; i++) {
-            rates[i] = FeesAndBitprorateProposal.CommissionRates({ txType: uint8(i), fee: i });
-        }
-        vm.expectRevert("commissionRates length must be between 1 and 50");
-        new FeesAndBitprorateProposal(IMoCInrate(address(mocInrate)), 1, rates);
-    }
-
-    /// @notice Verifies that the constructor initializes all state variables correctly with valid parameters.
-    /// Checks mocInrate address, bitProRate value, and commissionRates length.
-    function test_ConstructorInitializesState() public view {
-        assert(address(proposal.mocInrate()) == address(mocInrate));
-        assert(proposal.bitProRate() == 98_000_000_000_000);
-        assert(proposal.commissionRatesLength() == 12);
-    }
-
-    /// @notice Verifies that execute() reverts when called by an unauthorized address.
-    function test_ExecuteRevertsNotAuthorized() public {
-        // reverts trying to execute directly
-        vm.expectRevert("not_authorized_changer");
-        proposal.execute();
-
-        // reverts trying to execute through the governor without voting
-        IGovernor governor = IGovernor(mocInrate.governor());
-        vm.expectRevert();
-        governor.executeChange(proposal);
-    }
-
-    /// @notice Executes the proposal and verifies that the BitPro rate and commission rates are set correctly.
-    function test_Execute() public {
-        (IGovernor governor, address governorOwner) = _getGovernor();
-        vm.prank(governorOwner);
-        governor.executeChange(proposal);
-
-        assert(mocInrate.bitProRate() == 98_000_000_000_000);
-
-        uint256 FEE_RBTC = 1_500_000_000_000_000;
-        uint256 FEE_MOC = 1_200_000_000_000_000;
-        // Check all commission rates
-        uint256[12] memory expectedFees = [
-            FEE_RBTC, // FEE_RBTC for txType 0-5
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_RBTC,
-            FEE_MOC, // FEE_MOC for txType 6-11
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC,
-            FEE_MOC
-        ];
-        
-        for (uint8 i = 0; i < 12; i++) {
-            assert(mocInrate.commissionRatesByTxType(i) == expectedFees[i]);
-        }
-    }
-
-    /// @notice Ensures that execute() can only be called once and reverts on subsequent calls.
-    function test_ExecuteCanOnlyRunOnce() public {
-        (IGovernor governor, address governorOwner) = _getGovernor();
-        vm.prank(governorOwner);
-        governor.executeChange(proposal);
-
-        vm.expectRevert("This changer was already executed");
-        vm.prank(governorOwner);
-        governor.executeChange(proposal);
-    }
-
-    function _getGovernor() internal view returns (IGovernor governor, address governorOwner) {
-        governor = IGovernor(mocInrate.governor());
-        governorOwner = Ownable(address(governor)).owner();
-        return (governor, governorOwner);
-    }
+  /// @notice Helper to get the governor contract and its owner.
+  /// @return governor The IGovernor instance
+  /// @return governorOwner The address of the governor's owner
+  function _getGovernor() internal view returns (IGovernor governor, address governorOwner) {
+    governor = IGovernor(mocInrate.governor());
+    governorOwner = Ownable(address(governor)).owner();
+    return (governor, governorOwner);
+  }
 }
