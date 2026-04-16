@@ -1,5 +1,8 @@
 {
   "devDependencies": {
+    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#3f75585a6ec955626b5065de44b2e52707d93730",
+    "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#refactor/migrate-to-hardhat",
+    "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "^4.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
@@ -40,6 +43,9 @@
     "deploy:alpha-testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskAlphaTestnet",
     "deploy:testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskTestnet",
     "deploy:mainnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/deploy.js --network rskMainnet",
+    "deploy:alpha-testnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskAlphaTestnet",
+    "deploy:testnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskTestnet",
+    "deploy:mainnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskMainnet",
     "validate:prevote:alpha-testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_prevote.js --network rskAlphaTestnet",
     "validate:prevote:testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_prevote.js --network rskTestnet",
     "validate:prevote:mainnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_prevote.js --network rskMainnet",
