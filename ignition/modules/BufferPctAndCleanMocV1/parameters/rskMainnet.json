@@ -1,0 +1,12 @@
+{
+  "BufferPctAndCleanMocV1Module": {
+    "coinPairProxy": "0xa288319eCb63301e21963E21EF3Ca8fb720d2672",
+    "mocRewardsBufferProxy": "0xf09006E812BE98c7B18c877Af5C126629acB6cAb",
+    "mocV1Proxy": "0xf773B590aF754D597770937Fa8ea7AbDf2668370",
+    "mocExchangeV1Proxy": "0x6aCb83bB0281FB847b43cf7dd5e2766BFDF49038",
+    "mocSettlementV1Proxy": "0x609dF03D8a85eAffE376189CA7834D4C35e32F22",
+    "upgradeDelegatorOracle": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "upgradeDelegatorMoc": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
+    "moCHelperLib": "0x592b84710955C9561008D137a5403E1dd9A222D8"
+  }
+}
