@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 import { CoinPairPriceUpgradeProposal, IUpgradeDelegator } from "../changers/coin_pair_price_upgrade/CoinPairPriceUpgradeProposal.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
+import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
 
 interface Vm {
   function addr(uint256 privateKey) external returns (address keyAddr);
@@ -69,7 +70,7 @@ interface IStaking {
   function setOracleAddress(address oracleAddr) external;
 }
 
-contract BtcUsdOracleHistoricalSignerBypassTest {
+contract BtcUsdOracleHistoricalSignerBypassTest is OracleTestHelper {
   Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
   ICoinPairPrice internal constant BTCUSD_FEED =
@@ -77,13 +78,6 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
 
   uint256 internal constant FORK_BLOCK = 8_740_300;
   uint256 internal constant PUBLISH_MESSAGE_VERSION = 3;
-
-  struct SignerMaterial {
-    address signer;
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-  }
 
   // BTCUSD CoinPairPrice proxy used in existing repo fork tests
   address internal constant COIN_PAIR_PRICE_PROXY = 0xa288319eCb63301e21963E21EF3Ca8fb720d2672;
@@ -154,8 +148,15 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     uint256 forgedPrice = currentPrice + 123456789;
     address votedOracle = newSigners[3];
 
-    bytes32 digest = _buildDigest(coinpair, forgedPrice, votedOracle, lastPubBlock);
+    bytes32 digest = _buildDigest(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      forgedPrice,
+      votedOracle,
+      lastPubBlock
+    );
     (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
       _toDynamic(privateKeys),
       newSigners,
       digest
@@ -185,18 +186,25 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
 
     address oracleManagerProxy = BTCUSD_FEED.getOracleManager();
     address currentCoinPairImplementation = _loadAddress(
+      IOracleCheats(address(vm)),
       COIN_PAIR_PRICE_PROXY,
       IMPLEMENTATION_SLOT
     );
     address currentOracleManagerImplementation = _loadAddress(
+      IOracleCheats(address(vm)),
       oracleManagerProxy,
       IMPLEMENTATION_SLOT
     );
 
     _executeChanger();
 
-    address coinPairImplementationAfter = _loadAddress(COIN_PAIR_PRICE_PROXY, IMPLEMENTATION_SLOT);
+    address coinPairImplementationAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      COIN_PAIR_PRICE_PROXY,
+      IMPLEMENTATION_SLOT
+    );
     address oracleManagerImplementationAfter = _loadAddress(
+      IOracleCheats(address(vm)),
       oracleManagerProxy,
       IMPLEMENTATION_SLOT
     );
@@ -293,8 +301,15 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     uint256 forgedPrice = currentPrice + 987654321;
     address votedOracle = newSigners[3];
 
-    bytes32 digest = _buildDigest(coinpair, forgedPrice, votedOracle, lastPubBlock);
+    bytes32 digest = _buildDigest(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      forgedPrice,
+      votedOracle,
+      lastPubBlock
+    );
     (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
       _toDynamic(privateKeys),
       newSigners,
       digest
@@ -340,8 +355,15 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     uint256 forgedPrice = currentPrice + 111111;
     address votedOracle = historicalSigners[1];
 
-    bytes32 digest = _buildDigest(coinpair, forgedPrice, votedOracle, lastPubBlock);
+    bytes32 digest = _buildDigest(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      forgedPrice,
+      votedOracle,
+      lastPubBlock
+    );
     (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
       _toDynamic(privateKeys),
       historicalSigners,
       digest
@@ -386,8 +408,15 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     uint256 forgedPrice = currentPrice + 222222;
     address votedOracle = majoritySigners[0];
 
-    bytes32 digest = _buildDigest(coinpair, forgedPrice, votedOracle, lastPubBlock);
+    bytes32 digest = _buildDigest(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      forgedPrice,
+      votedOracle,
+      lastPubBlock
+    );
     (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
       _toDynamic(privateKeys),
       majoritySigners,
       digest
@@ -410,41 +439,6 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     require(updatedLastPubBlock == block.number, "publication block not updated");
   }
 
-  function _sortBySigner(SignerMaterial[] memory materials) internal pure {
-    for (uint256 i = 0; i < materials.length; i++) {
-      for (uint256 j = i + 1; j < materials.length; j++) {
-        if (uint160(materials[j].signer) < uint160(materials[i].signer)) {
-          SignerMaterial memory tmp = materials[i];
-          materials[i] = materials[j];
-          materials[j] = tmp;
-        }
-      }
-    }
-  }
-
-  function _toDynamic(uint256[4] memory input) internal pure returns (uint256[] memory output) {
-    output = new uint256[](4);
-    for (uint256 i = 0; i < output.length; i++) {
-      output[i] = input[i];
-    }
-  }
-
-  function _toDynamic(uint256[2] memory input) internal pure returns (uint256[] memory output) {
-    output = new uint256[](2);
-    for (uint256 i = 0; i < output.length; i++) {
-      output[i] = input[i];
-    }
-  }
-
-  function _rotationSignersFromKeys(
-    uint256[] memory privateKeys
-  ) internal returns (address[] memory signers) {
-    signers = new address[](privateKeys.length);
-    for (uint256 i = 0; i < privateKeys.length; i++) {
-      signers[i] = vm.addr(privateKeys[i]);
-    }
-  }
-
   function _rotateSignersForOwner(
     address owner,
     uint256[] memory privateKeys,
@@ -452,7 +446,7 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     IStaking staking,
     bool requireFresh
   ) internal returns (address[] memory signers) {
-    signers = _rotationSignersFromKeys(privateKeys);
+    signers = _rotationSignersFromKeys(IOracleCheats(address(vm)), privateKeys);
     for (uint256 i = 0; i < signers.length; i++) {
       if (requireFresh) {
         require(
@@ -473,7 +467,7 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
     IStaking staking
   ) internal returns (address[] memory signers) {
     require(owners.length >= privateKeys.length, "not enough selected owners");
-    signers = _rotationSignersFromKeys(privateKeys);
+    signers = _rotationSignersFromKeys(IOracleCheats(address(vm)), privateKeys);
     for (uint256 i = 0; i < signers.length; i++) {
       vm.prank(owners[i]);
       staking.setOracleAddress(signers[i]);
@@ -483,62 +477,6 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
       );
       require(oracleManager.getOracleOwner(signers[i]) == owners[i], "signer owner mismatch");
     }
-  }
-
-  function _buildDigest(
-    bytes32 coinpair,
-    uint256 price,
-    address votedOracle,
-    uint256 lastPubBlock
-  ) internal pure returns (bytes32) {
-    return
-      keccak256(
-        abi.encodePacked(
-          "\x19Ethereum Signed Message:\n148",
-          uint256(PUBLISH_MESSAGE_VERSION),
-          coinpair,
-          price,
-          votedOracle,
-          lastPubBlock
-        )
-      );
-  }
-
-  function _buildSortedSignatures(
-    uint256[] memory privateKeys,
-    address[] memory signers,
-    bytes32 digest
-  ) internal returns (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) {
-    require(privateKeys.length == signers.length, "private key/signer length mismatch");
-
-    SignerMaterial[] memory materials = new SignerMaterial[](privateKeys.length);
-    for (uint256 i = 0; i < privateKeys.length; i++) {
-      materials[i] = _signMaterial(privateKeys[i], signers[i], digest);
-    }
-
-    _sortBySigner(materials);
-    sigV = new uint8[](materials.length);
-    sigR = new bytes32[](materials.length);
-    sigS = new bytes32[](materials.length);
-    for (uint256 i = 0; i < materials.length; i++) {
-      sigV[i] = materials[i].v;
-      sigR[i] = materials[i].r;
-      sigS[i] = materials[i].s;
-    }
-  }
-
-  function _signMaterial(
-    uint256 privateKey,
-    address signer,
-    bytes32 digest
-  ) internal returns (SignerMaterial memory material) {
-    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
-    material = SignerMaterial({ signer: signer, v: v, r: r, s: s });
-  }
-
-  function _loadAddress(address target, bytes32 slot) internal view returns (address) {
-    bytes32 value = vm.load(target, slot);
-    return address(uint160(uint256(value)));
   }
 
   function _executeChanger() internal {

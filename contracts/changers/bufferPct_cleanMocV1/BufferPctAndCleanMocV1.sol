@@ -14,24 +14,32 @@ interface IBufferToken {
   function getNumOutputs() external view returns (uint256);
 }
 
+interface IOracleManager {
+  function clearRegisteredOwner(address oracleAddr) external;
+}
+
 /**
  * @title BufferPctAndCleanMocV1
  * @notice ChangeContract used to set new Buffer pcts and clean MOC V1
  */
 contract BufferPctAndCleanMocV1 is IChangeContract {
-  address public coinPairProxy;
-  address public mocRewardsBufferProxy;
-  address public mocV1Proxy;
-  address public mocExchangeV1Proxy;
-  address public mocSettlementV1Proxy;
-  IUpgradeDelegator public upgradeDelegatorOracle;
-  IUpgradeDelegator public upgradeDelegatorMoc;
-  address public newCoinPairPriceImplementation;
-  address public newMocV1Implementation;
-  address public newMocExchangeV1Implementation;
-  address public newMocSettlementV1Implementation;
+  address public immutable oracleManagerProxy;
+  address public immutable coinPairProxy;
+  address public immutable mocRewardsBufferProxy;
+  address public immutable mocV1Proxy;
+  address public immutable mocExchangeV1Proxy;
+  address public immutable mocSettlementV1Proxy;
+  IUpgradeDelegator public immutable upgradeDelegatorOracle;
+  IUpgradeDelegator public immutable upgradeDelegatorMoc;
+  address public immutable newCoinPairPriceImplementation;
+  address public immutable newOracleManagerImplementation;
+  address public immutable newMocV1Implementation;
+  address public immutable newMocExchangeV1Implementation;
+  address public immutable newMocSettlementV1Implementation;
+  address[] public deprecatedOracles;
 
   constructor(
+    address _oracleManagerProxy,
     address _coinPairProxy,
     address _mocRewardsBufferProxy,
     address _mocV1Proxy,
@@ -40,10 +48,13 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     IUpgradeDelegator _upgradeDelegatorOracle,
     IUpgradeDelegator _upgradeDelegatorMoc,
     address _newCoinPairPriceImplementation,
+    address _newOracleManagerImplementation,
     address _newMocV1Implementation,
     address _newMocExchangeV1Implementation,
-    address _newMocSettlementV1Implementation
+    address _newMocSettlementV1Implementation,
+    address[] memory _deprecatedOracles
   ) {
+    oracleManagerProxy = _oracleManagerProxy;
     coinPairProxy = _coinPairProxy;
     mocRewardsBufferProxy = _mocRewardsBufferProxy;
     mocV1Proxy = _mocV1Proxy;
@@ -52,9 +63,11 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     upgradeDelegatorOracle = _upgradeDelegatorOracle;
     upgradeDelegatorMoc = _upgradeDelegatorMoc;
     newCoinPairPriceImplementation = _newCoinPairPriceImplementation;
+    newOracleManagerImplementation = _newOracleManagerImplementation;
     newMocV1Implementation = _newMocV1Implementation;
     newMocExchangeV1Implementation = _newMocExchangeV1Implementation;
     newMocSettlementV1Implementation = _newMocSettlementV1Implementation;
+    deprecatedOracles = _deprecatedOracles;
   }
 
   function execute() external {
@@ -65,6 +78,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
 
   function _upgrade() internal {
     upgradeDelegatorOracle.upgrade(coinPairProxy, newCoinPairPriceImplementation);
+    upgradeDelegatorOracle.upgrade(oracleManagerProxy, newOracleManagerImplementation);
     upgradeDelegatorMoc.upgrade(mocV1Proxy, newMocV1Implementation);
     upgradeDelegatorMoc.upgrade(mocExchangeV1Proxy, newMocExchangeV1Implementation);
     upgradeDelegatorMoc.upgrade(mocSettlementV1Proxy, newMocSettlementV1Implementation);
@@ -74,6 +88,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
 
   function _afterUpgrade() internal virtual {
     setBufferSplits();
+    removeOldOracleOwners();
   }
 
   function setBufferSplits() internal {
@@ -88,5 +103,12 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
 
     buffer.addOutput(payable(output0), 70, threshold0);
     buffer.addOutput(payable(output1), 30, threshold1);
+  }
+
+  function removeOldOracleOwners() internal {
+    IOracleManager oracleManager = IOracleManager(oracleManagerProxy);
+    for (uint256 i = 0; i < deprecatedOracles.length; i++) {
+      oracleManager.clearRegisteredOwner(deprecatedOracles[i]);
+    }
   }
 }

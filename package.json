@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#8d1f26bd258df39cf0f7e439daf31be7519f02ad",
+    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#febfd26024a3a44938affe41e328c5aa8ad39894",
     "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#refactor/migrate-to-hardhat",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#30cbc6128904dbfc1ac0ddfc3e6246957f3af37e",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
@@ -56,7 +56,8 @@
     "validate:aftervote:alpha-testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network rskAlphaTestnet",
     "validate:aftervote:testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network rskTestnet",
     "validate:aftervote:mainnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network rskMainnet",
-    "test:fees-and-bitprorate": "npx hardhat test test/fees_and_bitprorate.spec.js"
+    "test:fees-and-bitprorate": "npx hardhat test test/fees_and_bitprorate.spec.js",
+    "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js"
   },
   "lint-staged": {
     "*.{ts,tsx,js,cjs,mjs}": [

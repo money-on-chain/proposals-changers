@@ -4,6 +4,7 @@ pragma solidity 0.8.24;
 import { BufferPctAndCleanMocV1, IUpgradeDelegator } from "../changers/bufferPct_cleanMocV1/BufferPctAndCleanMocV1.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
+import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
 
 interface Vm {
   struct Log {
@@ -32,6 +33,13 @@ interface Vm {
   function recordLogs() external;
   function getRecordedLogs() external returns (Log[] memory);
   function deal(address account, uint256 newBalance) external;
+  function roll(uint256 newHeight) external;
+  function mockCall(address callee, bytes calldata data, bytes calldata returnData) external;
+  function addr(uint256 privateKey) external returns (address keyAddr);
+  function sign(
+    uint256 privateKey,
+    bytes32 digest
+  ) external returns (uint8 v, bytes32 r, bytes32 s);
 }
 
 interface IOwnableLike {
@@ -45,6 +53,46 @@ interface IGoverned {
 interface IBufferTokenLike {
   function getNumOutputs() external view returns (uint256);
   function getOutput(uint256 idx) external view returns (address, uint256, uint256, uint256);
+}
+
+interface IOracleManagerProbe {
+  function getOracleOwner(address oracleAddr) external view returns (address);
+  function getOracleAddress(address ownerAddr) external view returns (address oracleAddr);
+  function getStakingContract() external view returns (address);
+  function getRegisteredOraclesLen() external view returns (uint256);
+  function getRegisteredOracleAtIndex(
+    uint256 idx
+  ) external view returns (address ownerAddr, address oracleAddr, string memory url);
+}
+
+interface IStakingProbe {
+  function setOracleAddress(address oracleAddr) external;
+}
+
+interface ICoinPairPriceProbe {
+  function getCoinPair() external view returns (bytes32);
+  function getPriceInfo() external view returns (uint256 price, bool isValid, uint256 lastPubBlock);
+  function getRoundInfo()
+    external
+    view
+    returns (
+      uint256 round,
+      uint256 startBlock,
+      uint256 lockPeriodTimestamp,
+      uint256 totalPoints,
+      address[] memory selectedOwners,
+      address[] memory selectedOracles
+    );
+  function publishPrice(
+    uint256 version,
+    bytes32 coinpair,
+    uint256 price,
+    address votedOracle,
+    uint256 blockNumber,
+    uint8[] calldata sigV,
+    bytes32[] calldata sigR,
+    bytes32[] calldata sigS
+  ) external;
 }
 
 interface IMoCStorageProbe {
@@ -76,21 +124,144 @@ interface IMoCSettlementStorageProbe {
 interface IMoCBasicOps {
   function connector() external view returns (address);
   function mintBPro(uint256 btcToMint) external payable;
+  function mintBProVendors(uint256 btcToMint, address payable vendorAccount) external payable;
   function redeemBPro(uint256 bproAmount) external;
   function mintDoc(uint256 btcToMint) external payable;
+  function mintDocVendors(uint256 btcToMint, address payable vendorAccount) external payable;
   function redeemFreeDoc(uint256 docAmount) external;
+  function runSettlement(uint256 steps) external;
 }
 
 interface IMoCConnectorProbe {
   function bproToken() external view returns (address);
   function docToken() external view returns (address);
+  function mocState() external view returns (address);
+  function mocInrate() external view returns (address);
+}
+
+interface IMoCStateProbe {
+  function state() external view returns (uint8);
+  function bproTecPrice() external view returns (uint256);
+  function btcToDoc(uint256 btcAmount) external view returns (uint256);
+  function docsToBtc(uint256 docAmount) external view returns (uint256);
+  function getBitcoinPrice() external view returns (uint256);
+  function getMoCPrice() external view returns (uint256);
+  function getMoCVendors() external view returns (address);
+}
+
+interface IMoCInrateProbe {
+  function MINT_BPRO_FEES_RBTC() external view returns (uint8);
+  function MINT_DOC_FEES_RBTC() external view returns (uint8);
+  function REDEEM_BPRO_FEES_RBTC() external view returns (uint8);
+  function REDEEM_DOC_FEES_RBTC() external view returns (uint8);
+  function calcCommissionValue(uint256 rbtcAmount, uint8 txType) external view returns (uint256);
+  function calcDocRedInterestValues(
+    uint256 docAmount,
+    uint256 rbtcAmount
+  ) external view returns (uint256);
 }
 
 interface IERC20Like {
   function balanceOf(address account) external view returns (uint256);
 }
 
-contract BufferPctAndCleanMocV1ForkTest {
+interface IMoCVendorsProbe {
+  function updatePaidMarkup(
+    address account,
+    uint256 mocAmount,
+    uint256 rbtcAmount
+  ) external returns (bool);
+}
+
+contract ReentrantMoCAttacker {
+  IMoCBasicOps internal moc;
+  IERC20Like internal bproToken;
+  IERC20Like internal docToken;
+  bool internal reenterOnReceive;
+  bool internal reenterDoc;
+  uint8 internal reenterAction;
+  bool internal lastReenterCallOk;
+  bytes internal lastReenterCallData;
+
+  constructor(address moc_, address bproToken_, address docToken_) {
+    moc = IMoCBasicOps(moc_);
+    bproToken = IERC20Like(bproToken_);
+    docToken = IERC20Like(docToken_);
+  }
+
+  receive() external payable {
+    if (reenterOnReceive) {
+      bytes memory payload;
+      uint256 valueToSend = 0;
+      if (reenterAction == 1 || reenterDoc) {
+        payload = abi.encodeWithSelector(IMoCBasicOps.redeemFreeDoc.selector, uint256(1));
+      } else if (reenterAction == 2) {
+        payload = abi.encodeWithSelector(IMoCBasicOps.redeemBPro.selector, uint256(1));
+      } else if (reenterAction == 3) {
+        payload = abi.encodeWithSelector(IMoCBasicOps.mintBPro.selector, uint256(1));
+        valueToSend = 1;
+      } else if (reenterAction == 4) {
+        payload = abi.encodeWithSelector(IMoCBasicOps.mintDoc.selector, uint256(1));
+        valueToSend = 1;
+      } else {
+        return;
+      }
+      (lastReenterCallOk, lastReenterCallData) = address(moc).call{ value: valueToSend }(payload);
+    }
+  }
+
+  function attackRedeemBPro(uint256 mintBtcAmount) external payable {
+    lastReenterCallOk = true;
+    delete lastReenterCallData;
+    moc.mintBPro{ value: msg.value }(mintBtcAmount);
+    uint256 bproBalance = bproToken.balanceOf(address(this));
+    require(bproBalance > 0, "attacker has no BPro");
+    reenterOnReceive = true;
+    reenterDoc = false;
+    reenterAction = 2;
+    moc.redeemBPro(bproBalance);
+    reenterOnReceive = false;
+  }
+
+  function attackRedeemFreeDoc(uint256 mintBtcAmount) external payable {
+    lastReenterCallOk = true;
+    delete lastReenterCallData;
+    moc.mintDoc{ value: msg.value }(mintBtcAmount);
+    uint256 docBalance = docToken.balanceOf(address(this));
+    require(docBalance > 0, "attacker has no Doc");
+    reenterOnReceive = true;
+    reenterDoc = true;
+    reenterAction = 1;
+    moc.redeemFreeDoc(docBalance);
+    reenterOnReceive = false;
+  }
+
+  function attackMintBProAsVendor(uint256 mintBtcAmount) external payable {
+    lastReenterCallOk = true;
+    delete lastReenterCallData;
+    reenterOnReceive = true;
+    reenterDoc = false;
+    reenterAction = 3;
+    moc.mintBProVendors{ value: msg.value }(mintBtcAmount, payable(address(this)));
+    reenterOnReceive = false;
+  }
+
+  function attackMintDocAsVendor(uint256 mintBtcAmount) external payable {
+    lastReenterCallOk = true;
+    delete lastReenterCallData;
+    reenterOnReceive = true;
+    reenterDoc = false;
+    reenterAction = 4;
+    moc.mintDocVendors{ value: msg.value }(mintBtcAmount, payable(address(this)));
+    reenterOnReceive = false;
+  }
+
+  function getLastReenterResult() external view returns (bool ok, bytes memory data) {
+    return (lastReenterCallOk, lastReenterCallData);
+  }
+}
+
+contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
   uint256 internal constant FORK_BLOCK = 8837400;
@@ -102,8 +273,10 @@ contract BufferPctAndCleanMocV1ForkTest {
   bytes32 internal constant ZOS_IMPLEMENTATION_SLOT =
     0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3;
   bytes32 internal constant UPGRADED_TOPIC = keccak256("Upgraded(address)");
+  uint256 internal constant PUBLISH_MESSAGE_VERSION = 3;
 
   address internal coinPairProxy;
+  address internal oracleManagerProxy;
   address internal mocRewardsBufferProxy;
   address internal mocV1Proxy;
   address internal mocExchangeV1Proxy;
@@ -112,6 +285,7 @@ contract BufferPctAndCleanMocV1ForkTest {
   address internal upgradeDelegatorMoc;
 
   address internal newCoinPairImpl;
+  address internal newOracleManagerImpl;
   address internal newMocImpl;
   address internal newMocExchangeImpl;
   address internal newMocSettlementImpl;
@@ -124,6 +298,7 @@ contract BufferPctAndCleanMocV1ForkTest {
 
     (
       coinPairProxy,
+      oracleManagerProxy,
       mocRewardsBufferProxy,
       mocV1Proxy,
       mocExchangeV1Proxy,
@@ -134,6 +309,9 @@ contract BufferPctAndCleanMocV1ForkTest {
 
     newCoinPairImpl = _deployFromArtifact(
       "contracts/compat/DeployableCoinPairPrice.sol:DeployableCoinPairPrice"
+    );
+    newOracleManagerImpl = _deployFromArtifact(
+      "contracts/compat/DeployableOracleManager.sol:DeployableOracleManager"
     );
     newMocImpl = _deployFromArtifact("contracts/compat/DeployableMoC.sol:DeployableMoC");
     newMocExchangeImpl = _deployFromArtifact(
@@ -272,36 +450,70 @@ contract BufferPctAndCleanMocV1ForkTest {
   }
 
   function testFork_DeployAndExecuteChanger() public {
-    IBufferTokenLike buffer = IBufferTokenLike(mocRewardsBufferProxy);
-    require(buffer.getNumOutputs() == 2, "Buffer must have exactly 2 outputs");
-
-    (address output0Before, uint256 split0Before, , ) = buffer.getOutput(0);
-    (address output1Before, uint256 split1Before, , ) = buffer.getOutput(1);
-
-    address coinPairImplBefore = _loadAddress(coinPairProxy, IMPLEMENTATION_SLOT);
-    address mocImplBefore = _loadAddress(mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
-    address mocExchangeImplBefore = _loadAddress(mocExchangeV1Proxy, ZOS_IMPLEMENTATION_SLOT);
-    address mocSettlementImplBefore = _loadAddress(mocSettlementV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address coinPairImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      coinPairProxy,
+      IMPLEMENTATION_SLOT
+    );
+    address oracleManagerImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      oracleManagerProxy,
+      IMPLEMENTATION_SLOT
+    );
+    address mocImplBefore = _loadAddress(IOracleCheats(address(vm)), mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address mocExchangeImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocExchangeV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
+    address mocSettlementImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocSettlementV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
 
     vm.recordLogs();
     _executeChanger();
     Vm.Log[] memory logs = vm.getRecordedLogs();
 
     bool coinPairUpgradedEvent = _hasUpgradedEvent(logs, coinPairProxy);
+    bool oracleManagerUpgradedEvent = _hasUpgradedEvent(logs, oracleManagerProxy);
     bool mocUpgradedEvent = _hasUpgradedEvent(logs, mocV1Proxy);
     bool mocExchangeUpgradedEvent = _hasUpgradedEvent(logs, mocExchangeV1Proxy);
     bool mocSettlementUpgradedEvent = _hasUpgradedEvent(logs, mocSettlementV1Proxy);
 
     require(coinPairUpgradedEvent, "Upgraded event missing for coinPairProxy");
+    require(oracleManagerUpgradedEvent, "Upgraded event missing for oracleManagerProxy");
     require(mocUpgradedEvent, "Upgraded event missing for mocV1Proxy");
     require(mocExchangeUpgradedEvent, "Upgraded event missing for mocExchangeV1Proxy");
     require(mocSettlementUpgradedEvent, "Upgraded event missing for mocSettlementV1Proxy");
 
-    address coinPairImplAfter = _loadAddress(coinPairProxy, IMPLEMENTATION_SLOT);
-    address mocImplAfter = _loadAddress(mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
-    address mocExchangeImplAfter = _loadAddress(mocExchangeV1Proxy, ZOS_IMPLEMENTATION_SLOT);
-    address mocSettlementImplAfter = _loadAddress(mocSettlementV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address coinPairImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      coinPairProxy,
+      IMPLEMENTATION_SLOT
+    );
+    address oracleManagerImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      oracleManagerProxy,
+      IMPLEMENTATION_SLOT
+    );
+    address mocImplAfter = _loadAddress(IOracleCheats(address(vm)), mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address mocExchangeImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocExchangeV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
+    address mocSettlementImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocSettlementV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
     require(coinPairImplAfter == newCoinPairImpl, "coinPair implementation mismatch");
+    require(
+      oracleManagerImplAfter == newOracleManagerImpl,
+      "oracleManager implementation mismatch"
+    );
     require(mocImplAfter == newMocImpl, "MoC implementation mismatch");
     require(mocExchangeImplAfter == newMocExchangeImpl, "MoCExchange implementation mismatch");
     require(
@@ -310,6 +522,10 @@ contract BufferPctAndCleanMocV1ForkTest {
     );
 
     require(coinPairImplAfter != coinPairImplBefore, "coinPair implementation did not change");
+    require(
+      oracleManagerImplAfter != oracleManagerImplBefore,
+      "oracleManager implementation did not change"
+    );
     require(mocImplAfter != mocImplBefore, "MoC implementation did not change");
     require(
       mocExchangeImplAfter != mocExchangeImplBefore,
@@ -319,6 +535,16 @@ contract BufferPctAndCleanMocV1ForkTest {
       mocSettlementImplAfter != mocSettlementImplBefore,
       "MoCSettlement implementation did not change"
     );
+  }
+
+  function testFork_BufferSplits_AfterUpgrade() public {
+    IBufferTokenLike buffer = IBufferTokenLike(mocRewardsBufferProxy);
+    require(buffer.getNumOutputs() == 2, "Buffer must have exactly 2 outputs");
+
+    (address output0Before, uint256 split0Before, , ) = buffer.getOutput(0);
+    (address output1Before, uint256 split1Before, , ) = buffer.getOutput(1);
+
+    _executeChanger();
 
     (address output0After, uint256 split0After, , ) = buffer.getOutput(0);
     (address output1After, uint256 split1After, , ) = buffer.getOutput(1);
@@ -327,8 +553,110 @@ contract BufferPctAndCleanMocV1ForkTest {
     require(output1After == output1Before, "output 1 address changed");
     require(split0After == 70, "output 0 split must be 70");
     require(split1After == 30, "output 1 split must be 30");
-
     require(split0Before != split0After || split1Before != split1After, "buffer splits unchanged");
+  }
+
+  function testFork_CleansDeprecatedOracles_AfterUpgrade() public {
+    address deprecatedOracle0 = 0x4b5E791b0Ef89E954d1212dB598cBd9d3787AAFE;
+    address deprecatedOracle1 = 0xe4822F07C1d988A8f2F53D1817f7e8848897b67A;
+
+    IOracleManagerProbe oracleManager = IOracleManagerProbe(oracleManagerProxy);
+
+    address owner0Before = oracleManager.getOracleOwner(deprecatedOracle0);
+    address owner1Before = oracleManager.getOracleOwner(deprecatedOracle1);
+    require(owner0Before != address(0), "deprecated oracle 0 already clean");
+    require(owner1Before != address(0), "deprecated oracle 1 already clean");
+
+    uint256 registeredLen = oracleManager.getRegisteredOraclesLen();
+    address[] memory oracleAddressesBefore = new address[](registeredLen);
+    address[] memory ownersBefore = new address[](registeredLen);
+    for (uint256 i = 0; i < registeredLen; i++) {
+      (address ownerAddr, address oracleAddr, ) = oracleManager.getRegisteredOracleAtIndex(i);
+      oracleAddressesBefore[i] = oracleAddr;
+      ownersBefore[i] = ownerAddr;
+    }
+
+    _executeChanger();
+
+    address owner0After = oracleManager.getOracleOwner(deprecatedOracle0);
+    address owner1After = oracleManager.getOracleOwner(deprecatedOracle1);
+    require(owner0After == address(0), "deprecated oracle 0 not cleared");
+    require(owner1After == address(0), "deprecated oracle 1 not cleared");
+
+    for (uint256 i = 0; i < registeredLen; i++) {
+      address oracleAddr = oracleAddressesBefore[i];
+      address ownerAddr = ownersBefore[i];
+      address ownerAfter = oracleManager.getOracleOwner(oracleAddr);
+      require(ownerAfter == ownersBefore[i], "non-deprecated oracle owner changed");
+      address oracleAddressAfter = oracleManager.getOracleAddress(ownerAddr);
+      require(oracleAddressAfter == oracleAddr, "non-deprecated owner oracle changed");
+    }
+  }
+
+  function testFork_OracleHappyPath_CanPublishPrice_AfterUpgrade() public {
+    _executeChanger();
+
+    ICoinPairPriceProbe coinPair = ICoinPairPriceProbe(coinPairProxy);
+    IOracleManagerProbe oracleManager = IOracleManagerProbe(oracleManagerProxy);
+    IStakingProbe staking = IStakingProbe(oracleManager.getStakingContract());
+
+    (, , , , address[] memory selectedOwners, ) = coinPair.getRoundInfo();
+    uint256 selectedCount = selectedOwners.length;
+    require(selectedCount > 0, "no selected owners");
+    uint256 majorityCount = (selectedCount / 2) + 1;
+
+    uint256[] memory privateKeys = new uint256[](majorityCount);
+    for (uint256 i = 0; i < majorityCount; i++) {
+      privateKeys[i] = 0xA100 + i + 1;
+    }
+
+    address[] memory signers = new address[](majorityCount);
+    for (uint256 i = 0; i < majorityCount; i++) {
+      signers[i] = IOracleCheats(address(vm)).addr(privateKeys[i]);
+      vm.prank(selectedOwners[i]);
+      staking.setOracleAddress(signers[i]);
+      require(
+        oracleManager.getOracleAddress(selectedOwners[i]) == signers[i],
+        "failed to set signer for selected owner"
+      );
+      require(oracleManager.getOracleOwner(signers[i]) == selectedOwners[i], "signer owner mismatch");
+    }
+
+    (uint256 currentPrice, bool isValid, uint256 lastPubBlock) = coinPair.getPriceInfo();
+    require(isValid, "price invalid before publish");
+    bytes32 coinpair = coinPair.getCoinPair();
+    uint256 newPrice = currentPrice + 333333;
+    address votedOracle = signers[0];
+
+    bytes32 digest = _buildDigest(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      newPrice,
+      votedOracle,
+      lastPubBlock
+    );
+    (uint8[] memory sigV, bytes32[] memory sigR, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
+      privateKeys,
+      signers,
+      digest
+    );
+
+    vm.prank(votedOracle);
+    coinPair.publishPrice(
+      PUBLISH_MESSAGE_VERSION,
+      coinpair,
+      newPrice,
+      votedOracle,
+      lastPubBlock,
+      sigV,
+      sigR,
+      sigS
+    );
+
+    (uint256 updatedPrice, , uint256 updatedLastPubBlock) = coinPair.getPriceInfo();
+    require(updatedPrice == newPrice, "published price not applied");
+    require(updatedLastPubBlock == block.number, "publication block not updated");
   }
 
   function testFork_MoCBasicOps_AfterUpgrade() public {
@@ -339,6 +667,8 @@ contract BufferPctAndCleanMocV1ForkTest {
     require(connectorAddr != address(0), "MoC connector is zero");
 
     IMoCConnectorProbe connector = IMoCConnectorProbe(connectorAddr);
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    IMoCInrateProbe mocInrate = IMoCInrateProbe(connector.mocInrate());
     address bproTokenAddr = connector.bproToken();
     address docTokenAddr = connector.docToken();
     require(bproTokenAddr != address(0), "BPro token is zero");
@@ -354,26 +684,281 @@ contract BufferPctAndCleanMocV1ForkTest {
     vm.deal(address(this), 1 ether);
 
     uint256 bproBefore = bproToken.balanceOf(address(this));
+    uint8 mocStateBeforeMint = mocState.state();
+    require(mocStateBeforeMint != 1, "BProDiscount state not supported in exact assertion");
+    uint256 bproTecPrice = mocState.bproTecPrice();
+    uint256 mocPrecision = IMoCStorageProbe(mocV1Proxy).getMocPrecision();
+    uint256 expectedBproMinted = (mintBProBtc * mocPrecision) / bproTecPrice;
+    uint256 bproMintCommission = mocInrate.calcCommissionValue(
+      mintBProBtc,
+      mocInrate.MINT_BPRO_FEES_RBTC()
+    );
+    uint256 expectedRbtcSpentOnMintBpro = mintBProBtc + bproMintCommission;
+    uint256 rbtcBeforeMintBpro = address(this).balance;
     moc.mintBPro{ value: mintBProValue }(mintBProBtc);
+    uint256 rbtcAfterMintBpro = address(this).balance;
     uint256 bproAfterMint = bproToken.balanceOf(address(this));
-    require(bproAfterMint > bproBefore, "mintBPro did not increase BPro balance");
+    require(bproAfterMint - bproBefore == expectedBproMinted, "mintBPro unexpected BPro amount");
+    require(
+      rbtcBeforeMintBpro - rbtcAfterMintBpro == expectedRbtcSpentOnMintBpro,
+      "mintBPro unexpected RBTC spent"
+    );
 
     uint256 bproToRedeem = (bproAfterMint - bproBefore) / 2;
     require(bproToRedeem > 0, "BPro redeem amount is zero");
+    uint256 bproTecPriceRedeem = mocState.bproTecPrice();
+    uint256 expectedGrossRbtcFromBproRedeem = (bproToRedeem * bproTecPriceRedeem) / mocPrecision;
+    uint256 bproRedeemCommission = mocInrate.calcCommissionValue(
+      expectedGrossRbtcFromBproRedeem,
+      mocInrate.REDEEM_BPRO_FEES_RBTC()
+    );
+    uint256 expectedRbtcFromBproRedeem = expectedGrossRbtcFromBproRedeem - bproRedeemCommission;
+    uint256 rbtcBeforeRedeemBpro = address(this).balance;
     moc.redeemBPro(bproToRedeem);
+    uint256 rbtcAfterRedeemBpro = address(this).balance;
     uint256 bproAfterRedeem = bproToken.balanceOf(address(this));
-    require(bproAfterRedeem < bproAfterMint, "redeemBPro did not decrease BPro balance");
+    require(
+      bproAfterMint - bproAfterRedeem == bproToRedeem,
+      "redeemBPro unexpected BPro burned amount"
+    );
+    require(
+      rbtcAfterRedeemBpro - rbtcBeforeRedeemBpro == expectedRbtcFromBproRedeem,
+      "redeemBPro unexpected RBTC received"
+    );
 
     uint256 docBefore = docToken.balanceOf(address(this));
+    uint256 expectedDocMinted = mocState.btcToDoc(mintDocBtc);
+    uint256 docMintCommission = mocInrate.calcCommissionValue(
+      mintDocBtc,
+      mocInrate.MINT_DOC_FEES_RBTC()
+    );
+    uint256 expectedRbtcSpentOnMintDoc = mintDocBtc + docMintCommission;
+    uint256 rbtcBeforeMintDoc = address(this).balance;
     moc.mintDoc{ value: mintDocValue }(mintDocBtc);
+    uint256 rbtcAfterMintDoc = address(this).balance;
     uint256 docAfterMint = docToken.balanceOf(address(this));
-    require(docAfterMint > docBefore, "mintDoc did not increase Doc balance");
+    require(docAfterMint - docBefore == expectedDocMinted, "mintDoc unexpected Doc amount");
+    require(
+      rbtcBeforeMintDoc - rbtcAfterMintDoc == expectedRbtcSpentOnMintDoc,
+      "mintDoc unexpected RBTC spent"
+    );
 
     uint256 docToRedeem = (docAfterMint - docBefore) / 2;
     require(docToRedeem > 0, "Doc redeem amount is zero");
+    uint256 expectedGrossRbtcFromDocRedeem = mocState.docsToBtc(docToRedeem);
+    uint256 docRedeemInterest = mocInrate.calcDocRedInterestValues(
+      docToRedeem,
+      expectedGrossRbtcFromDocRedeem
+    );
+    uint256 expectedPreFeeRbtcFromDocRedeem = expectedGrossRbtcFromDocRedeem - docRedeemInterest;
+    uint256 docRedeemCommission = mocInrate.calcCommissionValue(
+      expectedPreFeeRbtcFromDocRedeem,
+      mocInrate.REDEEM_DOC_FEES_RBTC()
+    );
+    uint256 expectedRbtcFromDocRedeem = expectedPreFeeRbtcFromDocRedeem - docRedeemCommission;
+    uint256 rbtcBeforeRedeemDoc = address(this).balance;
     moc.redeemFreeDoc(docToRedeem);
+    uint256 rbtcAfterRedeemDoc = address(this).balance;
     uint256 docAfterRedeem = docToken.balanceOf(address(this));
-    require(docAfterRedeem < docAfterMint, "redeemFreeDoc did not decrease Doc balance");
+    require(
+      docAfterMint - docAfterRedeem == docToRedeem,
+      "redeemFreeDoc unexpected Doc burned amount"
+    );
+    require(
+      rbtcAfterRedeemDoc - rbtcBeforeRedeemDoc == expectedRbtcFromDocRedeem,
+      "redeemFreeDoc unexpected RBTC received"
+    );
+  }
+
+  function testFork_RunSettlement_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    address mocStateAddr = connector.mocState();
+    IMoCSettlementStorageProbe settlement = IMoCSettlementStorageProbe(mocSettlementV1Proxy);
+
+    // Stabilize settlement path on fork: ensure non-zero oracle prices.
+    vm.mockCall(
+      mocStateAddr,
+      abi.encodeWithSelector(IMoCStateProbe.getBitcoinPrice.selector),
+      abi.encode(uint256(1e18))
+    );
+    vm.mockCall(
+      mocStateAddr,
+      abi.encodeWithSelector(IMoCStateProbe.getMoCPrice.selector),
+      abi.encode(uint256(1e18))
+    );
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("peek()"))),
+      abi.encode(bytes32(uint256(1e18)), true)
+    );
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("read()"))),
+      abi.encode(bytes32(uint256(1e18)))
+    );
+
+    uint256 nextSettlementBlockBefore = settlement.nextSettlementBlock();
+    if (block.number < nextSettlementBlockBefore) {
+      vm.roll(nextSettlementBlockBefore);
+    }
+
+    require(settlement.isSettlementEnabled(), "settlement not enabled");
+    moc.runSettlement(1);
+
+    uint256 nextSettlementBlockAfter = settlement.nextSettlementBlock();
+    require(
+      nextSettlementBlockAfter > nextSettlementBlockBefore,
+      "next settlement block did not advance"
+    );
+    require(!settlement.isSettlementEnabled(), "settlement should be disabled right after run");
+  }
+
+  function testFork_NonReentrant_RedeemBPro_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    address bproTokenAddr = connector.bproToken();
+    require(bproTokenAddr != address(0), "BPro token is zero");
+
+    ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
+      mocV1Proxy,
+      bproTokenAddr,
+      connector.docToken()
+    );
+    vm.deal(address(attacker), 1 ether);
+
+    (bool ok, ) = address(attacker).call{ value: 0.011 ether }(
+      abi.encodeWithSelector(ReentrantMoCAttacker.attackRedeemBPro.selector, 0.01 ether)
+    );
+    require(ok, "attack transaction should complete");
+    (bool reenterOk, bytes memory reenterData) = attacker.getLastReenterResult();
+    require(
+      !reenterOk && _isErrorString(reenterData, "reentrancy not allowed"),
+      "redeemBPro should revert by nonReentrant modifier"
+    );
+  }
+
+  function testFork_NonReentrant_RedeemFreeDoc_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    address bproTokenAddr = connector.bproToken();
+    address docTokenAddr = connector.docToken();
+    require(bproTokenAddr != address(0), "BPro token is zero");
+    require(docTokenAddr != address(0), "Doc token is zero");
+
+    ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
+      mocV1Proxy,
+      bproTokenAddr,
+      docTokenAddr
+    );
+    vm.deal(address(attacker), 1 ether);
+
+    (bool ok, ) = address(attacker).call{ value: 0.011 ether }(
+      abi.encodeWithSelector(ReentrantMoCAttacker.attackRedeemFreeDoc.selector, 0.01 ether)
+    );
+    require(ok, "attack transaction should complete");
+    (bool reenterOk, bytes memory reenterData) = attacker.getLastReenterResult();
+    require(
+      !reenterOk && _isErrorString(reenterData, "reentrancy not allowed"),
+      "redeemFreeDoc should revert by nonReentrant modifier"
+    );
+  }
+
+  function testFork_NonReentrant_MintBProVendors_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    address bproTokenAddr = connector.bproToken();
+    address docTokenAddr = connector.docToken();
+    require(bproTokenAddr != address(0), "BPro token is zero");
+    require(docTokenAddr != address(0), "Doc token is zero");
+
+    // Force vendor path to perform vendor transfer (callback target for reentrancy attempt).
+    vm.mockCall(
+      mocState.getMoCVendors(),
+      abi.encodeWithSelector(IMoCVendorsProbe.updatePaidMarkup.selector),
+      abi.encode(true)
+    );
+
+    ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
+      mocV1Proxy,
+      bproTokenAddr,
+      docTokenAddr
+    );
+    vm.deal(address(attacker), 1 ether);
+
+    (bool ok, ) = address(attacker).call{ value: 0.011 ether }(
+      abi.encodeWithSelector(ReentrantMoCAttacker.attackMintBProAsVendor.selector, 0.01 ether)
+    );
+    require(ok, "attack transaction should complete");
+    (bool reenterOk, bytes memory reenterData) = attacker.getLastReenterResult();
+    require(
+      !reenterOk && _isErrorString(reenterData, "reentrancy not allowed"),
+      "mintBProVendors should revert by nonReentrant modifier"
+    );
+  }
+
+  function testFork_NonReentrant_MintDocVendors_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    address bproTokenAddr = connector.bproToken();
+    address docTokenAddr = connector.docToken();
+    require(bproTokenAddr != address(0), "BPro token is zero");
+    require(docTokenAddr != address(0), "Doc token is zero");
+
+    // Force vendor path to perform vendor transfer (callback target for reentrancy attempt).
+    vm.mockCall(
+      mocState.getMoCVendors(),
+      abi.encodeWithSelector(IMoCVendorsProbe.updatePaidMarkup.selector),
+      abi.encode(true)
+    );
+
+    ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
+      mocV1Proxy,
+      bproTokenAddr,
+      docTokenAddr
+    );
+    vm.deal(address(attacker), 1 ether);
+
+    (bool ok, ) = address(attacker).call{ value: 0.011 ether }(
+      abi.encodeWithSelector(ReentrantMoCAttacker.attackMintDocAsVendor.selector, 0.01 ether)
+    );
+    require(ok, "attack transaction should complete");
+    (bool reenterOk, bytes memory reenterData) = attacker.getLastReenterResult();
+    require(
+      !reenterOk && _isErrorString(reenterData, "reentrancy not allowed"),
+      "mintDocVendors should revert by nonReentrant modifier"
+    );
+  }
+
+  function _isErrorString(
+    bytes memory revertData,
+    string memory expected
+  ) internal pure returns (bool) {
+    if (revertData.length < 68) return false;
+    bytes4 selector;
+    assembly ("memory-safe") {
+      selector := mload(add(revertData, 0x20))
+    }
+    if (selector != 0x08c379a0) return false; // Error(string)
+
+    bytes memory payload = new bytes(revertData.length - 4);
+    for (uint256 i = 0; i < payload.length; i++) {
+      payload[i] = revertData[i + 4];
+    }
+    string memory reason = abi.decode(payload, (string));
+    return keccak256(bytes(reason)) == keccak256(bytes(expected));
   }
 
   function _hasUpgradedEvent(Vm.Log[] memory logs, address emitter) internal pure returns (bool) {
@@ -390,7 +975,12 @@ contract BufferPctAndCleanMocV1ForkTest {
   }
 
   function _executeChanger() internal {
+    address[] memory deprecatedOracles = new address[](2);
+    deprecatedOracles[0] = 0x4b5E791b0Ef89E954d1212dB598cBd9d3787AAFE;
+    deprecatedOracles[1] = 0xe4822F07C1d988A8f2F53D1817f7e8848897b67A;
+
     BufferPctAndCleanMocV1 changer = new BufferPctAndCleanMocV1(
+      oracleManagerProxy,
       coinPairProxy,
       mocRewardsBufferProxy,
       mocV1Proxy,
@@ -399,19 +989,17 @@ contract BufferPctAndCleanMocV1ForkTest {
       IUpgradeDelegator(upgradeDelegatorOracle),
       IUpgradeDelegator(upgradeDelegatorMoc),
       newCoinPairImpl,
+      newOracleManagerImpl,
       newMocImpl,
       newMocExchangeImpl,
-      newMocSettlementImpl
+      newMocSettlementImpl,
+      deprecatedOracles
     );
 
     IGovernor governor = IGovernor(IGoverned(coinPairProxy).governor());
     address governorOwner = IOwnableLike(address(governor)).owner();
     vm.prank(governorOwner);
     governor.executeChange(IChangeContract(address(changer)));
-  }
-
-  function _loadAddress(address target, bytes32 slot) internal view returns (address) {
-    return address(uint160(uint256(vm.load(target, slot))));
   }
 
   function _deployFromArtifact(string memory artifactPath) internal returns (address deployed) {
@@ -428,6 +1016,7 @@ contract BufferPctAndCleanMocV1ForkTest {
     view
     returns (
       address coinPairProxy_,
+      address oracleManagerProxy_,
       address mocRewardsBufferProxy_,
       address mocV1Proxy_,
       address mocExchangeV1Proxy_,
@@ -438,6 +1027,10 @@ contract BufferPctAndCleanMocV1ForkTest {
   {
     string memory json = vm.readFile(MAINNET_PARAMS_PATH);
 
+    oracleManagerProxy_ = vm.parseJsonAddress(
+      json,
+      ".BufferPctAndCleanMocV1Module.oracleManagerProxy"
+    );
     coinPairProxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.coinPairProxy");
     mocRewardsBufferProxy_ = vm.parseJsonAddress(
       json,
@@ -461,6 +1054,7 @@ contract BufferPctAndCleanMocV1ForkTest {
       ".BufferPctAndCleanMocV1Module.upgradeDelegatorMoc"
     );
 
+    require(oracleManagerProxy_ != address(0), "oracleManagerProxy is zero");
     require(coinPairProxy_ != address(0), "coinPairProxy is zero");
     require(mocRewardsBufferProxy_ != address(0), "mocRewardsBufferProxy is zero");
     require(mocV1Proxy_ != address(0), "mocV1Proxy is zero");
