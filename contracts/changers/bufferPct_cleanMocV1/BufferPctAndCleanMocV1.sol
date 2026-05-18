@@ -18,6 +18,11 @@ interface IOracleManager {
   function clearRegisteredOwner(address oracleAddr) external;
 }
 
+interface IRifBucket {
+  function setMaxAbsoluteOpProviderAddress(address maxAbsoluteOpProviderAddress_) external;
+  function setMaxOpDiffProviderAddress(address maxOpDiffProviderAddress_) external;
+}
+
 /**
  * @title BufferPctAndCleanMocV1
  * @notice ChangeContract used to set new Buffer pcts and clean MOC V1
@@ -29,6 +34,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   address public immutable mocV1Proxy;
   address public immutable mocExchangeV1Proxy;
   address public immutable mocSettlementV1Proxy;
+  address public immutable rifBucketProxy;
   IUpgradeDelegator public immutable upgradeDelegatorOracle;
   IUpgradeDelegator public immutable upgradeDelegatorMoc;
   address public immutable newCoinPairPriceImplementation;
@@ -36,6 +42,8 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   address public immutable newMocV1Implementation;
   address public immutable newMocExchangeV1Implementation;
   address public immutable newMocSettlementV1Implementation;
+  address public immutable newMaxAbsoluteOpProvider;
+  address public immutable newMaxOpDifferenceProvider;
   address[] public deprecatedOracles;
 
   constructor(
@@ -45,6 +53,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     address _mocV1Proxy,
     address _mocExchangeV1Proxy,
     address _mocSettlementV1Proxy,
+    address _rifBucketProxy,
     IUpgradeDelegator _upgradeDelegatorOracle,
     IUpgradeDelegator _upgradeDelegatorMoc,
     address _newCoinPairPriceImplementation,
@@ -52,6 +61,8 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     address _newMocV1Implementation,
     address _newMocExchangeV1Implementation,
     address _newMocSettlementV1Implementation,
+    address _newMaxAbsoluteOpProvider,
+    address _newMaxOpDifferenceProvider,
     address[] memory _deprecatedOracles
   ) {
     oracleManagerProxy = _oracleManagerProxy;
@@ -60,6 +71,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     mocV1Proxy = _mocV1Proxy;
     mocExchangeV1Proxy = _mocExchangeV1Proxy;
     mocSettlementV1Proxy = _mocSettlementV1Proxy;
+    rifBucketProxy = _rifBucketProxy;
     upgradeDelegatorOracle = _upgradeDelegatorOracle;
     upgradeDelegatorMoc = _upgradeDelegatorMoc;
     newCoinPairPriceImplementation = _newCoinPairPriceImplementation;
@@ -67,6 +79,8 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     newMocV1Implementation = _newMocV1Implementation;
     newMocExchangeV1Implementation = _newMocExchangeV1Implementation;
     newMocSettlementV1Implementation = _newMocSettlementV1Implementation;
+    newMaxAbsoluteOpProvider = _newMaxAbsoluteOpProvider;
+    newMaxOpDifferenceProvider = _newMaxOpDifferenceProvider;
     deprecatedOracles = _deprecatedOracles;
   }
 
@@ -88,7 +102,14 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
 
   function _afterUpgrade() internal virtual {
     setBufferSplits();
+    setRifBucketFluxCapacitorProviders();
     removeOldOracleOwners();
+  }
+
+  function setRifBucketFluxCapacitorProviders() internal {
+    IRifBucket rifBucket = IRifBucket(rifBucketProxy);
+    rifBucket.setMaxAbsoluteOpProviderAddress(newMaxAbsoluteOpProvider);
+    rifBucket.setMaxOpDiffProviderAddress(newMaxOpDifferenceProvider);
   }
 
   function setBufferSplits() internal {

@@ -6,6 +6,7 @@
     "mocV1Proxy": "0xf773B590aF754D597770937Fa8ea7AbDf2668370",
     "mocExchangeV1Proxy": "0x6aCb83bB0281FB847b43cf7dd5e2766BFDF49038",
     "mocSettlementV1Proxy": "0x609dF03D8a85eAffE376189CA7834D4C35e32F22",
+    "rifBucketProxy": "0xA27024Ed70035E46dba712609fc2Afa1c97aA36A",
     "upgradeDelegatorOracle": "0x131564703310a294C1bFDC09D10EC0659f18E253",
     "upgradeDelegatorMoc": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
     "coinPairPriceImplementation": "0x37ff40ec727349d478d2715ae58097f218f7e03f",

@@ -5,6 +5,8 @@ import { BufferPctAndCleanMocV1, IUpgradeDelegator } from "../changers/bufferPct
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
+import { FCMaxAbsoluteOpProvider } from "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol";
+import { FCMaxOpDifferenceProvider } from "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol";
 
 interface Vm {
   struct Log {
@@ -173,6 +175,15 @@ interface IMoCVendorsProbe {
   ) external returns (bool);
 }
 
+interface IRifBucketProbe {
+  function maxAbsoluteOpProvider() external view returns (address);
+  function maxOpDiffProvider() external view returns (address);
+}
+
+interface IDataProviderProbe {
+  function peek() external view returns (bytes32, bool);
+}
+
 contract ReentrantMoCAttacker {
   IMoCBasicOps internal moc;
   IERC20Like internal bproToken;
@@ -273,6 +284,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   bytes32 internal constant ZOS_IMPLEMENTATION_SLOT =
     0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3;
   bytes32 internal constant UPGRADED_TOPIC = keccak256("Upgraded(address)");
+  bytes32 internal constant DATA_UPDATED_TOPIC = keccak256("DataUpdated(uint256)");
   uint256 internal constant PUBLISH_MESSAGE_VERSION = 3;
 
   address internal coinPairProxy;
@@ -281,6 +293,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   address internal mocV1Proxy;
   address internal mocExchangeV1Proxy;
   address internal mocSettlementV1Proxy;
+  address internal rifBucketProxy;
   address internal upgradeDelegatorOracle;
   address internal upgradeDelegatorMoc;
 
@@ -303,6 +316,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocV1Proxy,
       mocExchangeV1Proxy,
       mocSettlementV1Proxy,
+      rifBucketProxy,
       upgradeDelegatorOracle,
       upgradeDelegatorMoc
     ) = _readMainnetParamsFromJson();
@@ -460,7 +474,11 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       oracleManagerProxy,
       IMPLEMENTATION_SLOT
     );
-    address mocImplBefore = _loadAddress(IOracleCheats(address(vm)), mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address mocImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
     address mocExchangeImplBefore = _loadAddress(
       IOracleCheats(address(vm)),
       mocExchangeV1Proxy,
@@ -498,7 +516,11 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       oracleManagerProxy,
       IMPLEMENTATION_SLOT
     );
-    address mocImplAfter = _loadAddress(IOracleCheats(address(vm)), mocV1Proxy, ZOS_IMPLEMENTATION_SLOT);
+    address mocImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
     address mocExchangeImplAfter = _loadAddress(
       IOracleCheats(address(vm)),
       mocExchangeV1Proxy,
@@ -593,6 +615,85 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     }
   }
 
+  function testFork_RifBucketProviders_AfterUpgrade_PreservesOwnerAndData() public {
+    IRifBucketProbe rifBucket = IRifBucketProbe(rifBucketProxy);
+
+    address maxAbsoluteProviderBefore = rifBucket.maxAbsoluteOpProvider();
+    address maxOpDiffProviderBefore = rifBucket.maxOpDiffProvider();
+
+    address ownerAbsBefore = IOwnableLike(maxAbsoluteProviderBefore).owner();
+    address ownerDiffBefore = IOwnableLike(maxOpDiffProviderBefore).owner();
+    (bytes32 dataAbsBefore, ) = IDataProviderProbe(maxAbsoluteProviderBefore).peek();
+    (bytes32 dataDiffBefore, ) = IDataProviderProbe(maxOpDiffProviderBefore).peek();
+
+    _executeChanger();
+
+    address maxAbsoluteProviderAfter = rifBucket.maxAbsoluteOpProvider();
+    address maxOpDiffProviderAfter = rifBucket.maxOpDiffProvider();
+    require(
+      maxAbsoluteProviderAfter != maxAbsoluteProviderBefore,
+      "maxAbsolute provider address did not change"
+    );
+    require(
+      maxOpDiffProviderAfter != maxOpDiffProviderBefore,
+      "maxOpDiff provider address did not change"
+    );
+
+    address ownerAbsAfter = IOwnableLike(maxAbsoluteProviderAfter).owner();
+    address ownerDiffAfter = IOwnableLike(maxOpDiffProviderAfter).owner();
+    (bytes32 dataAbsAfter, bool validAbsAfter) = IDataProviderProbe(maxAbsoluteProviderAfter)
+      .peek();
+    (bytes32 dataDiffAfter, bool validDiffAfter) = IDataProviderProbe(maxOpDiffProviderAfter)
+      .peek();
+
+    require(validAbsAfter, "maxAbsolute provider after invalid");
+    require(validDiffAfter, "maxOpDiff provider after invalid");
+    require(ownerAbsAfter == ownerAbsBefore, "maxAbsolute provider owner mismatch");
+    require(ownerDiffAfter == ownerDiffBefore, "maxOpDiff provider owner mismatch");
+    require(dataAbsAfter == dataAbsBefore, "maxAbsolute provider data mismatch");
+    require(dataDiffAfter == dataDiffBefore, "maxOpDiff provider data mismatch");
+  }
+
+  function testFork_RifBucketProviders_OwnerCanUpdateAndEmitEvent_AfterUpgrade() public {
+    _executeChanger();
+
+    IRifBucketProbe rifBucket = IRifBucketProbe(rifBucketProxy);
+    address maxAbsoluteProvider = rifBucket.maxAbsoluteOpProvider();
+    address maxOpDiffProvider = rifBucket.maxOpDiffProvider();
+
+    address absOwner = IOwnableLike(maxAbsoluteProvider).owner();
+    address diffOwner = IOwnableLike(maxOpDiffProvider).owner();
+
+    uint256 newAbsoluteValue = 123456789;
+    uint256 newDifferenceValue = 987654321;
+
+    vm.recordLogs();
+    vm.prank(absOwner);
+    FCMaxAbsoluteOpProvider(maxAbsoluteProvider).setMaxAbsoluteOperation(newAbsoluteValue);
+    Vm.Log[] memory logsAbs = vm.getRecordedLogs();
+
+    vm.recordLogs();
+    vm.prank(diffOwner);
+    FCMaxOpDifferenceProvider(maxOpDiffProvider).setMaxOperationalDifference(newDifferenceValue);
+    Vm.Log[] memory logsDiff = vm.getRecordedLogs();
+
+    (bytes32 absDataAfter, bool absValidAfter) = IDataProviderProbe(maxAbsoluteProvider).peek();
+    (bytes32 diffDataAfter, bool diffValidAfter) = IDataProviderProbe(maxOpDiffProvider).peek();
+    require(absValidAfter, "maxAbsolute provider invalid after update");
+    require(diffValidAfter, "maxOpDiff provider invalid after update");
+    require(uint256(absDataAfter) == newAbsoluteValue, "maxAbsolute provider data did not update");
+    require(uint256(diffDataAfter) == newDifferenceValue, "maxOpDiff provider data did not update");
+
+    require(
+      _hasDataUpdatedEvent(logsAbs, maxAbsoluteProvider, newAbsoluteValue),
+      "DataUpdated missing for maxAbsolute provider"
+    );
+    require(
+      _hasDataUpdatedEvent(logsDiff, maxOpDiffProvider, newDifferenceValue),
+      "DataUpdated missing for maxOpDiff provider"
+    );
+  }
+
   function testFork_OracleHappyPath_CanPublishPrice_AfterUpgrade() public {
     _executeChanger();
 
@@ -619,7 +720,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
         oracleManager.getOracleAddress(selectedOwners[i]) == signers[i],
         "failed to set signer for selected owner"
       );
-      require(oracleManager.getOracleOwner(signers[i]) == selectedOwners[i], "signer owner mismatch");
+      require(
+        oracleManager.getOracleOwner(signers[i]) == selectedOwners[i],
+        "signer owner mismatch"
+      );
     }
 
     (uint256 currentPrice, bool isValid, uint256 lastPubBlock) = coinPair.getPriceInfo();
@@ -664,15 +768,12 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
 
     IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
     address connectorAddr = moc.connector();
-    require(connectorAddr != address(0), "MoC connector is zero");
 
     IMoCConnectorProbe connector = IMoCConnectorProbe(connectorAddr);
     IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
     IMoCInrateProbe mocInrate = IMoCInrateProbe(connector.mocInrate());
     address bproTokenAddr = connector.bproToken();
     address docTokenAddr = connector.docToken();
-    require(bproTokenAddr != address(0), "BPro token is zero");
-    require(docTokenAddr != address(0), "Doc token is zero");
 
     IERC20Like bproToken = IERC20Like(bproTokenAddr);
     IERC20Like docToken = IERC20Like(docTokenAddr);
@@ -822,7 +923,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
     IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
     address bproTokenAddr = connector.bproToken();
-    require(bproTokenAddr != address(0), "BPro token is zero");
 
     ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
       mocV1Proxy,
@@ -849,8 +949,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
     address bproTokenAddr = connector.bproToken();
     address docTokenAddr = connector.docToken();
-    require(bproTokenAddr != address(0), "BPro token is zero");
-    require(docTokenAddr != address(0), "Doc token is zero");
 
     ReentrantMoCAttacker attacker = new ReentrantMoCAttacker(
       mocV1Proxy,
@@ -878,8 +976,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
     address bproTokenAddr = connector.bproToken();
     address docTokenAddr = connector.docToken();
-    require(bproTokenAddr != address(0), "BPro token is zero");
-    require(docTokenAddr != address(0), "Doc token is zero");
 
     // Force vendor path to perform vendor transfer (callback target for reentrancy attempt).
     vm.mockCall(
@@ -914,8 +1010,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
     address bproTokenAddr = connector.bproToken();
     address docTokenAddr = connector.docToken();
-    require(bproTokenAddr != address(0), "BPro token is zero");
-    require(docTokenAddr != address(0), "Doc token is zero");
 
     // Force vendor path to perform vendor transfer (callback target for reentrancy attempt).
     vm.mockCall(
@@ -974,10 +1068,48 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     return false;
   }
 
+  function _hasDataUpdatedEvent(
+    Vm.Log[] memory logs,
+    address emitter,
+    uint256 expectedData
+  ) internal pure returns (bool) {
+    for (uint256 i = 0; i < logs.length; i++) {
+      if (
+        logs[i].emitter == emitter &&
+        logs[i].topics.length > 0 &&
+        logs[i].topics[0] == DATA_UPDATED_TOPIC
+      ) {
+        if (abi.decode(logs[i].data, (uint256)) == expectedData) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   function _executeChanger() internal {
     address[] memory deprecatedOracles = new address[](2);
     deprecatedOracles[0] = 0x4b5E791b0Ef89E954d1212dB598cBd9d3787AAFE;
     deprecatedOracles[1] = 0xe4822F07C1d988A8f2F53D1817f7e8848897b67A;
+
+    IRifBucketProbe rifBucket = IRifBucketProbe(rifBucketProxy);
+    address maxAbsoluteProviderBefore = rifBucket.maxAbsoluteOpProvider();
+    address maxOpDiffProviderBefore = rifBucket.maxOpDiffProvider();
+    (bytes32 dataAbsBefore, ) = IDataProviderProbe(maxAbsoluteProviderBefore).peek();
+    (bytes32 dataDiffBefore, ) = IDataProviderProbe(maxOpDiffProviderBefore).peek();
+
+    address newMaxAbsoluteOpProvider = address(
+      new FCMaxAbsoluteOpProvider(
+        IOwnableLike(maxAbsoluteProviderBefore).owner(),
+        uint256(dataAbsBefore)
+      )
+    );
+    address newMaxOpDifferenceProvider = address(
+      new FCMaxOpDifferenceProvider(
+        IOwnableLike(maxOpDiffProviderBefore).owner(),
+        uint256(dataDiffBefore)
+      )
+    );
 
     BufferPctAndCleanMocV1 changer = new BufferPctAndCleanMocV1(
       oracleManagerProxy,
@@ -986,6 +1118,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocV1Proxy,
       mocExchangeV1Proxy,
       mocSettlementV1Proxy,
+      rifBucketProxy,
       IUpgradeDelegator(upgradeDelegatorOracle),
       IUpgradeDelegator(upgradeDelegatorMoc),
       newCoinPairImpl,
@@ -993,6 +1126,8 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       newMocImpl,
       newMocExchangeImpl,
       newMocSettlementImpl,
+      newMaxAbsoluteOpProvider,
+      newMaxOpDifferenceProvider,
       deprecatedOracles
     );
 
@@ -1021,6 +1156,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       address mocV1Proxy_,
       address mocExchangeV1Proxy_,
       address mocSettlementV1Proxy_,
+      address rifBucketProxy_,
       address upgradeDelegatorOracle_,
       address upgradeDelegatorMoc_
     )
@@ -1045,6 +1181,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       json,
       ".BufferPctAndCleanMocV1Module.mocSettlementV1Proxy"
     );
+    rifBucketProxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.rifBucketProxy");
     upgradeDelegatorOracle_ = vm.parseJsonAddress(
       json,
       ".BufferPctAndCleanMocV1Module.upgradeDelegatorOracle"

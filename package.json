@@ -1,15 +1,15 @@
 {
   "devDependencies": {
     "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#febfd26024a3a44938affe41e328c5aa8ad39894",
-    "@moc/shared": "git+ssh://git@github.com/money-on-chain/OMoC-SC-Shared.git#refactor/migrate-to-hardhat",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#30cbc6128904dbfc1ac0ddfc3e6246957f3af37e",
+    "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#bee0bfd9c78dd947a0c585d7851ee328c98d4947",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "^4.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-verify": "^3.0.0",
-    "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/contracts-upgradeable": "^5.4.0",
+    "@openzeppelin/contracts": "4.9.0",
+    "@openzeppelin/contracts-upgradeable": "4.9.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
     "chai": "^5.3.1",

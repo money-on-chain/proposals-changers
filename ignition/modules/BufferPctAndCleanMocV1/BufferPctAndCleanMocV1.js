@@ -7,11 +7,64 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const mocV1Proxy = m.getParameter("mocV1Proxy");
   const mocExchangeV1Proxy = m.getParameter("mocExchangeV1Proxy");
   const mocSettlementV1Proxy = m.getParameter("mocSettlementV1Proxy");
+  const rifBucketProxy = m.getParameter("rifBucketProxy");
   const upgradeDelegatorOracle = m.getParameter("upgradeDelegatorOracle");
   const upgradeDelegatorMoc = m.getParameter("upgradeDelegatorMoc");
   const moCHelperLib = m.getParameter("moCHelperLib");
   const deprecatedOracles = m.getParameter("deprecatedOracles");
   const coinPairPriceImplementation = m.getParameter("coinPairPriceImplementation");
+
+  const rifBucket = m.contractAt("MocBaseBucket", rifBucketProxy, { id: "RifBucket" });
+  const currentMaxAbsoluteOpProviderAddress = m.staticCall(
+    rifBucket,
+    "maxAbsoluteOpProvider",
+    [],
+    0,
+    { id: "CurrentMaxAbsoluteOpProviderAddress" },
+  );
+  const currentMaxOpDiffProviderAddress = m.staticCall(rifBucket, "maxOpDiffProvider", [], 0, {
+    id: "CurrentMaxOpDiffProviderAddress",
+  });
+
+  const currentMaxAbsoluteOpProvider = m.contractAt(
+    "FCMaxAbsoluteOpProvider",
+    currentMaxAbsoluteOpProviderAddress,
+    { id: "CurrentMaxAbsoluteOpProvider" },
+  );
+  const currentMaxOpDiffProvider = m.contractAt(
+    "FCMaxOpDifferenceProvider",
+    currentMaxOpDiffProviderAddress,
+    { id: "CurrentMaxOpDiffProvider" },
+  );
+
+  const maxAbsoluteOpProviderOwner = m.staticCall(currentMaxAbsoluteOpProvider, "owner", [], 0, {
+    id: "CurrentMaxAbsoluteOpProviderOwner",
+  });
+  const maxAbsoluteOpProviderInitialData = m.staticCall(
+    currentMaxAbsoluteOpProvider,
+    "peek",
+    [],
+    0,
+    { id: "CurrentMaxAbsoluteOpProviderInitialData" },
+  );
+
+  const maxOpDiffProviderOwner = m.staticCall(currentMaxOpDiffProvider, "owner", [], 0, {
+    id: "CurrentMaxOpDiffProviderOwner",
+  });
+  const maxOpDiffProviderInitialData = m.staticCall(currentMaxOpDiffProvider, "peek", [], 0, {
+    id: "CurrentMaxOpDiffProviderInitialData",
+  });
+
+  const maxAbsoluteOpProvider = m.contract(
+    "FCMaxAbsoluteOpProvider",
+    [maxAbsoluteOpProviderOwner, maxAbsoluteOpProviderInitialData],
+    { id: "MaxAbsoluteOpProvider" },
+  );
+  const maxOpDifferenceProvider = m.contract(
+    "FCMaxOpDifferenceProvider",
+    [maxOpDiffProviderOwner, maxOpDiffProviderInitialData],
+    { id: "MaxOpDifferenceProvider" },
+  );
 
   const oracleManagerImplementation = m.contract("DeployableOracleManager", [], {
     id: "OracleManagerImplementation",
@@ -39,6 +92,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     mocV1Proxy,
     mocExchangeV1Proxy,
     mocSettlementV1Proxy,
+    rifBucketProxy,
     upgradeDelegatorOracle,
     upgradeDelegatorMoc,
     coinPairPriceImplementation,
@@ -46,6 +100,8 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     mocImplementation,
     mocExchangeImplementation,
     mocSettlementImplementation,
+    maxAbsoluteOpProvider,
+    maxOpDifferenceProvider,
     deprecatedOracles,
   ]);
 
@@ -55,6 +111,8 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     mocImplementation,
     mocExchangeImplementation,
     mocSettlementImplementation,
+    maxAbsoluteOpProvider,
+    maxOpDifferenceProvider,
     changer,
   };
 });
