@@ -75,7 +75,7 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
   ICoinPairPrice internal constant BTCUSD_FEED =
     ICoinPairPrice(0xa288319eCb63301e21963E21EF3Ca8fb720d2672);
 
-  uint256 internal constant FORK_BLOCK = 8_735_658;
+  uint256 internal constant FORK_BLOCK = 8_740_300;
   uint256 internal constant PUBLISH_MESSAGE_VERSION = 3;
 
   struct SignerMaterial {
@@ -88,6 +88,12 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
   // BTCUSD CoinPairPrice proxy used in existing repo fork tests
   address internal constant COIN_PAIR_PRICE_PROXY = 0xa288319eCb63301e21963E21EF3Ca8fb720d2672;
   address internal constant UPGRADE_DELEGATOR = 0x131564703310a294C1bFDC09D10EC0659f18E253;
+  address internal constant DEPLOYED_COIN_PAIR_IMPL =
+    0xA34F7F544DE6398d4Ce44De4a1fad1d84f297f79;
+  address internal constant DEPLOYED_ORACLE_MANAGER_IMPL =
+    0xF74653be82F0f117a2f237ebA9988C14fF91F530;
+  address internal constant DEPLOYED_UPGRADE_PROPOSAL =
+    0x8168488D431Ab46A9abF905a9578F53BECc08F59;
 
   // EIP-1967 slots (used by AdminUpgradeabilityProxy / Transparent proxies)
   bytes32 internal constant IMPLEMENTATION_SLOT =
@@ -199,8 +205,16 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
       "coin pair implementation was not upgraded"
     );
     require(
+      coinPairImplementationAfter == DEPLOYED_COIN_PAIR_IMPL,
+      "coin pair implementation mismatch vs deployed artifact"
+    );
+    require(
       oracleManagerImplementationAfter != currentOracleManagerImplementation,
       "oracle manager implementation was not upgraded"
+    );
+    require(
+      oracleManagerImplementationAfter == DEPLOYED_ORACLE_MANAGER_IMPL,
+      "oracle manager implementation mismatch vs deployed artifact"
     );
   }
 
@@ -530,48 +544,8 @@ contract BtcUsdOracleHistoricalSignerBypassTest {
   function _executeChanger() internal {
     address governorAddr = IGoverned(COIN_PAIR_PRICE_PROXY).governor();
     address governorOwner = IOwnableLike(governorAddr).owner();
-    address oracleManagerProxy = BTCUSD_FEED.getOracleManager();
-    address newCoinPairPriceImplementation = _deployRealCoinPairPriceImplementation();
-    address newOracleManagerImplementation = _deployRealOracleManagerImplementation();
-    CoinPairPriceUpgradeProposal proposal = new CoinPairPriceUpgradeProposal(
-      COIN_PAIR_PRICE_PROXY,
-      oracleManagerProxy,
-      IUpgradeDelegator(UPGRADE_DELEGATOR),
-      newCoinPairPriceImplementation,
-      newOracleManagerImplementation
-    );
 
     vm.prank(governorOwner);
-    IGovernor(governorAddr).executeChange(IChangeContract(address(proposal)));
-  }
-
-  function _deployRealCoinPairPriceImplementation()
-    internal
-    returns (address deployedImplementation)
-  {
-    bytes memory coinPairPriceCreationCode = vm.getCode(
-      "contracts/compat/DeployableCoinPairPrice.sol:DeployableCoinPairPrice"
-    );
-    deployedImplementation = _deployContract(coinPairPriceCreationCode);
-    require(deployedImplementation != address(0), "coin pair implementation deploy failed");
-  }
-
-  function _deployRealOracleManagerImplementation()
-    internal
-    returns (address deployedImplementation)
-  {
-    bytes memory oracleManagerCreationCode = vm.getCode(
-      "contracts/compat/DeployableOracleManager.sol:DeployableOracleManager"
-    );
-    deployedImplementation = _deployContract(oracleManagerCreationCode);
-    require(deployedImplementation != address(0), "oracle manager implementation deploy failed");
-  }
-
-  function _deployContract(bytes memory creationCode) internal returns (address deployed) {
-    require(creationCode.length > 0, "empty creation code");
-    assembly {
-      deployed := create(0, add(creationCode, 0x20), mload(creationCode))
-    }
-    require(deployed != address(0), "create failed");
+    IGovernor(governorAddr).executeChange(IChangeContract(DEPLOYED_UPGRADE_PROPOSAL));
   }
 }
