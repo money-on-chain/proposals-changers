@@ -22,7 +22,6 @@ See: [docs/P20250826.md](docs/P20250826.md)
 - set .env `cp .env.example .env`
 - Compile: `npm run compile`
 
-
 ## Running tests example
 
 ```bash

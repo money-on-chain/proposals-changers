@@ -1,0 +1,35 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-b318deca8c2b7e075c4c403474a060e82538cf6f",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/changers/coin_pair_price_upgrade/CoinPairPriceUpgradeProposal.sol": "project/contracts/changers/coin_pair_price_upgrade/CoinPairPriceUpgradeProposal.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "shanghai",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": ["ast"],
+          "*": ["abi", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "metadata"]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/changers/coin_pair_price_upgrade/CoinPairPriceUpgradeProposal.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24;\n\nimport { IChangeContract } from \"../../interfaces/IChangeContract.sol\";\n\ninterface IUpgradeDelegator {\n  function upgrade(address proxy, address newImplementation) external;\n}\n\n/**\n * @title CoinPairPriceUpgradeProposal\n * @notice ChangeContract used to upgrade an existing CoinPairPrice proxy\n *         using the Money on Chain UpgradeDelegator pattern.\n */\ncontract CoinPairPriceUpgradeProposal is IChangeContract {\n  address public coinPairProxy;\n  address public oracleManagerProxy;\n  IUpgradeDelegator public upgradeDelegator;\n  address public newCoinPairPriceImplementation;\n  address public newOracleManagerImplementation;\n\n  constructor(\n    address _coinPairProxy,\n    address _oracleManagerProxy,\n    IUpgradeDelegator _upgradeDelegator,\n    address _newCoinPairPriceImplementation,\n    address _newOracleManagerImplementation\n  ) {\n    coinPairProxy = _coinPairProxy;\n    oracleManagerProxy = _oracleManagerProxy;\n    upgradeDelegator = _upgradeDelegator;\n    newCoinPairPriceImplementation = _newCoinPairPriceImplementation;\n    newOracleManagerImplementation = _newOracleManagerImplementation;\n  }\n\n  function execute() external {\n    _beforeUpgrade();\n    _upgrade();\n    _afterUpgrade();\n  }\n\n  function _upgrade() internal {\n    upgradeDelegator.upgrade(oracleManagerProxy, newOracleManagerImplementation);\n    upgradeDelegator.upgrade(coinPairProxy, newCoinPairPriceImplementation);\n  }\n\n  function _beforeUpgrade() internal virtual {}\n\n  function _afterUpgrade() internal virtual {}\n}\n"
+      },
+      "project/contracts/interfaces/IChangeContract.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\n/**\n  @title IChangeContract\n  @notice This interface is the one used by the governance system.\n  @dev If you plan to do some changes to a system governed by this project you should write a contract\n  that does those changes, like a recipe. This contract MUST not have ANY kind of public or external function\n  that modifies the state of this ChangeContract, otherwise you could run into front-running issues when the governance\n  system is fully in place.\n */\ninterface IChangeContract {\n  /**\n    @notice Override this function with a recipe of the changes to be done when this ChangeContract\n    is executed\n   */\n  function execute() external;\n}\n"
+      }
+    }
+  }
+}
