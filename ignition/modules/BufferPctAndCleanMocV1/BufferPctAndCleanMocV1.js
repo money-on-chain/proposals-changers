@@ -5,8 +5,6 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const coinPairProxy = m.getParameter("coinPairProxy");
   const mocRewardsBufferProxy = m.getParameter("mocRewardsBufferProxy");
   const mocV1Proxy = m.getParameter("mocV1Proxy");
-  const mocExchangeV1Proxy = m.getParameter("mocExchangeV1Proxy");
-  const mocSettlementV1Proxy = m.getParameter("mocSettlementV1Proxy");
   const rifBucketProxy = m.getParameter("rifBucketProxy");
   const upgradeDelegatorOracle = m.getParameter("upgradeDelegatorOracle");
   const upgradeDelegatorMoc = m.getParameter("upgradeDelegatorMoc");
@@ -73,6 +71,25 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const mocImplementation = m.contract("DeployableMoC", [], {
     id: "MoCImplementation",
   });
+  const mocProxy = m.contractAt("MoC", mocV1Proxy, { id: "MoCProxy" });
+  const mocConnectorProxy = m.staticCall(mocProxy, "connector", [], 0, {
+    id: "MoCConnectorProxy",
+  });
+  const mocConnector = m.contractAt("MoCConnector", mocConnectorProxy, {
+    id: "MoCConnector",
+  });
+  const mocStateV1Proxy = m.staticCall(mocConnector, "mocState", [], 0, {
+    id: "MoCStateProxy",
+  });
+  const mocExchangeV1Proxy = m.staticCall(mocConnector, "mocExchange", [], 0, {
+    id: "MoCExchangeProxy",
+  });
+  const mocSettlementV1Proxy = m.staticCall(mocConnector, "mocSettlement", [], 0, {
+    id: "MoCSettlementProxy",
+  });
+  const mocStateImplementation = m.contract("DeployableMoCState", [], {
+    id: "MoCStateImplementation",
+  });
 
   const mocExchangeImplementation = m.contract("DeployableMoCExchange", [], {
     id: "MoCExchangeImplementation",
@@ -90,6 +107,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     coinPairProxy,
     mocRewardsBufferProxy,
     mocV1Proxy,
+    mocStateV1Proxy,
     mocExchangeV1Proxy,
     mocSettlementV1Proxy,
     rifBucketProxy,
@@ -98,6 +116,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     coinPairPriceImplementation,
     oracleManagerImplementation,
     mocImplementation,
+    mocStateImplementation,
     mocExchangeImplementation,
     mocSettlementImplementation,
     maxAbsoluteOpProvider,
@@ -109,6 +128,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     coinPairPriceImplementation,
     oracleManagerImplementation,
     mocImplementation,
+    mocStateImplementation,
     mocExchangeImplementation,
     mocSettlementImplementation,
     maxAbsoluteOpProvider,

@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#febfd26024a3a44938affe41e328c5aa8ad39894",
-    "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#30cbc6128904dbfc1ac0ddfc3e6246957f3af37e",
+    "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#5f9e44e802c274b45523a43907332ccd21b67bb2",
     "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#bee0bfd9c78dd947a0c585d7851ee328c98d4947",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "^4.0.0",

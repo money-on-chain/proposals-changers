@@ -42,6 +42,9 @@ interface Vm {
     uint256 privateKey,
     bytes32 digest
   ) external returns (uint8 v, bytes32 r, bytes32 s);
+  function expectRevert() external;
+  function expectRevert(bytes calldata) external;
+  function txGasPrice(uint256 newGasPrice) external;
 }
 
 interface IOwnableLike {
@@ -139,6 +142,8 @@ interface IMoCConnectorProbe {
   function docToken() external view returns (address);
   function mocState() external view returns (address);
   function mocInrate() external view returns (address);
+  function mocExchange() external view returns (address);
+  function mocSettlement() external view returns (address);
 }
 
 interface IMoCStateProbe {
@@ -149,6 +154,13 @@ interface IMoCStateProbe {
   function getBitcoinPrice() external view returns (uint256);
   function getMoCPrice() external view returns (uint256);
   function getMoCVendors() external view returns (address);
+  function globalCoverage() external view returns (uint256);
+  function cobj() external view returns (uint256);
+  function getProtected() external view returns (uint256);
+  function liq() external view returns (uint256);
+  function getLiquidationEnabled() external view returns (bool);
+  function setLiquidationEnabled(bool liquidationEnabled_) external;
+  function nextState() external;
 }
 
 interface IMoCInrateProbe {
@@ -272,6 +284,20 @@ contract ReentrantMoCAttacker {
   }
 }
 
+contract LiquidationEnabledTestChanger is IChangeContract {
+  IMoCStateProbe internal immutable mocState;
+  bool internal immutable liquidationEnabled;
+
+  constructor(address mocState_, bool liquidationEnabled_) {
+    mocState = IMoCStateProbe(mocState_);
+    liquidationEnabled = liquidationEnabled_;
+  }
+
+  function execute() external override {
+    mocState.setLiquidationEnabled(liquidationEnabled);
+  }
+}
+
 contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
@@ -291,6 +317,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   address internal oracleManagerProxy;
   address internal mocRewardsBufferProxy;
   address internal mocV1Proxy;
+  address internal mocStateV1Proxy;
   address internal mocExchangeV1Proxy;
   address internal mocSettlementV1Proxy;
   address internal rifBucketProxy;
@@ -300,6 +327,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   address internal newCoinPairImpl;
   address internal newOracleManagerImpl;
   address internal newMocImpl;
+  address internal newMocStateImpl;
   address internal newMocExchangeImpl;
   address internal newMocSettlementImpl;
 
@@ -314,12 +342,14 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       oracleManagerProxy,
       mocRewardsBufferProxy,
       mocV1Proxy,
-      mocExchangeV1Proxy,
-      mocSettlementV1Proxy,
       rifBucketProxy,
       upgradeDelegatorOracle,
       upgradeDelegatorMoc
     ) = _readMainnetParamsFromJson();
+    IMoCConnectorProbe connector = IMoCConnectorProbe(IMoCBasicOps(mocV1Proxy).connector());
+    mocStateV1Proxy = connector.mocState();
+    mocExchangeV1Proxy = connector.mocExchange();
+    mocSettlementV1Proxy = connector.mocSettlement();
 
     newCoinPairImpl = _deployFromArtifact(
       "contracts/compat/DeployableCoinPairPrice.sol:DeployableCoinPairPrice"
@@ -328,6 +358,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       "contracts/compat/DeployableOracleManager.sol:DeployableOracleManager"
     );
     newMocImpl = _deployFromArtifact("contracts/compat/DeployableMoC.sol:DeployableMoC");
+    newMocStateImpl = _deployFromArtifact("contracts/compat/DeployableMoCState.sol:DeployableMoCState");
     newMocExchangeImpl = _deployFromArtifact(
       "contracts/compat/DeployableMoCExchange.sol:DeployableMoCExchange"
     );
@@ -479,6 +510,11 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocV1Proxy,
       ZOS_IMPLEMENTATION_SLOT
     );
+    address mocStateImplBefore = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocStateV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
     address mocExchangeImplBefore = _loadAddress(
       IOracleCheats(address(vm)),
       mocExchangeV1Proxy,
@@ -497,12 +533,14 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     bool coinPairUpgradedEvent = _hasUpgradedEvent(logs, coinPairProxy);
     bool oracleManagerUpgradedEvent = _hasUpgradedEvent(logs, oracleManagerProxy);
     bool mocUpgradedEvent = _hasUpgradedEvent(logs, mocV1Proxy);
+    bool mocStateUpgradedEvent = _hasUpgradedEvent(logs, mocStateV1Proxy);
     bool mocExchangeUpgradedEvent = _hasUpgradedEvent(logs, mocExchangeV1Proxy);
     bool mocSettlementUpgradedEvent = _hasUpgradedEvent(logs, mocSettlementV1Proxy);
 
     require(coinPairUpgradedEvent, "Upgraded event missing for coinPairProxy");
     require(oracleManagerUpgradedEvent, "Upgraded event missing for oracleManagerProxy");
     require(mocUpgradedEvent, "Upgraded event missing for mocV1Proxy");
+    require(mocStateUpgradedEvent, "Upgraded event missing for mocStateV1Proxy");
     require(mocExchangeUpgradedEvent, "Upgraded event missing for mocExchangeV1Proxy");
     require(mocSettlementUpgradedEvent, "Upgraded event missing for mocSettlementV1Proxy");
 
@@ -521,6 +559,11 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocV1Proxy,
       ZOS_IMPLEMENTATION_SLOT
     );
+    address mocStateImplAfter = _loadAddress(
+      IOracleCheats(address(vm)),
+      mocStateV1Proxy,
+      ZOS_IMPLEMENTATION_SLOT
+    );
     address mocExchangeImplAfter = _loadAddress(
       IOracleCheats(address(vm)),
       mocExchangeV1Proxy,
@@ -537,6 +580,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       "oracleManager implementation mismatch"
     );
     require(mocImplAfter == newMocImpl, "MoC implementation mismatch");
+    require(mocStateImplAfter == newMocStateImpl, "MoCState implementation mismatch");
     require(mocExchangeImplAfter == newMocExchangeImpl, "MoCExchange implementation mismatch");
     require(
       mocSettlementImplAfter == newMocSettlementImpl,
@@ -549,6 +593,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       "oracleManager implementation did not change"
     );
     require(mocImplAfter != mocImplBefore, "MoC implementation did not change");
+    require(
+      mocStateImplAfter != mocStateImplBefore,
+      "MoCState implementation did not change"
+    );
     require(
       mocExchangeImplAfter != mocExchangeImplBefore,
       "MoCExchange implementation did not change"
@@ -917,6 +965,229 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     require(!settlement.isSettlementEnabled(), "settlement should be disabled right after run");
   }
 
+  function testFork_MoCBasicOps_BelowCoverage_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    IERC20Like bproToken = IERC20Like(connector.bproToken());
+    IERC20Like docToken = IERC20Like(connector.docToken());
+
+    uint256 mintBProBtc = 0.01 ether;
+    uint256 mintDocBtc = 0.01 ether;
+    uint256 operationValue = 0.011 ether;
+    vm.deal(address(this), 2 ether);
+
+    // Seed balances while system is healthy so we can test both redeem paths below coverage.
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+
+    uint256 bproBalance = bproToken.balanceOf(address(this));
+    uint256 docBalance = docToken.balanceOf(address(this));
+
+    uint256 currentBtcPrice = mocState.getBitcoinPrice();
+    uint256 currentCoverage = mocState.globalCoverage();
+    uint256 cobj = mocState.cobj();
+    uint256 protected = mocState.getProtected();
+    require(currentCoverage > cobj, "test precondition: coverage must start above cobj");
+    require(cobj > protected, "test precondition: cobj must be above protected");
+
+    // Target BelowCobj but outside protection mode: protected < coverage < cobj.
+    uint256 targetCoverage = (cobj + protected) / 2;
+    uint256 targetBtcPrice = (currentBtcPrice * targetCoverage) / currentCoverage;
+
+    // Force BTC price through oracle reads to place protocol in BelowCobj.
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("peek()"))),
+      abi.encode(bytes32(targetBtcPrice), true)
+    );
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("read()"))),
+      abi.encode(bytes32(targetBtcPrice))
+    );
+
+    bytes memory stateRevertData = abi.encodeWithSignature(
+      "Error(string)",
+      "Function cannot be called at this state."
+    );
+
+    vm.expectRevert(stateRevertData);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+
+    vm.expectRevert(stateRevertData);
+    moc.redeemBPro(bproBalance / 2);
+
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    moc.redeemFreeDoc(docBalance / 2);
+  }
+
+  function testFork_MoCBasicOps_BelowProtected_AfterUpgrade() public {
+    _executeChanger();
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    IERC20Like bproToken = IERC20Like(connector.bproToken());
+    IERC20Like docToken = IERC20Like(connector.docToken());
+
+    uint256 mintBProBtc = 0.01 ether;
+    uint256 mintDocBtc = 0.01 ether;
+    uint256 operationValue = 0.011 ether;
+    vm.deal(address(this), 2 ether);
+
+    // Seed balances while system is healthy so we can attempt both redeem operations later.
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+
+    uint256 bproBalance = bproToken.balanceOf(address(this));
+    uint256 docBalance = docToken.balanceOf(address(this));
+
+    uint256 currentBtcPrice = mocState.getBitcoinPrice();
+    uint256 currentCoverage = mocState.globalCoverage();
+    uint256 cobj = mocState.cobj();
+    uint256 protected = mocState.getProtected();
+    require(currentCoverage > cobj, "test precondition: coverage must start above cobj");
+
+    // Target protection mode: coverage < protected.
+    uint256 targetCoverage = protected - 1;
+    uint256 targetBtcPrice = (currentBtcPrice * targetCoverage) / currentCoverage;
+
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("peek()"))),
+      abi.encode(bytes32(targetBtcPrice), true)
+    );
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("read()"))),
+      abi.encode(bytes32(targetBtcPrice))
+    );
+
+    bytes memory stateRevertData = abi.encodeWithSignature(
+      "Error(string)",
+      "Function cannot be called at this state."
+    );
+    bytes memory protectionRevertData = abi.encodeWithSignature(
+      "Error(string)",
+      "Function cannot be called at protection mode."
+    );
+
+    vm.expectRevert(stateRevertData);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+
+    vm.expectRevert(stateRevertData);
+    moc.redeemBPro(bproBalance / 2);
+
+    vm.expectRevert(protectionRevertData);
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+
+    vm.expectRevert(protectionRevertData);
+    moc.redeemFreeDoc(docBalance / 2);
+  }
+
+  function testFork_MoCBasicOps_LiquidationRefundsMints_AfterUpgrade() public {
+    _executeChanger();
+    vm.txGasPrice(0);
+
+    IMoCBasicOps moc = IMoCBasicOps(mocV1Proxy);
+    IMoCConnectorProbe connector = IMoCConnectorProbe(moc.connector());
+    IMoCStateProbe mocState = IMoCStateProbe(connector.mocState());
+    IERC20Like bproToken = IERC20Like(connector.bproToken());
+    IERC20Like docToken = IERC20Like(connector.docToken());
+
+    uint256 mintBProBtc = 0.01 ether;
+    uint256 mintDocBtc = 0.01 ether;
+    uint256 operationValue = 0.011 ether;
+    vm.deal(address(this), 2 ether);
+
+    // Seed balances while system is healthy so we can validate redeem failures under protection mode.
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+
+    uint256 bproBalance = bproToken.balanceOf(address(this));
+    uint256 docBalance = docToken.balanceOf(address(this));
+
+    uint256 currentBtcPrice = mocState.getBitcoinPrice();
+    uint256 currentCoverage = mocState.globalCoverage();
+    uint256 cobj = mocState.cobj();
+    uint256 protected = mocState.getProtected();
+    require(currentCoverage > cobj, "test precondition: coverage must start above cobj");
+
+    uint256 liq = mocState.liq();
+    uint256 liquidationCoverage = liq - 1;
+    uint256 liquidationBtcPrice = (currentBtcPrice * liquidationCoverage) / currentCoverage;
+
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("peek()"))),
+      abi.encode(bytes32(liquidationBtcPrice), true)
+    );
+    vm.mockCall(
+      coinPairProxy,
+      abi.encodeWithSelector(bytes4(keccak256("read()"))),
+      abi.encode(bytes32(liquidationBtcPrice))
+    );
+
+    uint256 coverageBeforeOps = mocState.globalCoverage();
+    require(coverageBeforeOps <= mocState.getProtected(), "not in protection mode");
+    require(coverageBeforeOps <= mocState.liq(), "not below liq");
+    require(!mocState.getLiquidationEnabled(), "liquidation enabled unexpectedly");
+    mocState.nextState();
+    require(mocState.state() == 2, "state should be BelowCobj when liquidation is disabled");
+
+    bytes memory stateRevertData = abi.encodeWithSignature(
+      "Error(string)",
+      "Function cannot be called at this state."
+    );
+    bytes memory protectionRevertData = abi.encodeWithSignature(
+      "Error(string)",
+      "Function cannot be called at protection mode."
+    );
+
+    vm.expectRevert(stateRevertData);
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+    vm.expectRevert(stateRevertData);
+    moc.redeemBPro(bproBalance / 2);
+    vm.expectRevert(protectionRevertData);
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    vm.expectRevert(protectionRevertData);
+    moc.redeemFreeDoc(docBalance / 2);
+
+    // Enable liquidation through governance.
+    if (!mocState.getLiquidationEnabled()) {
+      LiquidationEnabledTestChanger liquidationEnabledChanger = new LiquidationEnabledTestChanger(
+        address(mocState),
+        true
+      );
+      IGovernor governor = IGovernor(IGoverned(address(mocState)).governor());
+      address governorOwner = IOwnableLike(address(governor)).owner();
+      vm.prank(governorOwner);
+      governor.executeChange(IChangeContract(address(liquidationEnabledChanger)));
+      require(mocState.getLiquidationEnabled(), "liquidationEnabled was not set");
+    }
+
+    uint256 rbtcBeforeTrigger = address(this).balance;
+    uint256 bproBeforeTrigger = bproToken.balanceOf(address(this));
+    moc.mintBPro{ value: operationValue }(mintBProBtc);
+    require(address(this).balance == rbtcBeforeTrigger, "mintBPro value was not refunded");
+    require(
+      bproToken.balanceOf(address(this)) == bproBeforeTrigger,
+      "mintBPro should not mint in liquidation"
+    );
+
+    uint256 rbtcBeforeMintDoc = address(this).balance;
+    uint256 docBeforeMintDoc = docToken.balanceOf(address(this));
+    moc.mintDoc{ value: operationValue }(mintDocBtc);
+    require(address(this).balance == rbtcBeforeMintDoc, "mintDoc value was not refunded");
+    require(
+      docToken.balanceOf(address(this)) == docBeforeMintDoc,
+      "mintDoc should not mint in liquidation"
+    );
+  }
+
   function testFork_NonReentrant_RedeemBPro_AfterUpgrade() public {
     _executeChanger();
 
@@ -1116,6 +1387,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       coinPairProxy,
       mocRewardsBufferProxy,
       mocV1Proxy,
+      mocStateV1Proxy,
       mocExchangeV1Proxy,
       mocSettlementV1Proxy,
       rifBucketProxy,
@@ -1124,6 +1396,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       newCoinPairImpl,
       newOracleManagerImpl,
       newMocImpl,
+      newMocStateImpl,
       newMocExchangeImpl,
       newMocSettlementImpl,
       newMaxAbsoluteOpProvider,
@@ -1154,8 +1427,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       address oracleManagerProxy_,
       address mocRewardsBufferProxy_,
       address mocV1Proxy_,
-      address mocExchangeV1Proxy_,
-      address mocSettlementV1Proxy_,
       address rifBucketProxy_,
       address upgradeDelegatorOracle_,
       address upgradeDelegatorMoc_
@@ -1173,14 +1444,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       ".BufferPctAndCleanMocV1Module.mocRewardsBufferProxy"
     );
     mocV1Proxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.mocV1Proxy");
-    mocExchangeV1Proxy_ = vm.parseJsonAddress(
-      json,
-      ".BufferPctAndCleanMocV1Module.mocExchangeV1Proxy"
-    );
-    mocSettlementV1Proxy_ = vm.parseJsonAddress(
-      json,
-      ".BufferPctAndCleanMocV1Module.mocSettlementV1Proxy"
-    );
     rifBucketProxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.rifBucketProxy");
     upgradeDelegatorOracle_ = vm.parseJsonAddress(
       json,
@@ -1195,8 +1458,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     require(coinPairProxy_ != address(0), "coinPairProxy is zero");
     require(mocRewardsBufferProxy_ != address(0), "mocRewardsBufferProxy is zero");
     require(mocV1Proxy_ != address(0), "mocV1Proxy is zero");
-    require(mocExchangeV1Proxy_ != address(0), "mocExchangeV1Proxy is zero");
-    require(mocSettlementV1Proxy_ != address(0), "mocSettlementV1Proxy is zero");
     require(upgradeDelegatorOracle_ != address(0), "upgradeDelegatorOracle is zero");
     require(upgradeDelegatorMoc_ != address(0), "upgradeDelegatorMoc is zero");
   }

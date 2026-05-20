@@ -32,6 +32,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   address public immutable coinPairProxy;
   address public immutable mocRewardsBufferProxy;
   address public immutable mocV1Proxy;
+  address public immutable mocStateV1Proxy;
   address public immutable mocExchangeV1Proxy;
   address public immutable mocSettlementV1Proxy;
   address public immutable rifBucketProxy;
@@ -40,6 +41,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   address public immutable newCoinPairPriceImplementation;
   address public immutable newOracleManagerImplementation;
   address public immutable newMocV1Implementation;
+  address public immutable newMocStateV1Implementation;
   address public immutable newMocExchangeV1Implementation;
   address public immutable newMocSettlementV1Implementation;
   address public immutable newMaxAbsoluteOpProvider;
@@ -51,6 +53,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     address _coinPairProxy,
     address _mocRewardsBufferProxy,
     address _mocV1Proxy,
+    address _mocStateV1Proxy,
     address _mocExchangeV1Proxy,
     address _mocSettlementV1Proxy,
     address _rifBucketProxy,
@@ -59,6 +62,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     address _newCoinPairPriceImplementation,
     address _newOracleManagerImplementation,
     address _newMocV1Implementation,
+    address _newMocStateV1Implementation,
     address _newMocExchangeV1Implementation,
     address _newMocSettlementV1Implementation,
     address _newMaxAbsoluteOpProvider,
@@ -69,6 +73,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     coinPairProxy = _coinPairProxy;
     mocRewardsBufferProxy = _mocRewardsBufferProxy;
     mocV1Proxy = _mocV1Proxy;
+    mocStateV1Proxy = _mocStateV1Proxy;
     mocExchangeV1Proxy = _mocExchangeV1Proxy;
     mocSettlementV1Proxy = _mocSettlementV1Proxy;
     rifBucketProxy = _rifBucketProxy;
@@ -77,6 +82,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     newCoinPairPriceImplementation = _newCoinPairPriceImplementation;
     newOracleManagerImplementation = _newOracleManagerImplementation;
     newMocV1Implementation = _newMocV1Implementation;
+    newMocStateV1Implementation = _newMocStateV1Implementation;
     newMocExchangeV1Implementation = _newMocExchangeV1Implementation;
     newMocSettlementV1Implementation = _newMocSettlementV1Implementation;
     newMaxAbsoluteOpProvider = _newMaxAbsoluteOpProvider;
@@ -94,6 +100,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     upgradeDelegatorOracle.upgrade(coinPairProxy, newCoinPairPriceImplementation);
     upgradeDelegatorOracle.upgrade(oracleManagerProxy, newOracleManagerImplementation);
     upgradeDelegatorMoc.upgrade(mocV1Proxy, newMocV1Implementation);
+    upgradeDelegatorMoc.upgrade(mocStateV1Proxy, newMocStateV1Implementation);
     upgradeDelegatorMoc.upgrade(mocExchangeV1Proxy, newMocExchangeV1Implementation);
     upgradeDelegatorMoc.upgrade(mocSettlementV1Proxy, newMocSettlementV1Implementation);
   }
