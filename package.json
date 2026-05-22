@@ -2,7 +2,8 @@
   "devDependencies": {
     "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#febfd26024a3a44938affe41e328c5aa8ad39894",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#5f9e44e802c274b45523a43907332ccd21b67bb2",
-    "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#bee0bfd9c78dd947a0c585d7851ee328c98d4947",
+    "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#0b8ab1708d567700e4a11bb9b362bdc02dd5e213",
+    "@moc/governance": "git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#8bd3db428746fe85ca5acd2555cca80b5e47b56c",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "^4.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
@@ -57,7 +58,9 @@
     "validate:aftervote:testnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network rskTestnet",
     "validate:aftervote:mainnet:fees-and-bitprorate": "npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network rskMainnet",
     "test:fees-and-bitprorate": "npx hardhat test test/fees_and_bitprorate.spec.js",
-    "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js"
+    "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js",
+    "deploy:testnet:voting-machine-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/upgrade_votingMachine/upgrade_votingMachine.js --network rskTestnet --parameters ignition/modules/upgrade_votingMachine/parameters/rskTestnet.json",
+    "deploy:mainnet:voting-machine-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/upgrade_votingMachine/upgrade_votingMachine.js --network rskMainnet --parameters ignition/modules/upgrade_votingMachine/parameters/rskMainnet.json"
   },
   "lint-staged": {
     "*.{ts,tsx,js,cjs,mjs}": [

@@ -1,0 +1,6 @@
+{
+  "VotingMachineUpgradeChangerModule": {
+    "votingMachineProxy": "0x65a5681bE95d212F0c90eAd40170D8277de81169",
+    "upgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253"
+  }
+}
