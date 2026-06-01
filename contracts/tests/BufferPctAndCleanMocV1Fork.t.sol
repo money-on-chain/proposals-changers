@@ -344,16 +344,14 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocV1Proxy,
       rifBucketProxy,
       upgradeDelegatorOracle,
-      upgradeDelegatorMoc
+      upgradeDelegatorMoc,
+      newCoinPairImpl
     ) = _readMainnetParamsFromJson();
     IMoCConnectorProbe connector = IMoCConnectorProbe(IMoCBasicOps(mocV1Proxy).connector());
     mocStateV1Proxy = connector.mocState();
     mocExchangeV1Proxy = connector.mocExchange();
     mocSettlementV1Proxy = connector.mocSettlement();
 
-    newCoinPairImpl = _deployFromArtifact(
-      "contracts/compat/DeployableCoinPairPrice.sol:DeployableCoinPairPrice"
-    );
     newOracleManagerImpl = _deployFromArtifact(
       "contracts/compat/DeployableOracleManager.sol:DeployableOracleManager"
     );
@@ -1113,7 +1111,6 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     uint256 currentBtcPrice = mocState.getBitcoinPrice();
     uint256 currentCoverage = mocState.globalCoverage();
     uint256 cobj = mocState.cobj();
-    uint256 protected = mocState.getProtected();
     require(currentCoverage > cobj, "test precondition: coverage must start above cobj");
 
     uint256 liq = mocState.liq();
@@ -1429,7 +1426,8 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       address mocV1Proxy_,
       address rifBucketProxy_,
       address upgradeDelegatorOracle_,
-      address upgradeDelegatorMoc_
+      address upgradeDelegatorMoc_,
+      address coinPairPriceImplementation_
     )
   {
     string memory json = vm.readFile(MAINNET_PARAMS_PATH);
@@ -1453,6 +1451,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       json,
       ".BufferPctAndCleanMocV1Module.upgradeDelegatorMoc"
     );
+    coinPairPriceImplementation_ = vm.parseJsonAddress(
+      json,
+      ".BufferPctAndCleanMocV1Module.coinPairPriceImplementation"
+    );
 
     require(oracleManagerProxy_ != address(0), "oracleManagerProxy is zero");
     require(coinPairProxy_ != address(0), "coinPairProxy is zero");
@@ -1460,5 +1462,9 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     require(mocV1Proxy_ != address(0), "mocV1Proxy is zero");
     require(upgradeDelegatorOracle_ != address(0), "upgradeDelegatorOracle is zero");
     require(upgradeDelegatorMoc_ != address(0), "upgradeDelegatorMoc is zero");
+    require(
+      coinPairPriceImplementation_ != address(0),
+      "coinPairPriceImplementation is zero"
+    );
   }
 }
