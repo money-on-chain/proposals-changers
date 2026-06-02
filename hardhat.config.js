@@ -15,12 +15,49 @@ export default {
   solidity: {
     compilers: [
       {
+        version: "0.5.8",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+        },
+      },
+      {
+        version: "0.5.17",
+        settings: {
+          evmVersion: "byzantium",
+          optimizer: { enabled: true, runs: 200 },
+          libraries: {
+            "@moc/rbtc/contracts/MoCHelperLib.sol": {
+              MoCHelperLib:
+                process.env.MOC_HELPER_LIB || "0x592b84710955C9561008D137a5403E1dd9A222D8",
+            },
+          },
+        },
+      },
+      {
         version: "0.6.12",
         settings: { optimizer: { enabled: true, runs: 200 } },
       },
       {
         version: "0.8.24",
-        settings: { optimizer: { enabled: true, runs: 200 } },
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+            details: {
+              yulDetails: {
+                optimizerSteps:
+                  "dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul",
+              },
+            },
+          },
+          viaIR: true,
+          evmVersion: "london",
+          outputSelection: {
+            "*": {
+              "*": ["storageLayout"],
+            },
+          },
+        },
       },
     ],
   },
@@ -89,6 +126,14 @@ export default {
           url: "https://rootstock.blockscout.com",
           apiUrl: "https://rootstock.blockscout.com/api",
         },
+      },
+    },
+  },
+  test: {
+    solidity: {
+      ffi: true,
+      fsPermissions: {
+        readDirectory: ["./out", "./test", "./ignition"],
       },
     },
   },
