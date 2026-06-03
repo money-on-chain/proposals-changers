@@ -5,6 +5,7 @@
     "mocRewardsBufferProxy": "0xf09006E812BE98c7B18c877Af5C126629acB6cAb",
     "mocV1Proxy": "0xf773B590aF754D597770937Fa8ea7AbDf2668370",
     "rifBucketProxy": "0xA27024Ed70035E46dba712609fc2Afa1c97aA36A",
+    "docBucketProxy": "0x697535055Aa7AfD2C280523C7B062b1F05284661",
     "upgradeDelegatorOracle": "0x131564703310a294C1bFDC09D10EC0659f18E253",
     "upgradeDelegatorMoc": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
     "coinPairPriceImplementation": "0x37ff40ec727349d478d2715ae58097f218f7e03f",

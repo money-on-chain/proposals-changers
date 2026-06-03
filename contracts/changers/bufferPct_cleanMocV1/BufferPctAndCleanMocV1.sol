@@ -1,8 +1,9 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
 import { IChangeContract } from "../../interfaces/IChangeContract.sol";
 import { MocBaseBucket } from "moc-main-latest/contracts/core/MocBaseBucket.sol";
+import { MocCARC20 } from "moc-main-latest/contracts/collateral/rc20/MocCARC20.sol";
 
 interface IUpgradeDelegator {
   function upgrade(address proxy, address newImplementation) external;
@@ -24,6 +25,8 @@ interface IOracleManager {
  * @notice ChangeContract used to set new Buffer pcts and clean MOC V1
  */
 contract BufferPctAndCleanMocV1 is IChangeContract {
+  uint256 public constant HALF_INFINITY = type(uint256).max / 2;
+
   address public immutable oracleManagerProxy;
   address public immutable coinPairProxy;
   address public immutable mocRewardsBufferProxy;
@@ -32,6 +35,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   address public immutable mocExchangeV1Proxy;
   address public immutable mocSettlementV1Proxy;
   address public immutable rifBucketProxy;
+  MocCARC20 public immutable docBucketProxy;
   IUpgradeDelegator public immutable upgradeDelegatorOracle;
   IUpgradeDelegator public immutable upgradeDelegatorMoc;
   address public immutable newCoinPairPriceImplementation;
@@ -53,6 +57,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     address _mocExchangeV1Proxy,
     address _mocSettlementV1Proxy,
     address _rifBucketProxy,
+    address _docBucketProxy,
     IUpgradeDelegator _upgradeDelegatorOracle,
     IUpgradeDelegator _upgradeDelegatorMoc,
     address _newCoinPairPriceImplementation,
@@ -73,6 +78,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     mocExchangeV1Proxy = _mocExchangeV1Proxy;
     mocSettlementV1Proxy = _mocSettlementV1Proxy;
     rifBucketProxy = _rifBucketProxy;
+    docBucketProxy = MocCARC20(_docBucketProxy);
     upgradeDelegatorOracle = _upgradeDelegatorOracle;
     upgradeDelegatorMoc = _upgradeDelegatorMoc;
     newCoinPairPriceImplementation = _newCoinPairPriceImplementation;
@@ -110,6 +116,7 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     }
     setRifBucketFluxCapacitorProviders();
     removeOldOracleOwners();
+    fixDOCBucketInfinity();
   }
 
   function setRifBucketFluxCapacitorProviders() internal {
@@ -140,5 +147,15 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
     for (uint256 i = 0; i < deprecatedOracles.length; i++) {
       oracleManager.clearRegisteredOwner(deprecatedOracles[i]);
     }
+  }
+
+  function fixDOCBucketInfinity() internal {
+    docBucketProxy.setTCInterestParams(
+            docBucketProxy.tcInterestCollectorAddress(),
+            docBucketProxy.tcInterestRate(),
+            HALF_INFINITY
+        );
+    docBucketProxy.setSettlementTimeSpan(HALF_INFINITY);
+    docBucketProxy.setEmaCalculationTimeSpan(HALF_INFINITY);
   }
 }

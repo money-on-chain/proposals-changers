@@ -6,6 +6,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const mocRewardsBufferProxy = m.getParameter("mocRewardsBufferProxy");
   const mocV1Proxy = m.getParameter("mocV1Proxy");
   const rifBucketProxy = m.getParameter("rifBucketProxy");
+  const docBucketProxy = m.getParameter("docBucketProxy");
   const upgradeDelegatorOracle = m.getParameter("upgradeDelegatorOracle");
   const upgradeDelegatorMoc = m.getParameter("upgradeDelegatorMoc");
   const deprecatedOracles = m.getParameter("deprecatedOracles");
@@ -107,6 +108,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     mocExchangeV1Proxy,
     mocSettlementV1Proxy,
     rifBucketProxy,
+    docBucketProxy,
     upgradeDelegatorOracle,
     upgradeDelegatorMoc,
     coinPairPriceImplementation,
