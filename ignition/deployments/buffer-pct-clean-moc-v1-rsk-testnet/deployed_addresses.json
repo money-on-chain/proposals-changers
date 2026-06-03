@@ -1,0 +1,15 @@
+{
+  "BufferPctAndCleanMocV1Module#MoCProxy": "0x2820f6d4D199B8D8838A4B26F9917754B86a0c1F",
+  "BufferPctAndCleanMocV1Module#RifBucket": "0xa416934264515bb381E3b746f10f22D5c6f9431a",
+  "BufferPctAndCleanMocV1Module#MoCExchangeImplementation": "0xc860e591094f954C5078fBe4CE480a0c043072e9",
+  "BufferPctAndCleanMocV1Module#MoCImplementation": "0x6DBF6369fb3a2CB23B0e7CC20FEfEb7cC3aCCF5F",
+  "BufferPctAndCleanMocV1Module#MoCSettlementImplementation": "0xCD9534DF9bA7928Cf1259FC3dc2FEf72Ab1E7ae2",
+  "BufferPctAndCleanMocV1Module#MoCStateImplementation": "0x288998C07bbe716b3356aC01b7B7726DDd38304e",
+  "BufferPctAndCleanMocV1Module#OracleManagerImplementation": "0xfb1C45F743C8c3a8fdBe5b040536C45F30738Ae9",
+  "BufferPctAndCleanMocV1Module#CurrentMaxAbsoluteOpProvider": "0x14D227fa8666772E7d1B49Ce47A736f4909091A4",
+  "BufferPctAndCleanMocV1Module#CurrentMaxOpDiffProvider": "0x842852733E793aFa3829eEf356ED47FEb7641D34",
+  "BufferPctAndCleanMocV1Module#MoCConnector": "0xABB405e01Da6212E2d6fc87bbc460c73201cF6b0",
+  "BufferPctAndCleanMocV1Module#MaxAbsoluteOpProvider": "0x78e8a6D59056a259b803B89ff88b87E9E14Bb37a",
+  "BufferPctAndCleanMocV1Module#MaxOpDifferenceProvider": "0x9f6Ce43A1b032d3483Cd20323B88eBC5A308BD1a",
+  "BufferPctAndCleanMocV1Module#BufferPctAndCleanMocV1": "0xC55b49Dc267cd5fe82c763f0d6cc1820dCaaB503"
+}

@@ -301,7 +301,7 @@ contract LiquidationEnabledTestChanger is IChangeContract {
 contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
-  uint256 internal constant FORK_BLOCK = 8837400;
+  uint256 internal constant FORK_BLOCK = 8906760;
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/BufferPctAndCleanMocV1/parameters/rskMainnet.json";
 
@@ -611,6 +611,9 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
 
     (address output0Before, uint256 split0Before, , ) = buffer.getOutput(0);
     (address output1Before, uint256 split1Before, , ) = buffer.getOutput(1);
+
+    require(split0Before == 80, "output 0 split must be 80");
+    require(split1Before == 20, "output 1 split must be 20");
 
     _executeChanger();
 

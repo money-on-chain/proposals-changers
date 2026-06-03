@@ -13,6 +13,13 @@ dotenvConfig();
 export default {
   plugins: [hardhatEthers, hardhatToolboxMochaEthers, hardhatVerify],
   solidity: {
+    npmFilesToBuild: [
+      "moc-main-latest/contracts/core/MocBaseBucket.sol",
+      "@moc/rbtc/contracts/MoC.sol",
+      "@moc/rbtc/contracts/base/MoCConnector.sol",
+      "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol",
+      "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
+    ],
     compilers: [
       {
         version: "0.5.8",

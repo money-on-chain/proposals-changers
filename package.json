@@ -5,6 +5,8 @@
     "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.0.5",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "^4.0.0",
+    "@nomicfoundation/hardhat-ignition": "^3.0.0",
+    "@nomicfoundation/hardhat-ignition-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
     "@nomicfoundation/hardhat-verify": "^3.0.0",
@@ -41,9 +43,11 @@
     "format:fix": "prettier . --write",
     "fix:all": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs --fix && prettier . --write",
     "check:all": "eslint . --ext .ts,.tsx,.js,.cjs,.mjs && prettier . --check",
-    "deploy:alpha-testnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskAlphaTestnet",
-    "deploy:testnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskTestnet",
-    "deploy:mainnet:coin-pair-price-upgrade:ignition": "npx hardhat ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --network rskMainnet",
+    "deploy:alpha-testnet:coin-pair-price-upgrade:ignition": "npx hardhat --network rskAlphaTestnet ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --deployment-id coin-pair-price-upgrade-rsk-alpha-testnet",
+    "deploy:testnet:coin-pair-price-upgrade:ignition": "npx hardhat --network rskTestnet ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --deployment-id coin-pair-price-upgrade-rsk-testnet",
+    "deploy:mainnet:coin-pair-price-upgrade:ignition": "npx hardhat --network rskMainnet ignition deploy ignition/modules/CoinPairPriceUpgradeChanger.js --deployment-id coin-pair-price-upgrade-rsk-mainnet",
+    "deploy:testnet:buffer-pct-clean-moc-v1:ignition": "MOC_HELPER_LIB=0xD094d0981ac8d7555eC110732352aC9185e05cD7 npx hardhat --network rskTestnet --build-profile default ignition deploy ignition/modules/BufferPctAndCleanMocV1/BufferPctAndCleanMocV1.js --parameters ignition/modules/BufferPctAndCleanMocV1/parameters/rskTestnet.json --deployment-id buffer-pct-clean-moc-v1-rsk-testnet",
+    "deploy:mainnet:buffer-pct-clean-moc-v1:ignition": "MOC_HELPER_LIB=0x592b84710955C9561008D137a5403E1dd9A222D8 npx hardhat --network rskMainnet --build-profile default ignition deploy ignition/modules/BufferPctAndCleanMocV1/BufferPctAndCleanMocV1.js --parameters ignition/modules/BufferPctAndCleanMocV1/parameters/rskMainnet.json --deployment-id buffer-pct-clean-moc-v1-rsk-mainnet",
     "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js"
   },
   "lint-staged": {

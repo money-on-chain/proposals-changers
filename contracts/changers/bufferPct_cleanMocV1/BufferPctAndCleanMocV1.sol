@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import { IChangeContract } from "../../interfaces/IChangeContract.sol";
+import { MocBaseBucket } from "moc-main-latest/contracts/core/MocBaseBucket.sol";
 
 interface IUpgradeDelegator {
   function upgrade(address proxy, address newImplementation) external;
@@ -16,11 +17,6 @@ interface IBufferToken {
 
 interface IOracleManager {
   function clearRegisteredOwner(address oracleAddr) external;
-}
-
-interface IRifBucket {
-  function setMaxAbsoluteOpProviderAddress(address maxAbsoluteOpProviderAddress_) external;
-  function setMaxOpDiffProviderAddress(address maxOpDiffProviderAddress_) external;
 }
 
 /**
@@ -108,15 +104,21 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
   function _beforeUpgrade() internal virtual {}
 
   function _afterUpgrade() internal virtual {
-    setBufferSplits();
+    // skipped for testnet, rewards are collected to the multisig and not distributed with the Buffer
+    if (mocRewardsBufferProxy != address(0)) {
+      setBufferSplits();
+    }
     setRifBucketFluxCapacitorProviders();
     removeOldOracleOwners();
   }
 
   function setRifBucketFluxCapacitorProviders() internal {
-    IRifBucket rifBucket = IRifBucket(rifBucketProxy);
-    rifBucket.setMaxAbsoluteOpProviderAddress(newMaxAbsoluteOpProvider);
-    rifBucket.setMaxOpDiffProviderAddress(newMaxOpDifferenceProvider);
+    MocBaseBucket rifBucket = MocBaseBucket(rifBucketProxy);
+    rifBucket.setFluxCapacitorParams(
+      newMaxAbsoluteOpProvider,
+      newMaxOpDifferenceProvider,
+      rifBucket.decayTimeSpan()
+    );
   }
 
   function setBufferSplits() internal {
