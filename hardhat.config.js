@@ -136,6 +136,13 @@ export default {
       },
     },
   },
+  ignition: {
+    blockPollingInterval: 5000,
+    timeBeforeBumpingFees: 120000,
+    maxFeeBumps: 10,
+    requiredConfirmations: 1,
+    maxUnconfirmedTxs: 1,
+  },
   test: {
     solidity: {
       ffi: true,
