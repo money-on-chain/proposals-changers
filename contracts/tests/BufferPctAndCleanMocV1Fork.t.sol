@@ -1,51 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
+import { Test } from "forge-std/Test.sol";
+import { Vm } from "forge-std/Vm.sol";
 import { BufferPctAndCleanMocV1, IUpgradeDelegator } from "../changers/bufferPct_cleanMocV1/BufferPctAndCleanMocV1.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
 import { FCMaxAbsoluteOpProvider } from "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol";
 import { FCMaxOpDifferenceProvider } from "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol";
-
-interface Vm {
-  struct Log {
-    bytes32[] topics;
-    bytes data;
-    address emitter;
-  }
-
-  function createSelectFork(
-    string calldata urlOrAlias,
-    uint256 blockNumber
-  ) external returns (uint256);
-  function prank(address msgSender) external;
-  function load(address target, bytes32 slot) external view returns (bytes32 data);
-  function envOr(
-    string calldata name,
-    string calldata defaultValue
-  ) external returns (string memory value);
-  function envOr(string calldata name, address defaultValue) external returns (address value);
-  function getCode(string calldata artifactPath) external returns (bytes memory bytecode);
-  function readFile(string calldata path) external view returns (string memory);
-  function parseJsonAddress(
-    string calldata json,
-    string calldata key
-  ) external pure returns (address);
-  function recordLogs() external;
-  function getRecordedLogs() external returns (Log[] memory);
-  function deal(address account, uint256 newBalance) external;
-  function roll(uint256 newHeight) external;
-  function mockCall(address callee, bytes calldata data, bytes calldata returnData) external;
-  function addr(uint256 privateKey) external returns (address keyAddr);
-  function sign(
-    uint256 privateKey,
-    bytes32 digest
-  ) external returns (uint8 v, bytes32 r, bytes32 s);
-  function expectRevert() external;
-  function expectRevert(bytes calldata) external;
-  function txGasPrice(uint256 newGasPrice) external;
-}
+import { MocCore } from "moc-main-latest/contracts/core/MocCore.sol";
+import { MocCARC20 } from "moc-main-latest/contracts/collateral/rc20/MocCARC20.sol";
 
 interface IOwnableLike {
   function owner() external view returns (address);
@@ -298,10 +263,8 @@ contract LiquidationEnabledTestChanger is IChangeContract {
   }
 }
 
-contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
-  Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
-
-  uint256 internal constant FORK_BLOCK = 8837400;
+contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
+  uint256 internal constant FORK_BLOCK = 8906760;
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/BufferPctAndCleanMocV1/parameters/rskMainnet.json";
 
@@ -313,6 +276,9 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   bytes32 internal constant DATA_UPDATED_TOPIC = keccak256("DataUpdated(uint256)");
   uint256 internal constant PUBLISH_MESSAGE_VERSION = 3;
 
+  uint256 internal constant HALF_INFINITY = type(uint256).max / 2;
+  uint256 internal constant HUNDRED_YEARS_IN_SECONDS = 100 * 365 days;
+
   address internal coinPairProxy;
   address internal oracleManagerProxy;
   address internal mocRewardsBufferProxy;
@@ -321,6 +287,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   address internal mocExchangeV1Proxy;
   address internal mocSettlementV1Proxy;
   address internal rifBucketProxy;
+  MocCARC20 internal docBucketProxy;
   address internal upgradeDelegatorOracle;
   address internal upgradeDelegatorMoc;
 
@@ -334,8 +301,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
   receive() external payable {}
 
   function setUp() public {
-    string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", "https://public-node.rsk.co");
+    string memory defaultRpcUrl = "https://public-node.rsk.co";
+    string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", defaultRpcUrl);
     vm.createSelectFork(rpcUrl, FORK_BLOCK);
+    address docBucketProxyAddress;
 
     (
       coinPairProxy,
@@ -343,10 +312,12 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocRewardsBufferProxy,
       mocV1Proxy,
       rifBucketProxy,
+      docBucketProxyAddress,
       upgradeDelegatorOracle,
       upgradeDelegatorMoc,
       newCoinPairImpl
     ) = _readMainnetParamsFromJson();
+    docBucketProxy = MocCARC20(docBucketProxyAddress);
     IMoCConnectorProbe connector = IMoCConnectorProbe(IMoCBasicOps(mocV1Proxy).connector());
     mocStateV1Proxy = connector.mocState();
     mocExchangeV1Proxy = connector.mocExchange();
@@ -611,6 +582,9 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
 
     (address output0Before, uint256 split0Before, , ) = buffer.getOutput(0);
     (address output1Before, uint256 split1Before, , ) = buffer.getOutput(1);
+
+    require(split0Before == 80, "output 0 split must be 80");
+    require(split1Before == 20, "output 1 split must be 20");
 
     _executeChanger();
 
@@ -1304,6 +1278,106 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     );
   }
 
+  function test_ExecuteChangerSetsInfinityHalfTimeSpans() public {
+        address collectorBefore = docBucketProxy.tcInterestCollectorAddress();
+        uint256 rateBefore = docBucketProxy.tcInterestRate();
+
+        _executeChanger();
+
+        assertEq(docBucketProxy.tcInterestCollectorAddress(), collectorBefore, "TC collector should not change");
+        assertEq(docBucketProxy.tcInterestRate(), rateBefore, "TC interest rate should not change");
+        assertEq(
+            docBucketProxy.tcInterestPaymentTimeSpan(),
+            HALF_INFINITY,
+            "TC interest payment span should be half infinity"
+        );
+        assertEq(docBucketProxy.settlementTimeSpan(), HALF_INFINITY, "Settlement span should be half infinity");
+        assertEq(docBucketProxy.emaCalculationTimeSpan(), HALF_INFINITY, "EMA span should be half infinity");
+    }
+
+    function test_TimeBasedTasksSetNextTimesInfinitelyFarAfterExecution() public {
+        _executeChanger();
+
+        docBucketProxy.tcHoldersInterestPayment();
+        docBucketProxy.updateEmas();
+        docBucketProxy.execSettlement();
+
+        uint256 ultraFutureThreshold = block.timestamp + (HUNDRED_YEARS_IN_SECONDS * 100); // 10,000 years in the future
+
+        assertEq(
+            docBucketProxy.nextTCInterestPayment(),
+            block.timestamp + HALF_INFINITY,
+            "nextTCInterestPayment should be recalculated with half infinity"
+        );
+        assertEq(
+            docBucketProxy.nextEmaCalculation(),
+            block.timestamp + HALF_INFINITY,
+            "nextEmaCalculation should be recalculated with half infinity"
+        );
+        assertEq(
+            docBucketProxy.nextSettlementTime(),
+            block.timestamp + HALF_INFINITY,
+            "nextSettlementTime should be recalculated with half infinity"
+        );
+
+        assertGt(
+            docBucketProxy.nextTCInterestPayment(),
+            ultraFutureThreshold,
+            "nextTCInterestPayment should be far in the future"
+        );
+        assertGt(
+            docBucketProxy.nextEmaCalculation(),
+            ultraFutureThreshold,
+            "nextEmaCalculation should be far in the future"
+        );
+        assertGt(
+            docBucketProxy.nextSettlementTime(),
+            ultraFutureThreshold,
+            "nextSettlementTime should be far in the future"
+        );
+
+        // cannot be executed again in the same block due to time-based checks
+        vm.expectRevert(MocCore.MissingTimeToTCInterestPayment.selector);
+        docBucketProxy.tcHoldersInterestPayment();
+        docBucketProxy.updateEmas();
+        vm.expectRevert(MocCore.MissingTimeToSettlement.selector);
+        docBucketProxy.execSettlement();
+    }
+
+    function test_TimeBasedTasksWithoutChangerWrapNextTimesToCurrentTimestamp() public {
+        // This test validates current on-chain behavior without running the changer.
+        // It expects spans already configured as "infinite" in the forked state.
+        uint256 maxUint = type(uint256).max;
+        assertEq(docBucketProxy.tcInterestPaymentTimeSpan(), maxUint, "Expected max uint TC interest span before changer");
+        assertEq(docBucketProxy.emaCalculationTimeSpan(), maxUint, "Expected max uint EMA span before changer");
+        assertEq(docBucketProxy.settlementTimeSpan(), maxUint, "Expected max uint settlement span before changer");
+
+        docBucketProxy.tcHoldersInterestPayment();
+        docBucketProxy.updateEmas();
+        docBucketProxy.execSettlement();
+
+        assertEq(
+            docBucketProxy.nextTCInterestPayment(),
+            block.timestamp - 1,
+            "nextTCInterestPayment should wrap to current timestamp"
+        );
+        assertEq(
+            docBucketProxy.nextEmaCalculation(),
+            block.timestamp - 1,
+            "nextEmaCalculation should wrap to current timestamp"
+        );
+        assertEq(
+            docBucketProxy.nextSettlementTime(),
+            block.timestamp - 1,
+            "nextSettlementTime should wrap to current timestamp"
+        );
+
+        // can be executed again in the same block
+        docBucketProxy.tcHoldersInterestPayment();
+        docBucketProxy.updateEmas();
+        docBucketProxy.execSettlement();
+    }
+
   function _isErrorString(
     bytes memory revertData,
     string memory expected
@@ -1388,6 +1462,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       mocExchangeV1Proxy,
       mocSettlementV1Proxy,
       rifBucketProxy,
+      address(docBucketProxy),
       IUpgradeDelegator(upgradeDelegatorOracle),
       IUpgradeDelegator(upgradeDelegatorMoc),
       newCoinPairImpl,
@@ -1425,6 +1500,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
       address mocRewardsBufferProxy_,
       address mocV1Proxy_,
       address rifBucketProxy_,
+      address docBucketProxy_,
       address upgradeDelegatorOracle_,
       address upgradeDelegatorMoc_,
       address coinPairPriceImplementation_
@@ -1443,6 +1519,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     );
     mocV1Proxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.mocV1Proxy");
     rifBucketProxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.rifBucketProxy");
+    docBucketProxy_ = vm.parseJsonAddress(json, ".BufferPctAndCleanMocV1Module.docBucketProxy");
     upgradeDelegatorOracle_ = vm.parseJsonAddress(
       json,
       ".BufferPctAndCleanMocV1Module.upgradeDelegatorOracle"
@@ -1460,6 +1537,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper {
     require(coinPairProxy_ != address(0), "coinPairProxy is zero");
     require(mocRewardsBufferProxy_ != address(0), "mocRewardsBufferProxy is zero");
     require(mocV1Proxy_ != address(0), "mocV1Proxy is zero");
+    require(docBucketProxy_ != address(0), "docBucketProxy is zero");
     require(upgradeDelegatorOracle_ != address(0), "upgradeDelegatorOracle is zero");
     require(upgradeDelegatorMoc_ != address(0), "upgradeDelegatorMoc is zero");
     require(

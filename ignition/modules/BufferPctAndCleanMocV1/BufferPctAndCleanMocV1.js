@@ -6,9 +6,9 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const mocRewardsBufferProxy = m.getParameter("mocRewardsBufferProxy");
   const mocV1Proxy = m.getParameter("mocV1Proxy");
   const rifBucketProxy = m.getParameter("rifBucketProxy");
+  const docBucketProxy = m.getParameter("docBucketProxy");
   const upgradeDelegatorOracle = m.getParameter("upgradeDelegatorOracle");
   const upgradeDelegatorMoc = m.getParameter("upgradeDelegatorMoc");
-  const moCHelperLib = m.getParameter("moCHelperLib");
   const deprecatedOracles = m.getParameter("deprecatedOracles");
   const coinPairPriceImplementation = m.getParameter("coinPairPriceImplementation");
 
@@ -93,9 +93,6 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
 
   const mocExchangeImplementation = m.contract("DeployableMoCExchange", [], {
     id: "MoCExchangeImplementation",
-    libraries: {
-      MoCHelperLib: moCHelperLib,
-    },
   });
 
   const mocSettlementImplementation = m.contract("DeployableMoCSettlement", [], {
@@ -111,6 +108,7 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     mocExchangeV1Proxy,
     mocSettlementV1Proxy,
     rifBucketProxy,
+    docBucketProxy,
     upgradeDelegatorOracle,
     upgradeDelegatorMoc,
     coinPairPriceImplementation,
