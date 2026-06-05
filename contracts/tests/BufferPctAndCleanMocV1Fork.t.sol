@@ -3,7 +3,6 @@ pragma solidity 0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { Vm } from "forge-std/Vm.sol";
-import { BufferPctAndCleanMocV1, IUpgradeDelegator } from "../changers/bufferPct_cleanMocV1/BufferPctAndCleanMocV1.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
@@ -264,9 +263,11 @@ contract LiquidationEnabledTestChanger is IChangeContract {
 }
 
 contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
-  uint256 internal constant FORK_BLOCK = 8906760;
+  uint256 internal constant FORK_BLOCK = 8912027;
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/BufferPctAndCleanMocV1/parameters/rskMainnet.json";
+  string internal constant MAINNET_DEPLOYED_ADDRESSES_PATH =
+    "./ignition/deployments/buffer-pct-clean-moc-v1-rsk-mainnet/deployed_addresses.json";
 
   bytes32 internal constant IMPLEMENTATION_SLOT =
     0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
@@ -297,6 +298,9 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
   address internal newMocStateImpl;
   address internal newMocExchangeImpl;
   address internal newMocSettlementImpl;
+  address internal newMaxAbsoluteOpProvider;
+  address internal newMaxOpDifferenceProvider;
+  address internal changerAddress;
 
   receive() external payable {}
 
@@ -323,17 +327,16 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
     mocExchangeV1Proxy = connector.mocExchange();
     mocSettlementV1Proxy = connector.mocSettlement();
 
-    newOracleManagerImpl = _deployFromArtifact(
-      "contracts/compat/DeployableOracleManager.sol:DeployableOracleManager"
-    );
-    newMocImpl = _deployFromArtifact("contracts/compat/DeployableMoC.sol:DeployableMoC");
-    newMocStateImpl = _deployFromArtifact("contracts/compat/DeployableMoCState.sol:DeployableMoCState");
-    newMocExchangeImpl = _deployFromArtifact(
-      "contracts/compat/DeployableMoCExchange.sol:DeployableMoCExchange"
-    );
-    newMocSettlementImpl = _deployFromArtifact(
-      "contracts/compat/DeployableMoCSettlement.sol:DeployableMoCSettlement"
-    );
+    (
+      newOracleManagerImpl,
+      newMocImpl,
+      newMocStateImpl,
+      newMocExchangeImpl,
+      newMocSettlementImpl,
+      newMaxAbsoluteOpProvider,
+      newMaxOpDifferenceProvider,
+      changerAddress
+    ) = _readMainnetDeployedAddressesFromJson();
   }
 
   function testFork_StorageLayout_NoCollisionOnCriticalPointers() public {
@@ -657,6 +660,14 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
     require(
       maxOpDiffProviderAfter != maxOpDiffProviderBefore,
       "maxOpDiff provider address did not change"
+    );
+    require(
+      maxAbsoluteProviderAfter == newMaxAbsoluteOpProvider,
+      "maxAbsolute provider address mismatch"
+    );
+    require(
+      maxOpDiffProviderAfter == newMaxOpDifferenceProvider,
+      "maxOpDiff provider address mismatch"
     );
 
     address ownerAbsAfter = IOwnableLike(maxAbsoluteProviderAfter).owner();
@@ -1430,65 +1441,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
   }
 
   function _executeChanger() internal {
-    address[] memory deprecatedOracles = new address[](2);
-    deprecatedOracles[0] = 0x4b5E791b0Ef89E954d1212dB598cBd9d3787AAFE;
-    deprecatedOracles[1] = 0xe4822F07C1d988A8f2F53D1817f7e8848897b67A;
-
-    IRifBucketProbe rifBucket = IRifBucketProbe(rifBucketProxy);
-    address maxAbsoluteProviderBefore = rifBucket.maxAbsoluteOpProvider();
-    address maxOpDiffProviderBefore = rifBucket.maxOpDiffProvider();
-    (bytes32 dataAbsBefore, ) = IDataProviderProbe(maxAbsoluteProviderBefore).peek();
-    (bytes32 dataDiffBefore, ) = IDataProviderProbe(maxOpDiffProviderBefore).peek();
-
-    address newMaxAbsoluteOpProvider = address(
-      new FCMaxAbsoluteOpProvider(
-        IOwnableLike(maxAbsoluteProviderBefore).owner(),
-        uint256(dataAbsBefore)
-      )
-    );
-    address newMaxOpDifferenceProvider = address(
-      new FCMaxOpDifferenceProvider(
-        IOwnableLike(maxOpDiffProviderBefore).owner(),
-        uint256(dataDiffBefore)
-      )
-    );
-
-    BufferPctAndCleanMocV1 changer = new BufferPctAndCleanMocV1(
-      oracleManagerProxy,
-      coinPairProxy,
-      mocRewardsBufferProxy,
-      mocV1Proxy,
-      mocStateV1Proxy,
-      mocExchangeV1Proxy,
-      mocSettlementV1Proxy,
-      rifBucketProxy,
-      address(docBucketProxy),
-      IUpgradeDelegator(upgradeDelegatorOracle),
-      IUpgradeDelegator(upgradeDelegatorMoc),
-      newCoinPairImpl,
-      newOracleManagerImpl,
-      newMocImpl,
-      newMocStateImpl,
-      newMocExchangeImpl,
-      newMocSettlementImpl,
-      newMaxAbsoluteOpProvider,
-      newMaxOpDifferenceProvider,
-      deprecatedOracles
-    );
-
     IGovernor governor = IGovernor(IGoverned(coinPairProxy).governor());
     address governorOwner = IOwnableLike(address(governor)).owner();
     vm.prank(governorOwner);
-    governor.executeChange(IChangeContract(address(changer)));
-  }
-
-  function _deployFromArtifact(string memory artifactPath) internal returns (address deployed) {
-    bytes memory bytecode = vm.getCode(artifactPath);
-    require(bytecode.length != 0, "artifact bytecode is empty");
-    assembly ("memory-safe") {
-      deployed := create(0, add(bytecode, 0x20), mload(bytecode))
-    }
-    require(deployed != address(0), "deployment failed");
+    governor.executeChange(IChangeContract(changerAddress));
   }
 
   function _readMainnetParamsFromJson()
@@ -1544,5 +1500,73 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
       coinPairPriceImplementation_ != address(0),
       "coinPairPriceImplementation is zero"
     );
+  }
+
+  function _readMainnetDeployedAddressesFromJson()
+    internal
+    view
+    returns (
+      address oracleManagerImplementation_,
+      address mocImplementation_,
+      address mocStateImplementation_,
+      address mocExchangeImplementation_,
+      address mocSettlementImplementation_,
+      address maxAbsoluteOpProvider_,
+      address maxOpDifferenceProvider_,
+      address changerAddress_
+    )
+  {
+    string memory json = vm.readFile(MAINNET_DEPLOYED_ADDRESSES_PATH);
+
+    oracleManagerImplementation_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#OracleManagerImplementation"]'
+    );
+    mocImplementation_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MoCImplementation"]'
+    );
+    mocStateImplementation_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MoCStateImplementation"]'
+    );
+    mocExchangeImplementation_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MoCExchangeImplementation"]'
+    );
+    mocSettlementImplementation_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MoCSettlementImplementation"]'
+    );
+    maxAbsoluteOpProvider_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MaxAbsoluteOpProvider"]'
+    );
+    maxOpDifferenceProvider_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#MaxOpDifferenceProvider"]'
+    );
+    changerAddress_ = vm.parseJsonAddress(
+      json,
+      '.["BufferPctAndCleanMocV1Module#BufferPctAndCleanMocV1"]'
+    );
+
+    require(oracleManagerImplementation_ != address(0), "oracleManager implementation is zero");
+    require(mocImplementation_ != address(0), "MoC implementation is zero");
+    require(mocStateImplementation_ != address(0), "MoCState implementation is zero");
+    require(mocExchangeImplementation_ != address(0), "MoCExchange implementation is zero");
+    require(mocSettlementImplementation_ != address(0), "MoCSettlement implementation is zero");
+    require(maxAbsoluteOpProvider_ != address(0), "maxAbsolute provider is zero");
+    require(maxOpDifferenceProvider_ != address(0), "maxOpDifference provider is zero");
+    require(changerAddress_ != address(0), "changer is zero");
+
+    require(oracleManagerImplementation_.code.length != 0, "oracleManager implementation missing code");
+    require(mocImplementation_.code.length != 0, "MoC implementation missing code");
+    require(mocStateImplementation_.code.length != 0, "MoCState implementation missing code");
+    require(mocExchangeImplementation_.code.length != 0, "MoCExchange implementation missing code");
+    require(mocSettlementImplementation_.code.length != 0, "MoCSettlement implementation missing code");
+    require(maxAbsoluteOpProvider_.code.length != 0, "maxAbsolute provider missing code");
+    require(maxOpDifferenceProvider_.code.length != 0, "maxOpDifference provider missing code");
+    require(changerAddress_.code.length != 0, "changer missing code");
   }
 }
