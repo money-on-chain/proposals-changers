@@ -1,6 +1,6 @@
 # Proposal: Governance-Controlled Maximum Markup for MocVendors
 
-> :information_source: Info: This does not affect the stablecoin protocol, it only affects the `MocVendors` in _RIF on chain_.
+> :information*source: Info: This does not affect the stablecoin protocol, it only affects the `MocVendors` in \_RIF on chain*.
 
 ## Summary
 
@@ -153,17 +153,15 @@ As with all protocol‑level changes, this proposal will be submitted to a **gov
 
 Upon approval, deployment and reconfiguration will be executed following standard upgrade procedures.
 
-
 ## Contracts that will be changed
 
 Only the implementation of the `MocVendors` contract will be replaced.
 
-|             |                                             Address                                                              |
-| :---------: | :--------------------------------------------------------------------------------------------------------------: |
-| `Proxy`     | [`0x5f69…7012`](https://rootstock.blockscout.com/address/0x5f69Df7e853686a794c13BE029FF228642C07012?tab=contract)|
-| `Old impl.` | [`0x7d6E…56BC`](https://rootstock.blockscout.com/address/0x7d6Ed1214289618d64c88EdCaa18F651715856BC?tab=contract)|
-| `New impl.` | [`0x4FaA…528c`](https://rootstock.blockscout.com/address/0x4FaA94aF6C936E961218518a8c4535AD14b8528c?tab=contract)|
-
+|             |                                                      Address                                                      |
+| :---------: | :---------------------------------------------------------------------------------------------------------------: |
+|   `Proxy`   | [`0x5f69…7012`](https://rootstock.blockscout.com/address/0x5f69Df7e853686a794c13BE029FF228642C07012?tab=contract) |
+| `Old impl.` | [`0x7d6E…56BC`](https://rootstock.blockscout.com/address/0x7d6Ed1214289618d64c88EdCaa18F651715856BC?tab=contract) |
+| `New impl.` | [`0x4FaA…528c`](https://rootstock.blockscout.com/address/0x4FaA94aF6C936E961218518a8c4535AD14b8528c?tab=contract) |
 
 ## Technical procedure
 
@@ -173,6 +171,6 @@ In order to fix these contracts a change contract must be deployed and it will b
 
 ### The changer contract to vote would be:
 
-|             Name           |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
+|            Name            |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
 | :------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: |
 | `MocVendorsUpgradeChanger` | [`0x47F0704751012f531165FBBDba2FCb3843514935`](https://rootstock.blockscout.com/address/0x47F0704751012f531165FBBDba2FCb3843514935?tab=contract) |

@@ -24,7 +24,6 @@ In order to fix OMoC a change contract must be deployed and it will be necessary
 
 ### The changer contract to vote would be:
 
-|             Name               |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
+|              Name              |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
 | :----------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: |
 | `CoinPairPriceUpgradeProposal` | [`0x8168488d431Ab46A9aBF905A9578F53BecC08F59`](https://rootstock.blockscout.com/address/0x8168488d431Ab46A9aBF905A9578F53BecC08F59?tab=contract) |
-

@@ -121,16 +121,13 @@ The upgrade will be executed through a **changer contract**, which will:
 
 ---
 
-
 ## Changer Contract
 
 ### The changer contract to vote would be:
 
-|              Name               | Address (and link to verified code in RSK blockscout explorer) |
-| :-----------------------------: | :----------------------------------------------------------: |
+|              Name               |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
+| :-----------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: |
 | `MultiCollateralUpgradeChanger` | [`0x839228759C6640BB486a05c11b6A81166D8A9DC7`](https://rootstock.blockscout.com/address/0x839228759C6640BB486a05c11b6A81166D8A9DC7?tab=contract) |
-
-
 
 ---
 
@@ -138,11 +135,11 @@ The upgrade will be executed through a **changer contract**, which will:
 
 The following contracts are already part of the protocol and will be upgraded or reconfigured as part of this proposal:
 
-| Name                            | Description                                                                 | Address                                                                                                             |
-| ------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `MocRif Proxy (RIF Bucket)`     | Main contract handling the RIF collateral bucket (to be upgraded via proxy) | [`0xA270...A36A`](https://rootstock.blockscout.com/address/0xA27024Ed70035E46dba712609fc2Afa1c97aA36A?tab=contract) |
-| `USDRIF Proxy`                  | Stablecoin contract implementation (to be upgraded via proxy)               | [`0x3A15...6e37`](https://rootstock.blockscout.com/address/0x3A15461d8aE0F0Fb5Fa2629e9DA7D66A794a6e37?tab=contract) |
-| `Legacy MocQueue (RIF Bucket)`  | Existing queue contract used by the RIF bucket (state will be migrated)     | [`0x9181...A9E3`](https://rootstock.blockscout.com/address/0x9181E99dceace7dFd5f2E7d5126275D54067A9E3?tab=contract) |
+| Name                           | Description                                                                 | Address                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `MocRif Proxy (RIF Bucket)`    | Main contract handling the RIF collateral bucket (to be upgraded via proxy) | [`0xA270...A36A`](https://rootstock.blockscout.com/address/0xA27024Ed70035E46dba712609fc2Afa1c97aA36A?tab=contract) |
+| `USDRIF Proxy`                 | Stablecoin contract implementation (to be upgraded via proxy)               | [`0x3A15...6e37`](https://rootstock.blockscout.com/address/0x3A15461d8aE0F0Fb5Fa2629e9DA7D66A794a6e37?tab=contract) |
+| `Legacy MocQueue (RIF Bucket)` | Existing queue contract used by the RIF bucket (state will be migrated)     | [`0x9181...A9E3`](https://rootstock.blockscout.com/address/0x9181E99dceace7dFd5f2E7d5126275D54067A9E3?tab=contract) |
 
 ---
 
@@ -167,16 +164,19 @@ The upgrade introduces new implementations and contracts required to support mul
 ## Additional Technical Notes
 
 - The `USDRIF` token will be extended to support minting and redemption from both:
-    - `RIF Bucket`
-    - `DOC Bucket`
+
+  - `RIF Bucket`
+  - `DOC Bucket`
 
 - The `MocMultiCollateralGuard` will be updated to:
-    - Register the new `DOC Bucket`
-    - Coordinate collateral between both buckets
+
+  - Register the new `DOC Bucket`
+  - Coordinate collateral between both buckets
 
 - The queue mechanism for the RIF bucket will be upgraded:
-    - Migrating from block-based logic to timestamp-based logic
-    - Preserving existing queue state (operation IDs)
+
+  - Migrating from block-based logic to timestamp-based logic
+  - Preserving existing queue state (operation IDs)
 
 - No contracts are removed as part of this upgrade. Existing infrastructure is extended.
 
@@ -206,7 +206,6 @@ This proposal upgrades RIF On Chain to a **multi-collateral protocol**, enabling
 - No changes to existing protocol rules
 
 The upgrade represents a **natural evolution of the protocol**, expanding its capabilities while preserving its core design principles.
-
 
 ## User Experience Improvements
 
