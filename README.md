@@ -4,9 +4,7 @@ This repository collects contracts for proposed **changers** of the Money on Cha
 
 ## Included proposals
 
-### Proposal 20250826 - 2025/08/26 - Fee reduction
-
-See: [docs/P20250826.md](docs/P20250826.md)
+See the full list of proposals (published or pending) in [docs/proposals/README.md](docs/proposals/README.md).
 
 ## Project structure
 
@@ -14,6 +12,7 @@ See: [docs/P20250826.md](docs/P20250826.md)
 - **config/fees_and_bitprorate/** – network parameters in `deployConfig-<network>.json`. After a successful deploy the `changerAddress` is updated.
 - **scripts/fees_and_bitprorate/** – `deploy.js`, `validate_prevote.js`, `verify.js` and `validate_aftervote.js` scripts for deployment, pre-vote validation and Blockscout verification.
 - **test/** – unit tests (`*.spec.js`).
+ - **docs/proposals/** – Published or pending markdown proposals.
 
 ## Requirements
 
