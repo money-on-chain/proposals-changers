@@ -44,21 +44,17 @@ This circuit breaker serves as a last-resort protective mechanism against unlike
 
 This circuit breaker mechanism will be implemented through the foundational changes introduced in the [Add forced price invalidation and forced revert modes to CoinPairPrice #29](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/pull/29) pull request, which adds the capability to force price invalidation and transaction reverts at the `CoinPairPrice` contract level.
 
-### 2. Additional Security Enhancements
+### 2. Additional Enhancements
 
 (To be detailed based on specific implementation requirements)
 
-### 3. Protocol Resilience Improvements
-
-(To be detailed based on specific implementation requirements)
-
-### 4. Additional Protocol Improvements
+### 3. Additional Protocol Improvements
 
 The following changes are independent from the implementation of a Oracle Circuit Breaker and are included in this proposal as protocol maintenance and improvement tasks.
 
 Since a governance upgrade process is already required, these changes can be executed together, reducing operational overhead and avoiding the need for additional governance proposals.
 
-#### 4.1 Non-critical improvement: Code Cleanup for Deprecated BTCX Leveraged Positions
+#### 3.1 Non-critical improvement: Code Cleanup for Deprecated BTCX Leveraged Positions
 
 > :information_source: Info: Although non-critical, we will apply it as part of this upgrade to avoid a separate governance proposal and reduce operational overhead.
 
@@ -75,7 +71,7 @@ The deprecated code related to leveraged positions inrate payment logic will be 
 - **Enhanced Auditability**: Simplified code analysis for security auditors and reduces the attack surface by eliminating unused logic
 
 
-#### 4.2 Non-critical Bug Fix: [To be documented]
+#### 3.2 Non-critical Bug Fix: [To be documented]
 
 > :information_source: Info: This bug is not exploitable 
 
