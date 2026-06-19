@@ -38,6 +38,12 @@ This circuit breaker serves as a last-resort protective mechanism against unlike
 - Third-party protocols dependent on OMOC oracle data have a stable data source or clear signal that data cannot be trusted
 - Investigation and remediation can proceed without cascading damage across the ecosystem
 
+#### Technical Implementation
+
+> :warning: Warning: some technical/coding knowledge is necessary to fully understand this document
+
+This circuit breaker mechanism will be implemented through the foundational changes introduced in the [Add forced price invalidation and forced revert modes to CoinPairPrice #29](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/pull/29) pull request, which adds the capability to force price invalidation and transaction reverts at the `CoinPairPrice` contract level.
+
 ### 2. Additional Security Enhancements
 
 (To be detailed based on specific implementation requirements)
