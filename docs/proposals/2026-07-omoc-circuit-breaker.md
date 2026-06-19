@@ -46,7 +46,13 @@ This circuit breaker mechanism will be implemented through the foundational chan
 
 ### 2. Additional Enhancements
 
-(To be detailed based on specific implementation requirements)
+#### 2.1 Automatic Unsubscription of Oracle Operators Upon Stake Withdrawal
+
+With this enhancement, oracle operators who withdraw their stake below the minimum threshold required for participation will be automatically unsubscribed from active coin pair rounds. Provides the benefits of **Faster Operator Onboarding**: New oracle operators can participate more quickly without waiting for the current round to end and automatically removes inactive operators from rounds when they no longer meet the minimum stake requirements.
+
+> :warning: Warning: some technical/coding knowledge is necessary to fully understand this document
+
+This improvement, implemented through the [Unsuscribe oracles when withdraw their stake #30](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/pull/30) pull request
 
 ### 3. Additional Protocol Improvements
 
