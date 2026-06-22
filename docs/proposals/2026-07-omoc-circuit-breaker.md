@@ -60,24 +60,7 @@ The following changes are independent from the implementation of a Oracle Circui
 
 Since a governance upgrade process is already required, these changes can be executed together, reducing operational overhead and avoiding the need for additional governance proposals.
 
-#### 3.1 Non-critical improvement: Code Cleanup for Deprecated BTCX Leveraged Positions
-
-> :information_source: Info: Although non-critical, we will apply it as part of this upgrade to avoid a separate governance proposal and reduce operational overhead.
-
-##### Description
-
-The Money on Chain protocol previously supported leveraged positions known as BTCX, which were deactivated in February 2023 through the [Technical proposal for removal of leveraged positions](https://forum.moneyonchain.com/t/technical-proposal-for-removal-of-leveraged-positions/308). However, deprecated code related to the daily inrate payment logic for these leveraged positions remains in the codebase, even though this functionality is no longer being used. This cleanup removes the obsolete code, reducing unnecessary complexity and improving code maintainability.
-
-##### Fix
-
-The deprecated code related to leveraged positions inrate payment logic will be removed from the protocol contracts. This cleanup, originally implemented in the [Remove dailyInratePayment #119](https://github.com/money-on-chain/main-RBTC-contract/pull/119) pull request, ensures:
-
-- **Gas & Cost Efficiency**: Reduces gas consumption and eliminates daily operational costs for BPRO holders
-- **Improved Code Quality**: Cleaner, more maintainable codebase that is easier to read and understand
-- **Enhanced Auditability**: Simplified code analysis for security auditors and reduces the attack surface by eliminating unused logic
-
-
-#### 3.2 Non-critical Bug Fix: [To be documented]
+#### 3.1 Non-critical Bug Fix: [To be documented]
 
 > :information_source: Info: This bug is not exploitable 
 
@@ -123,7 +106,6 @@ The upgrade will be executed through a **changer contract**, which will:
 
 - Deploy and integrate the Oracle Circuit Breaker contract into the protocol
 - Configure the circuit breaker authority with the Money on Chain Foundation wallet address
-
 
 ---
 
