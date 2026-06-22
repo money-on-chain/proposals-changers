@@ -115,23 +115,23 @@ This diagram shows how Flow will look after the change.
 
 ## Reverse Auction that will be replaced
 
-|    Path         |                           Address                                                                                |
-| :-------------: | :--------------------------------------------------------------------------------------------------------------: |
-| `WRBTC` → `RIF` | [`0x2ae2…5b2f`](https://rootstock.blockscout.com/address/0x2Ae2870424E1bad972157c860C9e06f870e15b2f?tab=contract)|
-| `RIF` → `WRBTC` | [`0x3533…f1e0`](https://rootstock.blockscout.com/address/0x3533bd069Ed7dA74C2274869Cd930778e8edF1E0?tab=contract)|
-| `WRBTC` → `MOC` | [`0xc886…d508`](https://rootstock.blockscout.com/address/0xc8863d91604A12cE6073cA6A01D00172BB9BD508?tab=contract)|
-| `MOC` → `WRBTC` | [`0xbe9b…393d`](https://rootstock.blockscout.com/address/0xbe9B273d23A6ED9ca0df098bF70ac79bAD5D393D?tab=contract)|
-| `MOC` → `WRBTC` | [`0x73e9…17f3`](https://rootstock.blockscout.com/address/0x73e9DabfcDAE8e50BAF9F6FaDd2F4f8b845E17f3?tab=contract)|
+|      Path       |                                                      Address                                                      |
+| :-------------: | :---------------------------------------------------------------------------------------------------------------: |
+| `WRBTC` → `RIF` | [`0x2ae2…5b2f`](https://rootstock.blockscout.com/address/0x2Ae2870424E1bad972157c860C9e06f870e15b2f?tab=contract) |
+| `RIF` → `WRBTC` | [`0x3533…f1e0`](https://rootstock.blockscout.com/address/0x3533bd069Ed7dA74C2274869Cd930778e8edF1E0?tab=contract) |
+| `WRBTC` → `MOC` | [`0xc886…d508`](https://rootstock.blockscout.com/address/0xc8863d91604A12cE6073cA6A01D00172BB9BD508?tab=contract) |
+| `MOC` → `WRBTC` | [`0xbe9b…393d`](https://rootstock.blockscout.com/address/0xbe9B273d23A6ED9ca0df098bF70ac79bAD5D393D?tab=contract) |
+| `MOC` → `WRBTC` | [`0x73e9…17f3`](https://rootstock.blockscout.com/address/0x73e9DabfcDAE8e50BAF9F6FaDd2F4f8b845E17f3?tab=contract) |
 
 ## Contracts that will no longer be used
 
-|    Name         |                           Address                                                                                |
-| :-------------: | :--------------------------------------------------------------------------------------------------------------: |
-| `Unwrapper`     | [`0x957F…188D`](https://rootstock.blockscout.com/address/0x957F0bCE2aeD894BA5D96894157edaC84239188D?tab=contract)|
+|    Name     |                                                      Address                                                      |
+| :---------: | :---------------------------------------------------------------------------------------------------------------: |
+| `Unwrapper` | [`0x957F…188D`](https://rootstock.blockscout.com/address/0x957F0bCE2aeD894BA5D96894157edaC84239188D?tab=contract) |
 
 ## New Reverse Auction
 
-|  #  |          Path           |                           Address                                                                                 |
+|  #  |          Path           |                                                      Address                                                      |
 | :-: | :---------------------: | :---------------------------------------------------------------------------------------------------------------: |
 |  1  |     `RBTC` → `MOC`      | [`0x42E2…fd59`](https://rootstock.blockscout.com/address/0x42E29760D05CfB229D4075C75238Ec82Fb94fd59?tab=contract) |
 |  2  | `RIF` → `WRBTC` → `MOC` | [`0x323f…4809`](https://rootstock.blockscout.com/address/0x323f6117A256E8f697Ac8d2816eb71e9B7134809?tab=contract) |
@@ -140,7 +140,7 @@ This diagram shows how Flow will look after the change.
 
 ## Contracts whose output will be rewired
 
-|         Type          |                                                                                Address                            |
+|         Type          |                                                      Address                                                      |
 | :-------------------: | :---------------------------------------------------------------------------------------------------------------: |
 | `Commission splitter` | [`0x1149…B0fD`](https://rootstock.blockscout.com/address/0x114921bcbd5fc34E103494d338cA492B9400B0fD?tab=contract) |
 | `Commission splitter` | [`0x6C22…f948`](https://rootstock.blockscout.com/address/0x6C22ff31fbdF725d30F206efFF9f8a2a11fAf948?tab=contract) |
@@ -157,6 +157,6 @@ In order to fix these contracts a change contract must be deployed and it will b
 
 ### The changer contract to vote would be:
 
-|      Name       |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
-| :-------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: |
+|          Name          |                                          Address (and link to verified code in RSK blockscout explorer)                                          |
+| :--------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: |
 | `SetNewReverseAuction	` | [`0xf900643c9E78923fA83fdD00288dE5Bcb346bE67`](https://rootstock.blockscout.com/address/0xf900643c9E78923fA83fdD00288dE5Bcb346bE67?tab=contract) |

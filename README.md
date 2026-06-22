@@ -2,6 +2,26 @@
 
 This repository collects contracts for proposed **changers** of the Money on Chain protocol and the tooling to deploy, validate and test them. Each changer is intended to be executed only once by governance.
 
+## Requirements
+
+- Node.js >= 22.10 `nvm use`
+- Dependencies: `pnpm install --ignore-scripts`
+- set .env `cp .env.example .env`
+- Compile: `pnpm run compile`
+
+## Running tests example
+
+```bash
+# Hard forks (requires FORK_URL in hardhat.config.js or env)
+pnpm run test
+```
+
+## Deployment
+
+```bash
+pnpm run deploy:mainnet:buffer-pct-clean-moc-v1:ignition
+```
+
 ## Included proposals
 
 See the full list of proposals (published or pending) in [docs/proposals/README.md](docs/proposals/README.md).
@@ -12,14 +32,14 @@ See the full list of proposals (published or pending) in [docs/proposals/README.
 - **config/fees_and_bitprorate/** – network parameters in `deployConfig-<network>.json`. After a successful deploy the `changerAddress` is updated.
 - **scripts/fees_and_bitprorate/** – `deploy.js`, `validate_prevote.js`, `verify.js` and `validate_aftervote.js` scripts for deployment, pre-vote validation and Blockscout verification.
 - **test/** – unit tests (`*.spec.js`).
- - **docs/proposals/** – Published or pending markdown proposals.
+- **docs/proposals/** – Published or pending markdown proposals.
 
 ## Requirements
 
 - Node.js >= 22.10 `nvm use`
-- Dependencies: `npm install`
+- Dependencies: `pnpm install --ignore-scripts`
 - set .env `cp .env.example .env`
-- Compile: `npm run compile`
+- Compile: `pnpm run compile`
 
 ## Running tests example
 
@@ -30,7 +50,7 @@ npx hardhat test test/fees_and_bitprorate.spec.js
 
 ```bash
 # Hard forks (requires FORK_URL in hardhat.config.js or env)
-npm run test
+pnpm run test
 ```
 
 ## Deployment
@@ -69,7 +89,7 @@ npx hardhat run scripts/fees_and_bitprorate/validate_aftervote.js --network <net
 The forking test are part of integral test
 
 ```bash
-npm run test
+pnpm run test
 ```
 
 Checks on-chain storage of the changer matches the local configuration.
