@@ -992,15 +992,10 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
       abi.encode(bytes32(targetBtcPrice))
     );
 
-    bytes memory stateRevertData = abi.encodeWithSignature(
-      "Error(string)",
-      "Function cannot be called at this state."
-    );
-
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.mintDoc{ value: operationValue }(mintDocBtc);
 
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.redeemBPro(bproBalance / 2);
 
     moc.mintBPro{ value: operationValue }(mintBProBtc);
@@ -1049,25 +1044,16 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
       abi.encode(bytes32(targetBtcPrice))
     );
 
-    bytes memory stateRevertData = abi.encodeWithSignature(
-      "Error(string)",
-      "Function cannot be called at this state."
-    );
-    bytes memory protectionRevertData = abi.encodeWithSignature(
-      "Error(string)",
-      "Function cannot be called at protection mode."
-    );
-
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.mintDoc{ value: operationValue }(mintDocBtc);
 
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.redeemBPro(bproBalance / 2);
 
-    vm.expectRevert(protectionRevertData);
+    vm.expectRevert("Function cannot be called at protection mode.");
     moc.mintBPro{ value: operationValue }(mintBProBtc);
 
-    vm.expectRevert(protectionRevertData);
+    vm.expectRevert("Function cannot be called at protection mode.");
     moc.redeemFreeDoc(docBalance / 2);
   }
 
@@ -1120,22 +1106,13 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
     mocState.nextState();
     require(mocState.state() == 2, "state should be BelowCobj when liquidation is disabled");
 
-    bytes memory stateRevertData = abi.encodeWithSignature(
-      "Error(string)",
-      "Function cannot be called at this state."
-    );
-    bytes memory protectionRevertData = abi.encodeWithSignature(
-      "Error(string)",
-      "Function cannot be called at protection mode."
-    );
-
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.mintDoc{ value: operationValue }(mintDocBtc);
-    vm.expectRevert(stateRevertData);
+    vm.expectRevert("Function cannot be called at this state.");
     moc.redeemBPro(bproBalance / 2);
-    vm.expectRevert(protectionRevertData);
+    vm.expectRevert("Function cannot be called at protection mode.");
     moc.mintBPro{ value: operationValue }(mintBProBtc);
-    vm.expectRevert(protectionRevertData);
+    vm.expectRevert("Function cannot be called at protection mode.");
     moc.redeemFreeDoc(docBalance / 2);
 
     // Enable liquidation through governance.

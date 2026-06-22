@@ -14,8 +14,10 @@ export default {
   plugins: [hardhatEthers, hardhatToolboxMochaEthers, hardhatVerify],
   solidity: {
     npmFilesToBuild: [
-      "moc-main-latest/contracts/core/MocBaseBucket.sol",
+      "@moc/main/contracts/collateral/rc20/MocCARC20.sol",
       "@moc/rbtc/contracts/MoC.sol",
+      "@moc/rbtc/contracts/MoCInrate.sol",
+      "@moc/rbtc/contracts/MoCBProxManager.sol",
       "@moc/rbtc/contracts/base/MoCConnector.sol",
       "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol",
       "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
