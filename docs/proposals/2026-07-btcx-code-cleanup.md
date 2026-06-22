@@ -25,19 +25,17 @@ The following changes are independent from the _code cleanup for deprecated BTCX
 
 Since a governance upgrade process is already required, these changes can be executed together, reducing operational overhead and avoiding the need for additional governance proposals.
 
-#### 2.1 Non-critical Bug Fix: [To be documented]
-
-> :information_source: Info: This bug is not exploitable 
+#### 2.1 Non-critical Bug Fix: Unsupported Pegged Token Addresses in Queue Transactions
 
 > :information_source: Info: Although non-critical, we will fix it as part of this upgrade to avoid a separate governance proposal and reduce operational overhead.
 
 ##### Description
 
-[Detailed description of the bug to be added]
+Some functions that enqueue transactions into the protocol queue currently allow unsupported pegged token addresses to be passed as arguments. These transactions are known to fail later when pending queue execution is processed, creating unnecessary gas costs for users and delivering the false impression that the operation was supported.
 
 ##### Fix
 
-[Explanation of the fix to be added]
+The queue-enqueue functions will validate that any token address passed as an argument corresponds to a peg token supported by the protocol before accepting the transaction into the queue. This change prevents unsupported pegged token transactions from being queued and avoids later execution failures and unexpected user expense.
 
 
 ## Summary
