@@ -25,22 +25,30 @@ The following changes are independent from the _code cleanup for deprecated BTCX
 
 Since a governance upgrade process is already required, these changes can be executed together, reducing operational overhead and avoiding the need for additional governance proposals.
 
-#### 2.1 Non-critical Bug Fix: Unsupported Pegged Token Addresses in Queue Transactions
+#### 2.1 Non-critical Bug Fix: Unsupported Pegged Token Addresses in ROC Queue Transactions
 
 > :information_source: Info: Although non-critical, we will fix it as part of this upgrade to avoid a separate governance proposal and reduce operational overhead.
 
 ##### Description
 
-Some functions that enqueue transactions into the protocol queue currently allow unsupported pegged token addresses to be passed as arguments. These transactions are known to fail later when pending queue execution is processed, creating unnecessary gas costs for users and delivering the false impression that the operation was supported.
+Some functions that enqueue transactions into the _RIF on Chain_ protocol currently allow unsupported pegged token addresses to be passed as arguments. These transactions are known to fail later when pending queue execution is processed, creating unnecessary gas costs for users and delivering the false impression that the operation was supported.
 
 ##### Fix
 
-The queue-enqueue functions will validate that any token address passed as an argument corresponds to a peg token supported by the protocol before accepting the transaction into the queue. This change prevents unsupported pegged token transactions from being queued and avoids later execution failures and unexpected user expense.
+The _RIF on Chain_ queue-enqueue functions will validate that any token address passed as an argument corresponds to a peg token supported by the protocol before accepting the transaction into the queue. This change prevents unsupported pegged token transactions from being queued and avoids later execution failures and unexpected user expense.
 
 
 ## Summary
 
-[Summary to be added]
+This proposal improves the long-term maintainability and reliability of the _Money on Chain_ protocol by:
+
+- removing deprecated BTCX leveraged-position code and obsolete daily inrate payment logic
+- reducing protocol complexity and improving auditability
+- saving gas and eliminating the marginal daily operational costs for BPRO holders
+- preventing unsupported pegged token transactions from being queued in the _RIF on Chain_ queue
+- avoiding later queue execution failures and unexpected user expenses
+
+Together, these changes simplify the protocol codebase, reduce operational risk, and support better transaction handling for queued operations.
 
 ## Governance Process
 
@@ -60,8 +68,8 @@ The upgrade will be executed only after:
 
 The upgrade will be executed through a **changer contract**, which will:
 
-- [add step]
-- [add step]
+- remove deprecated BTCX leveraged-position code and obsolete daily inrate payment logic from the relevant contracts
+- add validation to queue-enqueue functions so unsupported pegged token addresses cannot be accepted as transaction arguments
 
 
 ---
