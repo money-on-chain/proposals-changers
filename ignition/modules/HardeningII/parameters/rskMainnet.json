@@ -1,0 +1,12 @@
+{
+  "HardeningIIModule": {
+    "mocV1Proxy": "0xf773B590aF754D597770937Fa8ea7AbDf2668370",
+    "mocStateV1Proxy": "0xb9C42EFc8ec54490a37cA91c423F7285Fa01e257",
+    "mocExchangeV1Proxy": "0x6aCb83bB0281FB847b43cf7dd5e2766BFDF49038",
+    "mocInrateV1Proxy": "0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3",
+    "mocBProxManagerV1Proxy": "0xC4fBFa2270Be87FEe5BC38f7a1Bb6A9415103b6c",
+    "rifBucketProxy": "0xA27024Ed70035E46dba712609fc2Afa1c97aA36A",
+    "docBucketProxy": "0x697535055Aa7AfD2C280523C7B062b1F05284661",
+    "upgradeDelegatorMoc": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C"
+  }
+}
