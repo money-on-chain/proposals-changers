@@ -99,7 +99,7 @@ The upgrade will be executed through a **changer contract**, which will:
 | `MocStateV1`        | New implementation | [`0xF65B...01186`](https://rootstock.blockscout.com/address/0xF65Be577b252a41887e2f1A19b576a0925201186?tab=contract) |
 | `MocExchangeV1`     | Proxy              | [`0x6aCb...49038`](https://rootstock.blockscout.com/address/0x6aCb83bB0281FB847b43cf7dd5e2766BFDF49038?tab=contract) |
 | `MocExchangeV1`     | Implementation     | [`0xFc88...B6FC1`](https://rootstock.blockscout.com/address/0xFc88703c22aeC7E072369D227C063B4D0cAB6FC1?tab=contract) |
-| `MocExchangeV1`     | New implementation | [`0x9Bfb...1b53C`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocExchangeV1`     | New implementation | [`0x9Bfb...1b53C`](https://rootstock.blockscout.com/address/0x9BfbBdb1Bf118E15249bb70460A1f4886511b53C?tab=contract) |
 | `MocInrateV1`       | Proxy              | [`0xc0f9...0A3F3`](https://rootstock.blockscout.com/address/0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3?tab=contract) |
 | `MocInrateV1`       | Implementation     | [`0xe9B1...ac918`](https://rootstock.blockscout.com/address/0xe9B15bE6E7CD575b15A197de6a536f39b32ac918?tab=contract) |
 | `MocInrateV1`       | New implementation | [`0x2ffc...c031A`](https://rootstock.blockscout.com/address/0x2ffc7eC2a97CAe6E357D288E1a59f5E242dc031A?tab=contract) |
