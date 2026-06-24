@@ -9,7 +9,6 @@ import { MocMultiCollateralGuard } from "@moc/main/contracts/multiCollateral/Moc
 import { MocQueue } from "@moc/main/contracts/queue/MocQueue.sol";
 import { MocQueueExecFees } from "@moc/main/contracts/queue/MocQueueExecFees.sol";
 import { MocCARC20 } from "@moc/main/contracts/collateral/rc20/MocCARC20.sol";
-
 interface IGoverned {
   function governor() external view returns (address);
 }
@@ -20,6 +19,7 @@ interface IOwnableLike {
 
 interface IMoCBasicOps {
   function connector() external view returns (address);
+  function dailyInratePayment() external;
   function mintBPro(uint256 btcToMint) external payable;
   function redeemBPro(uint256 bproAmount) external;
   function mintDoc(uint256 btcToMint) external payable;
@@ -95,11 +95,15 @@ contract HardeningIIForkTest is Test {
   bytes32 internal constant ERC1967_IMPLEMENTATION_SLOT =
     0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-  uint256 internal constant FORK_BLOCK = 8962309;
+  uint256 internal constant FORK_BLOCK = 8980146;
 
   // Path to the mainnet parameters JSON
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/HardeningII/parameters/rskMainnet.json";
+
+  // Path to the mainnet deployed addresses JSON
+  string internal constant MAINNET_DEPLOYED_ADDRESSES_PATH =
+    "./ignition/deployments/hardening-ii-rsk-mainnet/deployed_addresses.json";
 
   // Addresses loaded from JSON
   address internal mocV1Proxy;
@@ -111,7 +115,7 @@ contract HardeningIIForkTest is Test {
   address internal docBucketProxy;
   address internal upgradeDelegatorMoc;
 
-  // New implementations (freshly deployed in test)
+  // New implementations (from mainnet deployment)
   address internal newMocV1Implementation;
   address internal newMocStateV1Implementation;
   address internal newMocExchangeV1Implementation;
@@ -129,50 +133,13 @@ contract HardeningIIForkTest is Test {
     string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", defaultRpcUrl);
     vm.createSelectFork(rpcUrl, FORK_BLOCK);
 
-    // Read addresses from the parameters JSON
+    // Read proxy addresses from the parameters JSON
     _readParamsFromJson();
 
-    // Deploy new implementations
-    newMocV1Implementation = _deployFromArtifact(
-      "contracts/compat/DeployableMoC.sol:DeployableMoC"
-    );
-    newMocStateV1Implementation = _deployFromArtifact(
-      "contracts/compat/DeployableMoCState.sol:DeployableMoCState"
-    );
-    newMocExchangeV1Implementation = _deployFromArtifact(
-      "contracts/compat/DeployableMoCExchange.sol:DeployableMoCExchange"
-    );
-    newMocInrateV1Implementation = _deployFromArtifact(
-      "contracts/compat/DeployableMoCInrate.sol:DeployableMoCInrate"
-    );
-    newMocBProxManagerV1Implementation = _deployFromArtifact(
-      "contracts/compat/DeployableMoCBProxManager.sol:DeployableMoCBProxManager"
-    );
-    newRifBucketImplementation = _deployFromArtifact(
-      "contracts/compat/DeployableMocCARC20.sol:DeployableMocCARC20"
-    );
-    newDocBucketImplementation = _deployFromArtifact(
-      "contracts/compat/DeployableMocCARC20.sol:DeployableMocCARC20"
-    );
+    // Read deployed implementation and changer addresses from deployed_addresses.json
+    _readDeployedAddressesFromJson();
 
-    // Deploy the changer
-    changer = new HardeningII(
-      mocV1Proxy,
-      mocStateV1Proxy,
-      mocExchangeV1Proxy,
-      mocInrateV1Proxy,
-      mocBProxManagerV1Proxy,
-      rifBucketProxy,
-      docBucketProxy,
-      IUpgradeDelegator(upgradeDelegatorMoc),
-      newMocV1Implementation,
-      newMocStateV1Implementation,
-      newMocExchangeV1Implementation,
-      newMocInrateV1Implementation,
-      newMocBProxManagerV1Implementation,
-      newRifBucketImplementation,
-      newDocBucketImplementation
-    );
+    IMoCBasicOps(mocV1Proxy).dailyInratePayment();
   }
 
   // ── Tests ──────────────────────────────────────────────────────────────────
@@ -509,19 +476,26 @@ contract HardeningIIForkTest is Test {
     impl = address(uint160(uint256(raw)));
   }
 
-  function _deployFromArtifact(string memory artifactPath) internal returns (address deployed) {
-    bytes memory bytecode = vm.getCode(artifactPath);
-    require(
-      bytecode.length != 0,
-      string(abi.encodePacked("artifact bytecode is empty: ", artifactPath))
-    );
-    assembly ("memory-safe") {
-      deployed := create(0, add(bytecode, 0x20), mload(bytecode))
-    }
-    require(
-      deployed != address(0),
-      string(abi.encodePacked("deployment failed: ", artifactPath))
-    );
+  function _readDeployedAddressesFromJson() internal {
+    string memory json = vm.readFile(MAINNET_DEPLOYED_ADDRESSES_PATH);
+
+    newMocV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCImplementation']");
+    newMocStateV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCStateImplementation']");
+    newMocExchangeV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCExchangeImplementation']");
+    newMocInrateV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCInrateImplementation']");
+    newMocBProxManagerV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCBProxManagerImplementation']");
+    newRifBucketImplementation = vm.parseJsonAddress(json, ".['HardeningIIModule#RifBucketImplementation']");
+    newDocBucketImplementation = vm.parseJsonAddress(json, ".['HardeningIIModule#DocBucketImplementation']");
+    changer = HardeningII(vm.parseJsonAddress(json, ".['HardeningIIModule#HardeningII']"));
+
+    require(newMocV1Implementation != address(0), "newMocV1Implementation is zero");
+    require(newMocStateV1Implementation != address(0), "newMocStateV1Implementation is zero");
+    require(newMocExchangeV1Implementation != address(0), "newMocExchangeV1Implementation is zero");
+    require(newMocInrateV1Implementation != address(0), "newMocInrateV1Implementation is zero");
+    require(newMocBProxManagerV1Implementation != address(0), "newMocBProxManagerV1Implementation is zero");
+    require(newRifBucketImplementation != address(0), "newRifBucketImplementation is zero");
+    require(newDocBucketImplementation != address(0), "newDocBucketImplementation is zero");
+    require(address(changer) != address(0), "changer is zero");
   }
 
   function _readParamsFromJson() internal {
@@ -600,7 +574,7 @@ contract HardeningIIForkTest is Test {
     address tpToken = address(rif.tpTokens(0));
 
     // Known RIF whale on RSK mainnet (MoC reserve / treasury)
-    address knownRifHolder = 0xe4822F07C1d988A8f2F53D1817f7e8848897b67A;
+    address knownRifHolder = 0x6ED982FF0Eb40326927CE87ce46dcf241c0fA2a8;
     uint256 rifBalance = IERC20Whale(acToken).balanceOf(knownRifHolder);
     uint256 rifAmount = 100 ether; // 100 RIF
 
