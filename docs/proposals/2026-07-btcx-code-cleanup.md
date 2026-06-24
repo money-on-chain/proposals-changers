@@ -80,7 +80,7 @@ The upgrade will be executed through a **changer contract**, which will:
 
 | Name | Address (and link to verified code in RSK blockscout explorer) |
 | :---- | :---- |
-| `HardeningII` | [`0x00000000000000000000000000000000000FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `HardeningII` | [`0x23ceA36Ad14137DFcD3b309ffdbA354588350864`](https://rootstock.blockscout.com/address/0x23ceA36Ad14137DFcD3b309ffdbA354588350864?tab=contract) |
 
 ---
 
@@ -93,19 +93,19 @@ The upgrade will be executed through a **changer contract**, which will:
 | :---- | :----: | :---- |
 | `MocV1`             | Proxy              | [`0xf773...68370`](https://rootstock.blockscout.com/address/0xf773B590aF754D597770937Fa8ea7AbDf2668370?tab=contract) |
 | `MocV1`             | Implementation     | [`0xa60c...07250`](https://rootstock.blockscout.com/address/0xa60c124c197Ff16162f484A5AAd8691f01c07250?tab=contract) |
-| `MocV1`             | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocV1`             | New implementation | [`0x8cf0...5D226`](https://rootstock.blockscout.com/address/0x8cf0035B1D1BcD6821F563B3DB0530ef59C5D226?tab=contract) |
 | `MocStateV1`        | Proxy              | [`0xb9C4...1e257`](https://rootstock.blockscout.com/address/0xb9C42EFc8ec54490a37cA91c423F7285Fa01e257?tab=contract) |
 | `MocStateV1`        | Implementation     | [`0x1D82...06722`](https://rootstock.blockscout.com/address/0x1D827c823D01Acfa4E15959541e310C5FB506722?tab=contract) |
-| `MocStateV1`        | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocStateV1`        | New implementation | [`0xF65B...01186`](https://rootstock.blockscout.com/address/0xF65Be577b252a41887e2f1A19b576a0925201186?tab=contract) |
 | `MocExchangeV1`     | Proxy              | [`0x6aCb...49038`](https://rootstock.blockscout.com/address/0x6aCb83bB0281FB847b43cf7dd5e2766BFDF49038?tab=contract) |
 | `MocExchangeV1`     | Implementation     | [`0xFc88...B6FC1`](https://rootstock.blockscout.com/address/0xFc88703c22aeC7E072369D227C063B4D0cAB6FC1?tab=contract) |
-| `MocExchangeV1`     | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocExchangeV1`     | New implementation | [`0x9Bfb...1b53C`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
 | `MocInrateV1`       | Proxy              | [`0xc0f9...0A3F3`](https://rootstock.blockscout.com/address/0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3?tab=contract) |
 | `MocInrateV1`       | Implementation     | [`0xe9B1...ac918`](https://rootstock.blockscout.com/address/0xe9B15bE6E7CD575b15A197de6a536f39b32ac918?tab=contract) |
-| `MocInrateV1`       | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocInrateV1`       | New implementation | [`0x2ffc...c031A`](https://rootstock.blockscout.com/address/0x2ffc7eC2a97CAe6E357D288E1a59f5E242dc031A?tab=contract) |
 | `MocBProxManagerV1` | Proxy              | [`0xC4fB...03b6c`](https://rootstock.blockscout.com/address/0xC4fBFa2270Be87FEe5BC38f7a1Bb6A9415103b6c?tab=contract) |
 | `MocBProxManagerV1` | Implementation     | [`0xeE35...a4e89`](https://explorer.rootstock.io/address/0xee35b51edf623533a83d3aef8f1518ff67da4e89?tab=contract)    |
-| `MocBProxManagerV1` | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `MocBProxManagerV1` | New implementation | [`0xa34f...Bdd5a`](https://rootstock.blockscout.com/address/0xa34f8Ddb234D27FEF1645536Da53674768BBdd5a?tab=contract) |
 
 
 #### The following contracts are already part of the protocol and will be upgraded for the [2.1 Non-critical Bug Fix: Unsupported Pegged Token Addresses in ROC Queue Transactions](#21-non-critical-bug-fix-unsupported-pegged-token-addresses-in-roc-queue-transactions):
@@ -114,10 +114,10 @@ The upgrade will be executed through a **changer contract**, which will:
 | :---- | :----: | :---- |
 | `RifBucket` | Proxy              | [`0xA270...aA36A`](https://rootstock.blockscout.com/address/0xA27024Ed70035E46dba712609fc2Afa1c97aA36A?tab=contract) |
 | `RifBucket` | Implementation     | [`0x1a27...Fec54`](https://rootstock.blockscout.com/address/0x1a2702D60a8B68b845709155B3d97E1DA85Fec54?tab=contract) |
-| `RifBucket` | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `RifBucket` | New implementation | [`0x7D41...d3FdC`](https://rootstock.blockscout.com/address/0x7D41dE4fE6a9C57f13032B4D5489A8b7690d3FdC?tab=contract) |
 | `DocBucket` | Proxy              | [`0x6975...84661`](https://rootstock.blockscout.com/address/0x697535055Aa7AfD2C280523C7B062b1F05284661?tab=contract) |
 | `DocBucket` | Implementation     | [`0xF920...F5a9B`](https://rootstock.blockscout.com/address/0xF9208cA168FF7ccAFd120edbf39Cf86b625F5a9B?tab=contract) |
-| `DocBucket` | New implementation | [``](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `DocBucket` | New implementation | [`0x2f5b...b3b66`](https://rootstock.blockscout.com/address/0x2f5b77F2ed6D6947917E4d9746108E26275b3b66?tab=contract) |
 
 
 ---
