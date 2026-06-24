@@ -8,6 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
+- [Code Cleanup for Deprecated BTCX Leveraged Positions (and Bug Fixes)](2026-07-btcx-code-cleanup.md) — 2026/07
 - [Tasks runner implementation proposal](2026-06-tasks-runners.md) — 2026/06
 - [Oracle Incentive Rebalancing and Protocol Cleanup Upgrade](2026-06-oracle-incentive-rebalancing-and-protocol-cleanup-upgrade.md) — 2026/06
 - [Proposal: RIF On Chain V2 → V3 Upgrade (Multi-Collateral Support)](2026-05-proposal-rif-on-chain-v2-to-v3-upgrade-multi-collateral-support.md) — 2026/05
