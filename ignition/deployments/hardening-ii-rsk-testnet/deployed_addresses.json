@@ -1,0 +1,10 @@
+{
+  "HardeningIIModule#DocBucketImplementation": "0xd9644E981bfBc3b37D243f32C73C66B84816D6Cb",
+  "HardeningIIModule#MoCBProxManagerImplementation": "0x0E98E7B1a1D1fd17bF9f9F41f2B088dea79A97f2",
+  "HardeningIIModule#MoCExchangeImplementation": "0x1132290E13b88978F73937eCC3A79F31B660b0cF",
+  "HardeningIIModule#MoCImplementation": "0x40d9E31c78419eFD9096cbc608Bd91B98Aa5e0f4",
+  "HardeningIIModule#MoCInrateImplementation": "0x1da915f89335928Ec23829b70f898C9E17783470",
+  "HardeningIIModule#MoCStateImplementation": "0xE15092e566b4494aE0DF49e05ff79588FD494cf9",
+  "HardeningIIModule#RifBucketImplementation": "0x693D1EeE71318FC8e47e4E3483defB9dcE0a91E9",
+  "HardeningIIModule#HardeningII": "0x60ba742c58EA05fe6BafE9585c76f6382765F63b"
+}

@@ -109,17 +109,29 @@ export default {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
   },
-  // ✅ En HH3 use verify
   verify: {
-    // optional: disable Etherscan if you don't use it
-    etherscan: { enabled: false },
-    // optional: explicitly enable Blockscout (default: enabled)
-    blockscout: { enabled: true },
+    // Rootstock explorer is still experimental
+    // as it needs extra parameters obtained from the website
+    // to interact with the nextjs app.
+    rootstockExplorer: {
+      enabled: false,
+    },
+    blockscout: {
+      enabled: true,
+    },
+    etherscan: {
+      enabled: false,
+      apiKey: process.env.ETHERSCAN_API_KEY ?? "unused",
+    },
   },
   chainDescriptors: {
     31: {
       name: "Rootstock Testnet",
       blockExplorers: {
+        etherscan: {
+          url: "",
+          apiUrl: "",
+        },
         blockscout: {
           name: "Rootstock Testnet Blockscout",
           url: "https://rootstock-testnet.blockscout.com",
@@ -130,6 +142,10 @@ export default {
     30: {
       name: "Rootstock Mainnet",
       blockExplorers: {
+        etherscan: {
+          url: "",
+          apiUrl: "",
+        },
         blockscout: {
           name: "Rootstock Blockscout",
           url: "https://rootstock.blockscout.com",
