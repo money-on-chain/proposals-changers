@@ -1,5 +1,6 @@
 # Code Cleanup for Deprecated BTCX Leveraged Positions (and Bug Fixes)
 
+> :memo: `MIP#262702`
 
 ## Overview
 

@@ -1,5 +1,7 @@
 # Oracle Reliability Fix and Protocol Unpause Proposal
 
+> :memo: `MIP#261401`
+
 ## Overview
 
 This document proposes a fix to the Money on Chain Decentralized Oracles (OMoC) protocol for a bug that has been identified.

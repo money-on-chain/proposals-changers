@@ -1,5 +1,7 @@
 # Proposal: RIF On Chain V2 → V3 Upgrade (Multi-Collateral Support)
 
+> :memo: `MIP#261801`
+
 ## Overview
 
 This proposal introduces an upgrade of the **RIF On Chain (RoC)** protocol from **version V2 to version V3**.

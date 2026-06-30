@@ -1,5 +1,6 @@
 # Implementation of an Oracle Circuit Breaker and some other improvements
 
+> :memo: `MIP#262701`
 
 > :warning: Because this is a low-criticality change, the intention is that it may be included as an addendum to a future proposal if the community agrees.
 

@@ -1,5 +1,7 @@
 # Proposal: Reverse Auction Flow Upgrade Using TWAP Pricing
 
+> :memo: `MIP#260501`
+
 ## Overview
 
 This document proposes a change to the Money on Chain (MoC) protocol flow related to the use of **Reverse Auction** contracts.
@@ -99,19 +101,19 @@ The proposed changes significantly improve security, robustness, and maintainabi
 
 This is a simplified diagram to provide an overview.
 
-![](images/2026-02-mocflow.jpg)
+![](images/MIP260501-mocflow.jpg)
 
 ### Diagram showing only contracts related to vulnerable Reverse auctions
 
 Focused solely on contracts that need to be updated, discarded, or rewired.
 
-![](images/2026-02-vulnerable.jpg)
+![](images/MIP260501-vulnerable.jpg)
 
 ### Diagram with the proposed upgrade
 
 This diagram shows how Flow will look after the change.
 
-![](images/2026-02-new-deploy.jpg)
+![](images/MIP260501-new-deploy.jpg)
 
 ## Reverse Auction that will be replaced
 
