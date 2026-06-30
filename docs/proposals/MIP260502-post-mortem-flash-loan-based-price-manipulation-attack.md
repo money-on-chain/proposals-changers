@@ -1,5 +1,7 @@
 ## **Post-mortem: flash Loan–based price manipulation attack on the MOC FLow Reverse Auction rBTC to MOC contract**
 
+> :memo: `MIP#260502`
+
 A [proposal to resolve this issue](proposal.md) is already underway.
 
 ### **Executive summary**

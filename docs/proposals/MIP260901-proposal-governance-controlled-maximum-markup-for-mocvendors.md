@@ -1,5 +1,7 @@
 # Proposal: Governance-Controlled Maximum Markup for MocVendors
 
+> :memo: `MIP#260901`
+
 > :information*source: Info: This does not affect the stablecoin protocol, it only affects the `MocVendors` in \_RIF on chain*.
 
 ## Summary

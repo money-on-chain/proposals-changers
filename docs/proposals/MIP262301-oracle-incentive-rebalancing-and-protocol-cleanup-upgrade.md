@@ -1,5 +1,7 @@
 # Oracle Incentive Rebalancing and Protocol Cleanup Upgrade
 
+> :memo: `MIP#262301`
+
 ## Overview
 
 This proposal introduces a set of changes to the Money on Chain (MoC) protocol aimed at improving oracle network sustainability, increasing protocol robustness, simplifying legacy code paths, and addressing identified bugs.
