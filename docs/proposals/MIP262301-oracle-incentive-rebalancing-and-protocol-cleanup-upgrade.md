@@ -202,7 +202,7 @@ The upgrade will be executed through a **changer contract**, which will:
 - Reconfigure the `mocRewardsBuffer` split to 70% for MoC stakers and 30% for oracle operators, if the buffer is present.
 - Reconfigure the RIF bucket flux capacitor providers, remove deprecated oracle owner records, and fix the `DOC` bucket time parameters to prevent unintended EMA recalculation.
 
-![](images/2026-06-mocflow.jpg)
+![](images/MIP262301-mocflow.jpg)
 
 ---
 
