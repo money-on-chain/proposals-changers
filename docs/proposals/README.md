@@ -8,6 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
+- `MIP#262703` — [Tasks runner implementation proposal](MIP262703-tasks-runners.md)
 - `MIP#262702` — [Code Cleanup for Deprecated BTCX Leveraged Positions (and Bug Fixes)](MIP262702-btcx-code-cleanup.md)
 - `MIP#262701` — [Implementation of an Oracle Circuit Breaker and some other improvements](MIP262701-omoc-circuit-breaker.md)
 - `MIP#262301` — [Oracle Incentive Rebalancing and Protocol Cleanup Upgrade](MIP262301-oracle-incentive-rebalancing-and-protocol-cleanup-upgrade.md)
