@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.5",
+    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.7",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.6",
     "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.0.5",
     "@moc/main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.6",
