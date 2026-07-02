@@ -60,6 +60,14 @@ With this enhancement, oracle operators who withdraw their stake below the minim
 
 This improvement, implemented through the [Unsuscribe oracles when withdraw their stake #30](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/pull/30) pull request
 
+#### 2.2 Automatic Unsubscription of Oracle Operators After Repeated Missed Signatures
+
+With this enhancement, oracle operators participating in a CoinPair who remain inactive for multiple consecutive rounds without signing a price publication will be automatically unsubscribed from the next round of that CoinPair. This helps maintain a higher-quality set of active operators and reduces the impact of operators that are no longer contributing to the protocol. The number of missed rounds is controlled by a governance-configurable parameter, allowing the community to adjust the threshold according to network needs.
+
+> :warning: Warning: some technical/coding knowledge is necessary to fully understand this document
+
+This improvement, implemented through the [Remove oracles when max round missing sign is reached #20](https://github.com/money-on-chain/OMoC-Decentralized-Oracle/pull/20) pull request, introducing the `maxMissedSigRounds` parameter in CoinPairs.
+
 ## Summary
 
 This proposal improves the long-term sustainability and robustness of the Money on Chain Oracle (OMOC) protocol by:
