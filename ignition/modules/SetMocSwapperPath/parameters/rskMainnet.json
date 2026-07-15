@@ -1,0 +1,19 @@
+{
+  "SetMocSwapperPathModule": {
+    "mocSwapper": "0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73",
+    "rifToken": "0x2AcC95758f8b5F583470ba265EB685a8F45fC9D5",
+    "mocToken": "0x9aC7Fe28967b30e3a4E6E03286D715B42B453d10",
+    "__rifToMocPaths_comment": "RIF -> USDT -> WBTC -> MoC: 3 hops => 3 fees",
+    "rifToMocIntermediateTokens": [
+      "0xAf368c91793CB22739386DFCbBb2F1A9e4bCBeBf",
+      "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d"
+    ],
+    "rifToMocFees": [3000, 3000, 3000],
+    "__mocToRifPaths_comment": "MoC -> WBTC -> USDT -> RIF: 3 hops => 3 fees",
+    "mocToRifIntermediateTokens": [
+      "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d",
+      "0xAf368c91793CB22739386DFCbBb2F1A9e4bCBeBf"
+    ],
+    "mocToRifFees": [3000, 3000, 3000]
+  }
+}
