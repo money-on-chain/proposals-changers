@@ -4,8 +4,7 @@
 
 > :warning: Because this is a low-criticality change, the intention is that it may be included as an addendum to a future proposal if the community agrees.
 
-> :information_source: Info: This document is intended to provide a clear introduction and reference so that subsequent proposals can refer to these changes directly. 
-
+> :information_source: Info: This document is intended to provide a clear introduction and reference so that subsequent proposals can refer to these changes directly.
 
 ## Overview
 
@@ -40,6 +39,7 @@ The OMOC Oracle Circuit Breaker is a safety mechanism that can immediately make 
 #### Purpose and Scope
 
 This circuit breaker serves as a last-resort protective mechanism against unlikely but potentially severe data integrity incidents in the OMOC network. It ensures that:
+
 - The OMOC protocol can respond immediately to protect the ecosystem if data quality is compromised
 - Third-party protocols dependent on OMOC oracle data have a stable data source or clear signal that data cannot be trusted
 - Investigation and remediation can proceed without cascading damage across the ecosystem

@@ -15,12 +15,24 @@ export default {
   solidity: {
     npmFilesToBuild: [
       "@moc/main/contracts/collateral/rc20/MocCARC20.sol",
+      "@moc/main/contracts/interfaces/IDataProvider.sol",
       "@moc/rbtc/contracts/MoC.sol",
       "@moc/rbtc/contracts/MoCInrate.sol",
       "@moc/rbtc/contracts/MoCBProxManager.sol",
       "@moc/rbtc/contracts/base/MoCConnector.sol",
       "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol",
       "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
+      "@moc/roc/contracts/providers/DataProvider.sol",
+      "@moc/flow/contracts/BufferCoinbase.sol",
+      "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
+      "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
+      "@moc/lending/contracts/adapters/MocAdapterV1.sol",
+      "@moc/lending/contracts/MocLendingManager.sol",
+      "@moc/lending/contracts/MocLendingReader.sol",
+      "@moc/lending/contracts/TPInjector.sol",
+      "@moc/price-oracle-interfaces/contracts/PriceProviderInverse.sol",
+      "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
+      "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
     ],
     compilers: [
       {
@@ -44,6 +56,10 @@ export default {
       },
       {
         version: "0.6.12",
+        settings: { optimizer: { enabled: true, runs: 200 } },
+      },
+      {
+        version: "0.7.6",
         settings: { optimizer: { enabled: true, runs: 200 } },
       },
       {
@@ -82,7 +98,11 @@ export default {
         // timeout: 120000,
       },
     },
-
+    localhost: {
+      type: "http",
+      url: "http://127.0.0.1:8545",
+      chainId: 31337,
+    },
     // RSK Testnet (HTTP RPC)
     rskAlphaTestnet: {
       type: "http",
