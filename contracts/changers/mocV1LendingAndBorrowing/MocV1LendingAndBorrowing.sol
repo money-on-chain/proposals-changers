@@ -6,17 +6,17 @@ import { IMoCInrate } from "../../interfaces/IMoCInrate.sol";
 
 // Minimal interface for MocSwapperV3MultiHop.setPath
 interface IDataProvider {
-    function peek() external view returns (bytes32, bool);
+  function peek() external view returns (bytes32, bool);
 }
 
 interface IMocSwapperMultihopV3 {
-    function setPath(
-        address tokenA_,
-        address tokenB_,
-        address[] memory intermediateTokens_,
-        uint24[] memory fees_,
-        IDataProvider providerSwappingAtoB_
-    ) external;
+  function setPath(
+    address tokenA_,
+    address tokenB_,
+    address[] memory intermediateTokens_,
+    uint24[] memory fees_,
+    IDataProvider providerSwappingAtoB_
+  ) external;
 }
 
 /**
@@ -87,7 +87,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
 
     uint24[] memory feesWrbtcToDoc = new uint24[](2);
     feesWrbtcToDoc[0] = wrbtcUsdtFee; // WRBTC → USDT
-    feesWrbtcToDoc[1] = usdtDocFee;   // USDT  → DOC
+    feesWrbtcToDoc[1] = usdtDocFee; // USDT  → DOC
 
     mocSwapperExchange.setPath(
       wrbtcToken,
@@ -99,7 +99,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
 
     // ── 3. Configure DOC→USDT→WRBTC path (reverse, needed for exactOutput) ──
     uint24[] memory feesDocToWrbtc = new uint24[](2);
-    feesDocToWrbtc[0] = usdtDocFee;   // DOC  → USDT
+    feesDocToWrbtc[0] = usdtDocFee; // DOC  → USDT
     feesDocToWrbtc[1] = wrbtcUsdtFee; // USDT → WRBTC
 
     mocSwapperExchange.setPath(

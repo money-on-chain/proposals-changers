@@ -25,6 +25,7 @@ export default {
       "@moc/roc/contracts/providers/DataProvider.sol",
       "@moc/flow/contracts/BufferCoinbase.sol",
       "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
+      "@moc/main/contracts/governance/InterimGovernor.sol",
       "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
       "@moc/lending/contracts/adapters/MocAdapterV1.sol",
       "@moc/lending/contracts/MocLendingManager.sol",

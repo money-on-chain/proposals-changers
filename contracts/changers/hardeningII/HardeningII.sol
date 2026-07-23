@@ -13,7 +13,6 @@ interface IUpgradeDelegator {
  * @notice ChangeContract used to clean MOC V1 BTCx code and do not allow to enqueue RedeemTP operations on RIF with unknown TPS
  */
 contract HardeningII is IChangeContract {
-
   address public immutable mocV1Proxy;
   address public immutable mocStateV1Proxy;
   address public immutable mocExchangeV1Proxy;

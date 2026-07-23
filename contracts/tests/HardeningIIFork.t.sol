@@ -169,10 +169,7 @@ contract HardeningIIForkTest is Test {
     address rifBucketImplAfter = _getErc1967Implementation(rifBucketProxy);
     address docBucketImplAfter = _getErc1967Implementation(docBucketProxy);
 
-    require(
-      mocV1ImplAfter == newMocV1Implementation,
-      "mocV1 implementation not updated"
-    );
+    require(mocV1ImplAfter == newMocV1Implementation, "mocV1 implementation not updated");
     require(mocV1ImplAfter != mocV1ImplBefore, "mocV1 implementation did not change");
 
     require(
@@ -329,30 +326,15 @@ contract HardeningIIForkTest is Test {
       mocExchangeDayPrecisionAfter == mocExchangeDayPrecisionBefore,
       "MoCExchange day precision changed"
     );
-    require(
-      mocBProxNBTCC0After == mocBProxNBTCC0Before,
-      "MoCBProxManager C0 NBTC changed"
-    );
-    require(
-      mocBProxNBProC0After == mocBProxNBProC0Before,
-      "MoCBProxManager C0 NBPro changed"
-    );
-    require(
-      mocBProxNDocC0After == mocBProxNDocC0Before,
-      "MoCBProxManager C0 NDoc changed"
-    );
-    require(
-      mocBProxCobjC0After == mocBProxCobjC0Before,
-      "MoCBProxManager C0 cobj changed"
-    );
+    require(mocBProxNBTCC0After == mocBProxNBTCC0Before, "MoCBProxManager C0 NBTC changed");
+    require(mocBProxNBProC0After == mocBProxNBProC0Before, "MoCBProxManager C0 NBPro changed");
+    require(mocBProxNDocC0After == mocBProxNDocC0Before, "MoCBProxManager C0 NDoc changed");
+    require(mocBProxCobjC0After == mocBProxCobjC0Before, "MoCBProxManager C0 cobj changed");
     require(
       mocBProxActiveC0After == mocBProxActiveC0Before,
       "MoCBProxManager C0 active addresses count changed"
     );
-    require(
-      mocBProxCobjX2After == mocBProxCobjX2Before,
-      "MoCBProxManager X2 cobj changed"
-    );
+    require(mocBProxCobjX2After == mocBProxCobjX2Before, "MoCBProxManager X2 cobj changed");
   }
 
   function testFork_MoCBasicOps_AfterUpgrade() public {
@@ -480,19 +462,40 @@ contract HardeningIIForkTest is Test {
     string memory json = vm.readFile(MAINNET_DEPLOYED_ADDRESSES_PATH);
 
     newMocV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCImplementation']");
-    newMocStateV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCStateImplementation']");
-    newMocExchangeV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCExchangeImplementation']");
-    newMocInrateV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCInrateImplementation']");
-    newMocBProxManagerV1Implementation = vm.parseJsonAddress(json, ".['HardeningIIModule#MoCBProxManagerImplementation']");
-    newRifBucketImplementation = vm.parseJsonAddress(json, ".['HardeningIIModule#RifBucketImplementation']");
-    newDocBucketImplementation = vm.parseJsonAddress(json, ".['HardeningIIModule#DocBucketImplementation']");
+    newMocStateV1Implementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#MoCStateImplementation']"
+    );
+    newMocExchangeV1Implementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#MoCExchangeImplementation']"
+    );
+    newMocInrateV1Implementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#MoCInrateImplementation']"
+    );
+    newMocBProxManagerV1Implementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#MoCBProxManagerImplementation']"
+    );
+    newRifBucketImplementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#RifBucketImplementation']"
+    );
+    newDocBucketImplementation = vm.parseJsonAddress(
+      json,
+      ".['HardeningIIModule#DocBucketImplementation']"
+    );
     changer = HardeningII(vm.parseJsonAddress(json, ".['HardeningIIModule#HardeningII']"));
 
     require(newMocV1Implementation != address(0), "newMocV1Implementation is zero");
     require(newMocStateV1Implementation != address(0), "newMocStateV1Implementation is zero");
     require(newMocExchangeV1Implementation != address(0), "newMocExchangeV1Implementation is zero");
     require(newMocInrateV1Implementation != address(0), "newMocInrateV1Implementation is zero");
-    require(newMocBProxManagerV1Implementation != address(0), "newMocBProxManagerV1Implementation is zero");
+    require(
+      newMocBProxManagerV1Implementation != address(0),
+      "newMocBProxManagerV1Implementation is zero"
+    );
     require(newRifBucketImplementation != address(0), "newRifBucketImplementation is zero");
     require(newDocBucketImplementation != address(0), "newDocBucketImplementation is zero");
     require(address(changer) != address(0), "changer is zero");
@@ -619,19 +622,23 @@ contract HardeningIIForkTest is Test {
   }
 
   function _execFee(MocQueueExecFees.OperType operType_) internal view returns (uint256) {
-        return MocQueueExecFees(MocCARC20(rifBucketProxy).mocQueue()).getExecFee(operType_);
-    }
+    return MocQueueExecFees(MocCARC20(rifBucketProxy).mocQueue()).getExecFee(operType_);
+  }
 
-    function _mocMultiCollateralGuard() internal view returns (MocMultiCollateralGuard) {
-        return MocMultiCollateralGuard(payable(MocQueueExecFees(MocCARC20(rifBucketProxy).mocQueue()).mocMultiCollateralGuard()));
-    }
+  function _mocMultiCollateralGuard() internal view returns (MocMultiCollateralGuard) {
+    return
+      MocMultiCollateralGuard(
+        payable(MocQueueExecFees(MocCARC20(rifBucketProxy).mocQueue()).mocMultiCollateralGuard())
+      );
+  }
 
-    function _mineUntilQueueCanExecute() internal {
-        uint256 minOperWaitingBlk = MocQueue(payable(MocCARC20(rifBucketProxy).mocQueue())).minOperWaitingBlk();
-        vm.roll(block.number + minOperWaitingBlk + 1);
-    }
+  function _mineUntilQueueCanExecute() internal {
+    uint256 minOperWaitingBlk = MocQueue(payable(MocCARC20(rifBucketProxy).mocQueue()))
+      .minOperWaitingBlk();
+    vm.roll(block.number + minOperWaitingBlk + 1);
+  }
 
-    function _executeRifQueue() internal {
-        _mocMultiCollateralGuard().execute();
-    }
+  function _executeRifQueue() internal {
+    _mocMultiCollateralGuard().execute();
+  }
 }

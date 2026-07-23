@@ -84,6 +84,14 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   const wrbtcUsdtFee = m.getParameter("wrbtcUsdtFee", 3000);
   const usdtDocFee = m.getParameter("usdtDocFee", 500);
 
+  // ─── 0. Deploy InterimGovernor ───────────────────────────────────────────────
+  // Used as the governor during deployment so that the deployer (owner) can call
+  // onlyAuthorizedChanger functions directly (initializePool, setMocSwapperCore, etc.).
+  // At the end, governance is transferred to the real governor via changeGovernor().
+  const interimGovernor = m.contract("InterimGovernor", [], {
+    id: "InterimGovernor",
+  });
+
   // ─── 1. Deploy MocAdapterV1 (no proxy needed) ───────────────────────────────
   const mocAdapterV1 = m.contract("MocAdapterV1", [mocV1, mocStateV1, docToken], {
     id: "MocAdapterV1",
@@ -113,7 +121,7 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   ];
 
   const lendingManagerInitData = m.encodeFunctionCall(lendingManagerImpl, "initialize", [
-    governor,
+    interimGovernor,
     pauser,
     mocAdapterV1,
     maxSlippage,
@@ -143,8 +151,9 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   });
 
   // Build initialize calldata for the TPInjector proxy
+  // Use interimGovernor so the deployer can call onlyAuthorizedChanger during setup.
   const tpInjectorInitData = m.encodeFunctionCall(tpInjectorImpl, "initialize", [
-    governor,
+    interimGovernor,
     pauser,
     docToken,
     lendingManagerProxy,
@@ -161,7 +170,7 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   });
 
   // ─── 6. Initialize the DOC lending pool ─────────────────────────────────────
-  m.call(
+  const initializeDocPool = m.call(
     lendingManager,
     "initializePool",
     [
@@ -182,18 +191,41 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   );
 
   // ─── 7. Configure swapper core (MoC V1 bucket, DOC token) ───────────────────
-  m.call(lendingManager, "setMocSwapperCore", [mocV1, docToken, mocSwapperCoreV1], {
-    id: "SetMocSwapperCore",
-  });
+  // Must run after initializePool so the pool mapping entry exists.
+  const setMocSwapperCore = m.call(
+    lendingManager,
+    "setMocSwapperCore",
+    [mocV1, docToken, mocSwapperCoreV1],
+    { id: "SetMocSwapperCore", after: [initializeDocPool] },
+  );
 
   // ─── 8. Configure swapper exchange (already deployed externally) ─────────────
-  m.call(lendingManager, "setMocSwapperExchange", [mocV1, docToken, mocSwapperExchange], {
-    id: "SetMocSwapperExchange",
-  });
+  // Must run after initializePool so the pool mapping entry exists.
+  const setMocSwapperExchange = m.call(
+    lendingManager,
+    "setMocSwapperExchange",
+    [mocV1, docToken, mocSwapperExchange],
+    { id: "SetMocSwapperExchange", after: [initializeDocPool] },
+  );
 
   // ─── 9. Configure fee flow ───────────────────────────────────────────────────
-  m.call(lendingManager, "setMocFeeFlow", [mocV1, docToken, mocFeeFlow], {
+  // Must run after initializePool so the pool mapping entry exists.
+  const setMocFeeFlow = m.call(lendingManager, "setMocFeeFlow", [mocV1, docToken, mocFeeFlow], {
     id: "SetMocFeeFlow",
+    after: [initializeDocPool],
+  });
+
+  // ─── 9b. Transfer governance to the real governor ────────────────────────────
+  // Now that all pool configuration is done, hand over governance of both
+  // MocLendingManager and TPInjector from InterimGovernor to the real governor.
+  m.call(lendingManager, "changeGovernor", [governor], {
+    id: "TransferLendingManagerGovernance",
+    after: [setMocSwapperCore, setMocSwapperExchange, setMocFeeFlow],
+  });
+
+  m.call(tpInjector, "changeGovernor", [governor], {
+    id: "TransferTpInjectorGovernance",
+    after: [setMocSwapperCore, setMocSwapperExchange, setMocFeeFlow],
   });
 
   // ─── 10a. Deploy PriceProviderInverse ────────────────────────────────────────
@@ -282,6 +314,7 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   );
 
   return {
+    interimGovernor,
     mocAdapterV1,
     mocSwapperCoreV1,
     lendingManagerImpl,
