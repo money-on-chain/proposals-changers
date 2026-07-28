@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
+import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, TasksRunnerMigration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { MocReverseAuction } from "@moc/main/contracts/auxiliary/MocReverseAuction.sol";
@@ -60,6 +60,45 @@ interface IMocSwapperV3MultiHopProbe {
     address tokenOut
   ) external view returns (address);
 }
+
+contract TasksRunnerMock is ITasksRunner {
+  address[] internal tasks;
+
+  function addTask(address task) external {
+    tasks.push(task);
+  }
+
+  function removeTask(address task) external {
+    for (uint256 i = 0; i < tasks.length; i++) {
+      if (tasks[i] == task) {
+        tasks[i] = tasks[tasks.length - 1];
+        tasks.pop();
+        return;
+      }
+    }
+  }
+
+  function getTasks() external view returns (address[] memory) {
+    return tasks;
+  }
+
+  function containsTask(address task) external view returns (bool) {
+    for (uint256 i = 0; i < tasks.length; i++) {
+      if (tasks[i] == task) return true;
+    }
+    return false;
+  }
+}
+
+contract CommissionSplitterTaskMock {
+  address public immutable commissionSplitter;
+
+  constructor(address commissionSplitter_) {
+    commissionSplitter = commissionSplitter_;
+  }
+}
+
+contract TaskMock {}
 
 /**
  * @title LendingAndBorrowingV1ForkTest
@@ -127,6 +166,10 @@ contract LendingAndBorrowingV1ForkTest is Test {
   address internal wrbtcToDocProvider;
   address internal docToWrbtcProvider;
   MocV1LendingAndBorrowing internal changer;
+  TasksRunnerMock internal tasksRunner;
+  address internal deprecatedSplitterTask;
+  address internal bufferFlushTask;
+  address internal bufferLiquidateTask;
 
   receive() external payable {}
 
@@ -252,10 +295,23 @@ contract LendingAndBorrowingV1ForkTest is Test {
     }
 
     // ── Step 13: Deploy MocV1LendingAndBorrowing changer ───────────────
+    tasksRunner = new TasksRunnerMock();
+    deprecatedSplitterTask = address(
+      new CommissionSplitterTaskMock(IMoCInrateProbe(mocInrateV1).getBitProInterestAddress())
+    );
+    bufferFlushTask = address(new TaskMock());
+    bufferLiquidateTask = address(new TaskMock());
+    tasksRunner.addTask(deprecatedSplitterTask);
+
     changer = new MocV1LendingAndBorrowing(
       IMoCInrate(mocInrateV1),
       newBitProRate,
       payable(bufferCoinbaseProxy),
+      TasksRunnerMigration({
+        tasksRunner: tasksRunner,
+        bufferFlushTask: bufferFlushTask,
+        bufferLiquidateTask: bufferLiquidateTask
+      }),
       IMocSwapperMultihopV3(mocSwapperExchange),
       wrbtcToken,
       usdtToken,
@@ -296,6 +352,26 @@ contract LendingAndBorrowingV1ForkTest is Test {
       bufferCoinbaseProxy,
       "getBitProInterestAddress() should point to bufferCoinbaseProxy after changer"
     );
+  }
+
+  function testFork_TasksRunnerMigratesBitProInterestTasks() public {
+    _executeChanger();
+
+    assertFalse(
+      tasksRunner.containsTask(deprecatedSplitterTask),
+      "Deprecated BitPro interest splitter task should be removed"
+    );
+    assertTrue(tasksRunner.containsTask(bufferFlushTask), "New buffer flush task missing");
+    assertTrue(tasksRunner.containsTask(bufferLiquidateTask), "New buffer liquidate task missing");
+  }
+
+  function testFork_ChangerDrainsDeprecatedInterestSplitter() public {
+    address deprecatedInterestRecipient = IMoCInrateProbe(mocInrateV1).getBitProInterestAddress();
+    vm.deal(deprecatedInterestRecipient, 1 ether);
+
+    _executeChanger();
+
+    assertEq(deprecatedInterestRecipient.balance, 0, "Deprecated splitter was not drained");
   }
 
   /**

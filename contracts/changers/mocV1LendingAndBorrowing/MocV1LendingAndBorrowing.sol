@@ -19,6 +19,26 @@ interface IMocSwapperMultihopV3 {
   ) external;
 }
 
+interface ITasksRunner {
+  function addTask(address task) external;
+  function removeTask(address task) external;
+  function getTasks() external view returns (address[] memory);
+}
+
+interface ICommissionSplitterTask {
+  function commissionSplitter() external view returns (address);
+}
+
+interface ICommissionSplitter {
+  function split() external;
+}
+
+struct TasksRunnerMigration {
+  ITasksRunner tasksRunner;
+  address bufferFlushTask;
+  address bufferLiquidateTask;
+}
+
 /**
  * @title MocV1LendingAndBorrowing
  * @notice ChangeContract used to:
@@ -31,6 +51,10 @@ contract MocV1LendingAndBorrowing is IChangeContract {
   IMoCInrate public immutable mocInrateV1;
   uint256 public immutable newBitProRate;
   address payable public immutable newBitProInterestAddress;
+
+  ITasksRunner public immutable tasksRunner;
+  address public immutable bufferFlushTask;
+  address public immutable bufferLiquidateTask;
 
   // Swapper exchange (MocSwapperV3MultiHop)
   IMocSwapperMultihopV3 public immutable mocSwapperExchange;
@@ -54,6 +78,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     IMoCInrate _mocInrateV1,
     uint256 _newBitProRate,
     address payable _newBitProInterestAddress,
+    TasksRunnerMigration memory _tasksRunnerMigration,
     IMocSwapperMultihopV3 _mocSwapperExchange,
     address _wrbtcToken,
     address _usdtToken,
@@ -66,6 +91,9 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     mocInrateV1 = _mocInrateV1;
     newBitProRate = _newBitProRate;
     newBitProInterestAddress = _newBitProInterestAddress;
+    tasksRunner = _tasksRunnerMigration.tasksRunner;
+    bufferFlushTask = _tasksRunnerMigration.bufferFlushTask;
+    bufferLiquidateTask = _tasksRunnerMigration.bufferLiquidateTask;
     mocSwapperExchange = _mocSwapperExchange;
     wrbtcToken = _wrbtcToken;
     usdtToken = _usdtToken;
@@ -77,9 +105,16 @@ contract MocV1LendingAndBorrowing is IChangeContract {
   }
 
   function execute() external {
+    address deprecatedInterestRecipient = mocInrateV1.getBitProInterestAddress();
+    ICommissionSplitter(deprecatedInterestRecipient).split();
+    _removeSplitterTasks(deprecatedInterestRecipient);
+
     // ── 1. Update BitPro rate and interest address on MoCInrate V1 ──────────
     mocInrateV1.setBitProRate(newBitProRate);
     mocInrateV1.setBitProInterestAddress(newBitProInterestAddress);
+
+    tasksRunner.addTask(bufferFlushTask);
+    tasksRunner.addTask(bufferLiquidateTask);
 
     // ── 2. Configure WRBTC→USDT→DOC path on mocSwapperExchange ─────────────
     address[] memory intermediates = new address[](1);
@@ -109,5 +144,18 @@ contract MocV1LendingAndBorrowing is IChangeContract {
       feesDocToWrbtc,
       docToWrbtcProvider
     );
+  }
+
+  function _removeSplitterTasks(address deprecatedSplitter) internal {
+    address[] memory tasks = tasksRunner.getTasks();
+    for (uint256 i = 0; i < tasks.length; i++) {
+      try ICommissionSplitterTask(tasks[i]).commissionSplitter() returns (
+        address commissionSplitter
+      ) {
+        if (commissionSplitter == deprecatedSplitter) {
+          tasksRunner.removeTask(tasks[i]);
+        }
+      } catch {}
+    }
   }
 }
