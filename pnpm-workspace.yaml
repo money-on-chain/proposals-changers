@@ -1,0 +1,21 @@
+blockExoticSubdeps: false
+
+autoInstallPeers: false
+
+allowBuilds:
+  es5-ext: true
+  esbuild: true
+  keccak: false
+  scrypt: false
+  secp256k1: false
+  sha3: false
+  unrs-resolver: true
+  websocket@https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2: true
+  websocket@https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400: true
+
+peerDependencyRules:
+  ignoreMissing:
+    - "@codechecks/client"
+  allowedVersions:
+    "main-sc-protocol-v2@3.0.9>hardhat": "3.9.0"
+    "hardhat-watcher@2.5.0>hardhat": "3.9.0"

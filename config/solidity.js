@@ -1,0 +1,15 @@
+export const npmFilesToBuild = [
+  "@moneyonchain/proposals-changers/contracts/changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol",
+  "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
+  "@moc/main/contracts/governance/InterimGovernor.sol",
+  "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
+  "@moc/lending/contracts/adapters/MocAdapterV1.sol",
+  "@moc/lending/contracts/MocLendingManager.sol",
+  "@moc/lending/contracts/MocLendingReader.sol",
+  "@moc/lending/contracts/TPInjector.sol",
+  "@moc/roc/contracts/providers/DataProvider.sol",
+  "@moc/price-oracle-interfaces/contracts/PriceProviderInverse.sol",
+  "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol",
+];

@@ -4,6 +4,7 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   // ─── Shared addresses ───────────────────────────────────────────────────────
   const governor = m.getParameter("governor");
   const pauser = m.getParameter("pauser");
+  const tasksRunner = m.getParameter("tasksRunner");
 
   // MoC V1 contract addresses
   const mocV1 = m.getParameter("mocV1"); // MoC V1 proxy (the bucket)
@@ -277,6 +278,18 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
     { id: "BufferCoinbaseProxy" },
   );
 
+  const bufferFlushTask = m.contract(
+    "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol:TaskFlush",
+    [bufferCoinbaseProxy],
+    { id: "TaskFlushBitProInterestBuffer" },
+  );
+
+  const bufferLiquidateTask = m.contract(
+    "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol:TaskLiquidate",
+    [bufferCoinbaseProxy],
+    { id: "TaskLiquidateBitProInterestBuffer" },
+  );
+
   // ─── 12a. Deploy DataProvider for WRBTC→DOC max amount ───────────────────────
   // owner = pauser, initial value = wrbtcToDocMaxAmount (placeholder "0")
   const wrbtcToDocProvider = m.contract("DataProvider", [pauser, wrbtcToDocMaxAmount], {
@@ -301,6 +314,9 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
       mocInrateV1,
       newBitProRate,
       bufferCoinbaseProxy,
+      tasksRunner,
+      bufferFlushTask,
+      bufferLiquidateTask,
       mocSwapperExchange,
       wrbtcToken,
       usdtToken,
@@ -327,6 +343,8 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
     reverseAuction,
     bufferCoinbaseImpl,
     bufferCoinbaseProxy,
+    bufferFlushTask,
+    bufferLiquidateTask,
     wrbtcToDocProvider,
     docToWrbtcProvider,
     changer,

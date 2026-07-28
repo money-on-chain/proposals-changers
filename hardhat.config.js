@@ -13,6 +13,7 @@ dotenvConfig();
 export default {
   plugins: [hardhatEthers, hardhatToolboxMochaEthers, hardhatVerify],
   solidity: {
+    splitTestsCompilation: true,
     npmFilesToBuild: [
       "@moc/main/contracts/collateral/rc20/MocCARC20.sol",
       "@moc/main/contracts/interfaces/IDataProvider.sol",
@@ -107,7 +108,7 @@ export default {
     // RSK Testnet (HTTP RPC)
     rskAlphaTestnet: {
       type: "http",
-      url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
+      url: configVariable("RPC_URL_RSK_TESTNET"),
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       // gasPrice: 60000000n, // optional (wei)
@@ -116,7 +117,7 @@ export default {
     // RSK Testnet (HTTP RPC)
     rskTestnet: {
       type: "http",
-      url: process.env.RPC_URL_RSK_TESTNET, // ej: https://public-node.testnet.rsk.co
+      url: configVariable("RPC_URL_RSK_TESTNET"),
       chainId: 31,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       // gasPrice: 60000000n, // optional (wei)
@@ -125,7 +126,7 @@ export default {
     // RSK Mainnet (HTTP RPC)
     rskMainnet: {
       type: "http",
-      url: process.env.RPC_URL_RSK_MAINNET,
+      url: configVariable("RPC_URL_RSK_MAINNET"),
       chainId: 30,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
