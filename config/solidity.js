@@ -9,7 +9,9 @@ export const npmFilesToBuild = [
   "@moc/lending/contracts/TPInjector.sol",
   "@moc/roc/contracts/providers/DataProvider.sol",
   "@moc/price-oracle-interfaces/contracts/PriceProviderInverse.sol",
+  "@moc/flow/contracts/BufferCoinbase.sol",
   "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
+  "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol",
 ];

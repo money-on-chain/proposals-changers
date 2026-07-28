@@ -99,12 +99,17 @@
   "type": "module",
   "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065",
   "peerDependencies": {
+    "@moc/flow": "3.0.3",
     "@moc/lending": "1.0.1",
     "@moc/main": "3.0.9",
+    "@moc/moc-main": "3.0.9",
+    "@moc/oracles": "3.0.10",
+    "@moc/periphery": "3.0.5",
     "@moc/price-oracle-interfaces": "0.1.0",
     "@moc/roc": "3.0.9",
-    "@nomicfoundation/hardhat-ignition": "3.1.8",
-    "@openzeppelin/contracts": "4.9.3"
+    "@nomicfoundation/hardhat-ignition": "3.0.3",
+    "@openzeppelin/contracts": "4.9.3",
+    "ts-test-helpers": "0.1.2"
   },
   "exports": {
     "./contracts/*": "./contracts/*",
