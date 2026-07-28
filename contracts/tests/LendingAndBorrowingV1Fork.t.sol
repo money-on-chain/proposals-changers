@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
+import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, TasksRunnerMigration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { MocReverseAuction } from "@moc/main/contracts/auxiliary/MocReverseAuction.sol";
@@ -307,9 +307,11 @@ contract LendingAndBorrowingV1ForkTest is Test {
       IMoCInrate(mocInrateV1),
       newBitProRate,
       payable(bufferCoinbaseProxy),
-      tasksRunner,
-      bufferFlushTask,
-      bufferLiquidateTask,
+      TasksRunnerMigration({
+        tasksRunner: tasksRunner,
+        bufferFlushTask: bufferFlushTask,
+        bufferLiquidateTask: bufferLiquidateTask
+      }),
       IMocSwapperMultihopV3(mocSwapperExchange),
       wrbtcToken,
       usdtToken,

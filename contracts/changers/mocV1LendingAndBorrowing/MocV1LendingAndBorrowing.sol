@@ -33,6 +33,12 @@ interface ICommissionSplitter {
   function split() external;
 }
 
+struct TasksRunnerMigration {
+  ITasksRunner tasksRunner;
+  address bufferFlushTask;
+  address bufferLiquidateTask;
+}
+
 /**
  * @title MocV1LendingAndBorrowing
  * @notice ChangeContract used to:
@@ -72,9 +78,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     IMoCInrate _mocInrateV1,
     uint256 _newBitProRate,
     address payable _newBitProInterestAddress,
-    ITasksRunner _tasksRunner,
-    address _bufferFlushTask,
-    address _bufferLiquidateTask,
+    TasksRunnerMigration memory _tasksRunnerMigration,
     IMocSwapperMultihopV3 _mocSwapperExchange,
     address _wrbtcToken,
     address _usdtToken,
@@ -87,9 +91,9 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     mocInrateV1 = _mocInrateV1;
     newBitProRate = _newBitProRate;
     newBitProInterestAddress = _newBitProInterestAddress;
-    tasksRunner = _tasksRunner;
-    bufferFlushTask = _bufferFlushTask;
-    bufferLiquidateTask = _bufferLiquidateTask;
+    tasksRunner = _tasksRunnerMigration.tasksRunner;
+    bufferFlushTask = _tasksRunnerMigration.bufferFlushTask;
+    bufferLiquidateTask = _tasksRunnerMigration.bufferLiquidateTask;
     mocSwapperExchange = _mocSwapperExchange;
     wrbtcToken = _wrbtcToken;
     usdtToken = _usdtToken;
