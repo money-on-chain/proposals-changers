@@ -126,11 +126,11 @@ The exact moving-average logic and parameters will be documented in the technica
 
 ## Protocol-Funded Reward Summary
 
-| RoC Revenue Source | RIF/USD Providers | TasksRunner Executors | BTC/USD Providers |
-| :---- | :----: | :----: | :----: |
-| RIF bucket minting and redemption fees | 15% | 0.75% | 6.75% |
-| DOC bucket minting and redemption fees | 15% | 0.75% | 6.75% |
-| Periodic interest from RIFPRO holders | 15% | 1.5% | 13.5% |
+| RoC Revenue Source                     | RIF/USD Providers | TasksRunner Executors | BTC/USD Providers |
+| :------------------------------------- | :---------------: | :-------------------: | :---------------: |
+| RIF bucket minting and redemption fees |        15%        |         0.75%         |       6.75%       |
+| DOC bucket minting and redemption fees |        15%        |         0.75%         |       6.75%       |
+| Periodic interest from RIFPRO holders  |        15%        |         1.5%          |       13.5%       |
 
 These protocol-funded rewards are additional to the execution and price-provision payments borne by minting and redemption operations.
 
@@ -187,27 +187,27 @@ The exact task list, contract list, parameters, and verified addresses will be a
 
 ## Changer Contract
 
-| Name | Address and verified code |
-| :---- | :---- |
-| `TBD` | `TBD` |
+| Name  | Address and verified code |
+| :---- | :------------------------ |
+| `TBD` | `TBD`                     |
 
 ---
 
 ## Existing Contracts to Be Upgraded or Reconfigured
 
-| Protocol | Name | Change | Current Address | New Implementation or Configuration |
-| :---- | :---- | :---- | :---- | :---- |
-| RoC | `TBD` | Use OMOC RIF/USD | `TBD` | `TBD` |
-| MoC | `TBD` | Use OMOC RIF/USD | `TBD` | `TBD` |
-| RoC | `TBD` | Increase target coverage and improve the elastic moving average | `TBD` | `TBD` |
-| RoC | `TBD` | Use TasksRunner and update revenue distribution | `TBD` | `TBD` |
-| MoC | `TBD` | Use TasksRunner and update revenue distribution | `TBD` | `TBD` |
-| OMOC | `TBD` | Receive and distribute service revenue | `TBD` | `TBD` |
+| Protocol | Name  | Change                                                          | Current Address | New Implementation or Configuration |
+| :------- | :---- | :-------------------------------------------------------------- | :-------------- | :---------------------------------- |
+| RoC      | `TBD` | Use OMOC RIF/USD                                                | `TBD`           | `TBD`                               |
+| MoC      | `TBD` | Use OMOC RIF/USD                                                | `TBD`           | `TBD`                               |
+| RoC      | `TBD` | Increase target coverage and improve the elastic moving average | `TBD`           | `TBD`                               |
+| RoC      | `TBD` | Use TasksRunner and update revenue distribution                 | `TBD`           | `TBD`                               |
+| MoC      | `TBD` | Use TasksRunner and update revenue distribution                 | `TBD`           | `TBD`                               |
+| OMOC     | `TBD` | Receive and distribute service revenue                          | `TBD`           | `TBD`                               |
 
 ---
 
 ## New Contracts
 
-| Protocol | Name | Purpose | Address |
-| :---- | :---- | :---- | :---- |
-| `TBD` | `TBD` | Additional contracts or implementations required by this proposal | `TBD` |
+| Protocol | Name  | Purpose                                                           | Address |
+| :------- | :---- | :---------------------------------------------------------------- | :------ |
+| `TBD`    | `TBD` | Additional contracts or implementations required by this proposal | `TBD`   |

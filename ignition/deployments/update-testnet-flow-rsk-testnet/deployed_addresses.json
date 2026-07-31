@@ -1,0 +1,15 @@
+{
+  "UpdateTestnetFlowModule#BtcToMocMaxAmountProvider": "0xE896c4E2C44bf1B4282F5b89beb4c368041D2B98",
+  "UpdateTestnetFlowModule#MocSwapperV3Implementation": "0xc5d73743d94bb8Bb2aefB2C416c2366c65785Edc",
+  "UpdateTestnetFlowModule#MocToBtcMaxAmountProvider": "0xA16509f85048Ed933034E113C7EA3152F47a1C88",
+  "UpdateTestnetFlowModule#MocToRifMaxAmountProvider": "0xcE07FA20EF53052fFd3970FDdDEa8AF908414D89",
+  "UpdateTestnetFlowModule#PriceProviderInverseRifToMoc": "0x3CC288d86D0B57AEdd3Fe37424EF55aA302b4F07",
+  "UpdateTestnetFlowModule#ReverseAuctionMocToRif": "0x7461878FDe4144112f91DD6B913023563363bC80",
+  "UpdateTestnetFlowModule#RifToMocMaxAmountProvider": "0x1eb540A79F81a57f7eB079D2F8f841D4e6F858F8",
+  "UpdateTestnetFlowModule#UniswapV3OracleBtcToMoc": "0x3C05F6193A2FBF9B6CF427C6CF1505Cf113eD417",
+  "UpdateTestnetFlowModule#ReverseAuctionRifToMoc": "0x55c888D946784fcc732dB1bB4A5b059C67aE5510",
+  "UpdateTestnetFlowModule#MocSwapperV3": "0xCF03a538b50b159D24D614e04c77644B3Fd7820b",
+  "UpdateTestnetFlowModule#ReverseAuctionBtcToMoc": "0x80bB8a52290bF85C4b500980dcDB3FF14Ab8C35e",
+  "UpdateTestnetFlowModule#ReverseAuctionMocToBtc": "0x0cC17FC424cC39E07CF774f2597d2778261cf6a8",
+  "UpdateTestnetFlowModule#UpdateTestnetFlowChanger": "0x13884b89ED9b5e170349b5C8b8CAdc0415f31313"
+}

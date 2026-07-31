@@ -21,6 +21,12 @@ export default {
       "@moc/rbtc/contracts/base/MoCConnector.sol",
       "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol",
       "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
+      "@moc/roc/contracts/providers/DataProvider.sol",
+      "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
+      "@moc/main/contracts/multiCollateral/swapper/MocSwapperV3.sol",
+      "@moc/price-oracle-interfaces/contracts/PriceProviderInverse.sol",
+      "@moc/price-oracle-interfaces/contracts/UniswapV3Oracle.sol",
+      "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
     ],
     compilers: [
       {
@@ -44,6 +50,10 @@ export default {
       },
       {
         version: "0.6.12",
+        settings: { optimizer: { enabled: true, runs: 200 } },
+      },
+      {
+        version: "0.7.6",
         settings: { optimizer: { enabled: true, runs: 200 } },
       },
       {

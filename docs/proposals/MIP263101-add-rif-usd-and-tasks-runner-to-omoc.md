@@ -128,26 +128,26 @@ The exact contract list, parameters, and verified addresses will be added to thi
 
 ## Changer Contract
 
-| Name | Address and verified code |
-| :---- | :---- |
-| `TBD` | `TBD` |
+| Name  | Address and verified code |
+| :---- | :------------------------ |
+| `TBD` | `TBD`                     |
 
 ---
 
 ## Existing Contracts to Be Upgraded or Reconfigured
 
-| Protocol | Name | Change | Current Address | New Implementation or Configuration |
-| :---- | :---- | :---- | :---- | :---- |
-| OMOC | `TBD` | RIF/USD, TasksRunner, and MIP#262701 changes | `TBD` | `TBD` |
-| RoC | `TBD` | RIF revenue-conversion route | `TBD` | `TBD` |
-| MoC / RoC | `TBD` | MIP#262702 cleanup and fixes | `TBD` | `TBD` |
+| Protocol  | Name  | Change                                       | Current Address | New Implementation or Configuration |
+| :-------- | :---- | :------------------------------------------- | :-------------- | :---------------------------------- |
+| OMOC      | `TBD` | RIF/USD, TasksRunner, and MIP#262701 changes | `TBD`           | `TBD`                               |
+| RoC       | `TBD` | RIF revenue-conversion route                 | `TBD`           | `TBD`                               |
+| MoC / RoC | `TBD` | MIP#262702 cleanup and fixes                 | `TBD`           | `TBD`                               |
 
 ---
 
 ## New Contracts
 
-| Protocol | Name | Purpose | Address |
-| :---- | :---- | :---- | :---- |
-| OMOC | `TBD` | RIF/USD coin-pair infrastructure | `TBD` |
-| OMOC | `TBD` | TasksRunner infrastructure | `TBD` |
-| Other | `TBD` | Additional contracts required by this proposal | `TBD` |
+| Protocol | Name  | Purpose                                        | Address |
+| :------- | :---- | :--------------------------------------------- | :------ |
+| OMOC     | `TBD` | RIF/USD coin-pair infrastructure               | `TBD`   |
+| OMOC     | `TBD` | TasksRunner infrastructure                     | `TBD`   |
+| Other    | `TBD` | Additional contracts required by this proposal | `TBD`   |
