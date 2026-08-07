@@ -128,26 +128,54 @@ The exact contract list, parameters, and verified addresses will be added to thi
 
 ## Changer Contract
 
-| Name | Address and verified code |
-| :---- | :---- |
-| `TBD` | `TBD` |
+### The changer contract to vote would be:
+
+| Name                    | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :---------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PreTasksRunnerChanger` | [`0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1`](https://rootstock.blockscout.com/address/0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1?tab=contract) |
 
 ---
 
-## Existing Contracts to Be Upgraded or Reconfigured
+## Existing Contracts to be upgraded
 
-| Protocol | Name | Change | Current Address | New Implementation or Configuration |
-| :---- | :---- | :---- | :---- | :---- |
-| OMOC | `TBD` | RIF/USD, TasksRunner, and MIP#262701 changes | `TBD` | `TBD` |
-| RoC | `TBD` | RIF revenue-conversion route | `TBD` | `TBD` |
-| MoC / RoC | `TBD` | MIP#262702 cleanup and fixes | `TBD` | `TBD` |
+The following contracts are already part of the protocol and will be upgraded as part of this proposal:
+
+| Name             |        Type        | Address                                                                                                             |
+| :--------------- | :----------------: | :------------------------------------------------------------------------------------------------------------------ |
+| `OracleManager`  |       Proxy        | [`0x64A5...712C`](https://rootstock.blockscout.com/address/0x64A5634b2D1F17DC7c4765aaCd222F8E9eB7712C?tab=contract) |
+| `OracleManager`  |   Implementation   | [`0x2ea6...F6A9`](https://rootstock.blockscout.com/address/0x2ea69e6e91040c57a0AeaE0B0E3424Aaf740F6A9?tab=contract) |
+| `OracleManager`  | New implementation | [`0xDa61...5c54`](https://rootstock.blockscout.com/address/0xDa61bA24E64d508E27f699F6F41E46C6246f5c54?tab=contract) |
+| `CoinPairBTCUSD` |       Proxy        | [`0xa288...2672`](https://rootstock.blockscout.com/address/0xa288319eCb63301e21963E21EF3Ca8fb720d2672?tab=contract) |
+| `CoinPairBTCUSD` |   Implementation   | [`0x37ff...e03F`](https://rootstock.blockscout.com/address/0x37ff40ec727349d478d2715aE58097f218F7e03F?tab=contract) |
+| `CoinPairBTCUSD` | New implementation | [`0xb9F7...8b9A`](https://rootstock.blockscout.com/address/0xb9F7B2996123BDd1157fd7549d90573240fB8b9A?tab=contract) |
+| `CoinPairRIFBTC` |       Proxy        | [`0x4D58...98d0`](https://rootstock.blockscout.com/address/0x4D582deE1B405A45CD0c6801f0575560ad3f98d0?tab=contract) |
+| `CoinPairRIFBTC` |   Implementation   | [`0x37ff...e03F`](https://rootstock.blockscout.com/address/0x37ff40ec727349d478d2715aE58097f218F7e03F?tab=contract) |
+| `CoinPairRIFBTC` | New implementation | [`0xb9F7...8b9A`](https://rootstock.blockscout.com/address/0xb9F7B2996123BDd1157fd7549d90573240fB8b9A?tab=contract) |
+| `CoinPairUSDARS` |       Proxy        | [`0x44E1...4393`](https://rootstock.blockscout.com/address/0x44E100CC6B4b89EfFF71e0c88048166732F04393?tab=contract) |
+| `CoinPairUSDARS` |   Implementation   | [`0x37ff...e03F`](https://rootstock.blockscout.com/address/0x37ff40ec727349d478d2715aE58097f218F7e03F?tab=contract) |
+| `CoinPairUSDARS` | New implementation | [`0xb9F7...8b9A`](https://rootstock.blockscout.com/address/0xb9F7B2996123BDd1157fd7549d90573240fB8b9A?tab=contract) |
+| `CoinpairUSDCOP` |       Proxy        | [`0xdD71...166b`](https://rootstock.blockscout.com/address/0xdD711A0EB1CbdF7F5287C5CA67E0E9d0288f166b?tab=contract) |
+| `CoinpairUSDCOP` |   Implementation   | [`0x37ff...e03F`](https://rootstock.blockscout.com/address/0x37ff40ec727349d478d2715aE58097f218F7e03F?tab=contract) |
+| `CoinpairUSDCOP` | New implementation | [`0xb9F7...8b9A`](https://rootstock.blockscout.com/address/0xb9F7B2996123BDd1157fd7549d90573240fB8b9A?tab=contract) |
+
+---
+
+## Existing Contracts to be reconfigured
+
+The following contracts are already part of the protocol and will be reconfigured as part of this proposal:
+
+| Name         |                                                       Address                                                       |
+| :----------- | :-----------------------------------------------------------------------------------------------------------------: |
+| `mocSwapper` | [`0x2412...3C73`](https://rootstock.blockscout.com/address/0x24122D7Ff0eF57c18e5c333e2C7BD863e4F23C73?tab=contract) |
 
 ---
 
 ## New Contracts
 
-| Protocol | Name | Purpose | Address |
-| :---- | :---- | :---- | :---- |
-| OMOC | `TBD` | RIF/USD coin-pair infrastructure | `TBD` |
-| OMOC | `TBD` | TasksRunner infrastructure | `TBD` |
-| Other | `TBD` | Additional contracts required by this proposal | `TBD` |
+| Name                        |                                                       Address                                                       |
+| :-------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
+| `TasksRunnerProxy`          | [`0xD99a...b975`](https://rootstock.blockscout.com/address/0xD99a43Ba443068ea539CeB623AE24e6c9910b975?tab=contract) |
+| `TasksRunnerImplementation` | [`0xA3eA...69D3`](https://rootstock.blockscout.com/address/0xA3eA7a013F11f71AD5D2139dDBBD385d559469D3?tab=contract) |
+| `BasefeeProvider`           | [`0xA9Aa...915C`](https://rootstock.blockscout.com/address/0xA9Aa3df27E832360D631C22BB4f2592A8574915C?tab=contract) |
+
+---
