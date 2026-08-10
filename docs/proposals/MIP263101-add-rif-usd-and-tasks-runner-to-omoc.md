@@ -1,4 +1,4 @@
-# Add RIF/USD and TasksRunner to OMOC; Use RIF/USD0 for Liquidity
+# Add RIF/USD and TasksRunner to OMOC; Use RIF/USD₮0 for Liquidity
 
 > :memo: `MIP#263101`
 
@@ -13,7 +13,7 @@ The proposed changer will:
 - Deploy and register the new `RIF/USD` coin pair in `OMOC`,
 - Deploy the TasksRunner infrastructure,
 - Give `OMOC` oracle operators time to review, upgrade, and subscribe to the new services before they are used by _RoC_ and _MoC_,
-- Change the conversion route used for `RIF` revenue collected from _RoC_ to use the more liquid `USD0/RIF`, `WBTC/USD0`, and `MOC/WBTC` pools,
+- Change the conversion route used for `RIF` revenue collected from _RoC_ to use the more liquid `USD₮0/RIF`, `WBTC/USD₮0`, and `MOC/WBTC` pools,
 - Incorporate the OMOC circuit-breaker improvements described in [MIP#262701](MIP262701-omoc-circuit-breaker.md), and
 - Incorporate the protocol cleanup and fixes described in [MIP#262702](MIP262702-btcx-code-cleanup.md).
 
@@ -43,7 +43,7 @@ Part of the revenue collected from _RoC_ is converted from `RIF` into `MOC` toke
 
 The existing route uses the `WRBTC/RIF` pair for one of those hops. That pair frequently lacks sufficient liquidity, which can delay payments and cause unnecessary value loss during conversion.
 
-This proposal changes the conversion route to `RIF → USD0 → WBTC → MOC`, using the `USD0/RIF`, `WBTC/USD0`, and `MOC/WBTC` pools. These pools have substantially more liquidity than the `WRBTC/RIF` pool used by the existing route. The change is expected to:
+This proposal changes the conversion route to `RIF → USD₮0 → WBTC → MOC`, using the `USD₮0/RIF`, `WBTC/USD₮0`, and `MOC/WBTC` pools. These pools have substantially more liquidity than the `WRBTC/RIF` pool used by the existing route. The change is expected to:
 
 - Improve the timely payment of `OMOC` oracle revenue shares,
 - Reduce slippage and value lost during conversions, and
@@ -67,9 +67,9 @@ The changer will deploy the `TasksRunner` infrastructure used to coordinate recu
 
 The initial deployment is intended to give operators time to review and adopt the service. Migrating _RoC_ and _MoC_ tasks from centralized automators to `TasksRunner` will require a separate future governance proposal.
 
-### 3. Use `RIF/USD0` liquidity for _RoC_ revenue conversion
+### 3. Use `RIF/USD₮0` liquidity for _RoC_ revenue conversion
 
-The changer will replace the conversion hop that currently depends on `WRBTC/RIF` liquidity with the multi-hop route `RIF → USD0 → WBTC → MOC`. This route will use the `USD0/RIF, WBTC/USD0`, and `MOC/WBTC` pools, which have substantially greater available liquidity.
+The changer will replace the conversion hop that currently depends on `WRBTC/RIF` liquidity with the multi-hop route `RIF → USD₮0 → WBTC → MOC`. This route will use the `USD₮0/RIF, WBTC/USD₮0`, and `MOC/WBTC` pools, which have substantially greater available liquidity.
 
 The conversion will remain multi-hop because no direct `MOC/RIF` pool exists.
 
@@ -96,7 +96,7 @@ After this proposal is executed:
 - `RIF/USD` price consensus will be available in `OMOC`,
 - `TasksRunner` consensus will be available in `OMOC`,
 - Operators will be able to upgrade and subscribe before _RoC_ and _MoC_ depend on the new services,
-- _RoC_ revenue conversion will use the more liquid `RIF/USD0` route,
+- _RoC_ revenue conversion will use the more liquid `RIF/USD₮0` route,
 - `OMOC` will include the circuit-breaker and operator-unsubscription improvements from [MIP#262701](MIP262701-omoc-circuit-breaker.md), and
 - The cleanup and fixes from [MIP#262702](MIP262702-btcx-code-cleanup.md) will be incorporated.
 
