@@ -128,7 +128,7 @@ Values may be converted and paid in a currency different from the one in which t
 - To the BTC/USD oracle, as MOC: 15.00% → 13.50%.
 - To TasksRunner, as MOC: 0.00% → 1.50%.
 
-**RIF bucket rebalance fees (tRIF)**
+**RIF bucket rebalance fees (RIF)**
 
 - To TasksRunner, as MOC: 0.00% → 100.00%.
 - To centralized automator, as MOC: 100.00% → 0.00%.
