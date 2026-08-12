@@ -71,9 +71,7 @@ Operators participating in TasksRunner consensus will coordinate execution turns
 
 ### 3. Protocol-funded rewards
 
-In addition to user-funded execution and price-provision payments, this section shows how the destination of each revenue stream changes after implementing this changer. Each list represents 100% of its revenue source's fee value, and each allocation is shown as **before → after**. The values currently shown on the left match the post-changer allocations and must be replaced with the actual previous allocations before the governance vote.
-
-Values may be converted and paid in a currency different from the one in which they were collected.
+In addition to user-funded execution and price-provision payments, this section shows how the destination of each revenue stream changes after implementing this changer. Each list represents 100% of its revenue source's fee value, and each allocation is shown as **before → after**. Values may be converted and paid in a currency different from the one in which they were collected.
 
 #### MoC protocol
 
