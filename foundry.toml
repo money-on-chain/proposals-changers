@@ -9,5 +9,5 @@ via_ir = true
 evm_version = "london"
 fs_permissions = [
   { access = "read", path = "./ignition/modules/BufferPctAndCleanMocV1/parameters" },
+  { access = "read", path = "./ignition/modules/upgrade_votingMachine/parameters" },
 ]
-

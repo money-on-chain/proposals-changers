@@ -21,6 +21,7 @@ export default {
       "@moc/rbtc/contracts/base/MoCConnector.sol",
       "@moc/roc/contracts/providers/FCMaxAbsoluteOpProvider.sol",
       "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
+      "@moc/voting/contracts/VotingMachine.sol",
     ],
     compilers: [
       {
