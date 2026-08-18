@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263101`
 
-> :warning: **Status: In voting**
+> :warning: **Status: Implemented**
 
 ## Overview
 
@@ -179,3 +179,13 @@ The following contracts are already part of the protocol and will be reconfigure
 | `BasefeeProvider`           | [`0xA9Aa...915C`](https://rootstock.blockscout.com/address/0xA9Aa3df27E832360D631C22BB4f2592A8574915C?tab=contract) |
 
 ---
+
+## Status
+
+📣 The voting process is over:
+* `29.0%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0xd7379f99cb56315ce72a301193635223633f2357b543365bc771b4086abd086e`](https://rootstock.blockscout.com/tx/0xd7379f99cb56315ce72a301193635223633f2357b543365bc771b4086abd086e)
