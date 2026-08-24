@@ -4,6 +4,8 @@
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.6",
     "@moc/roc": "git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.0.5",
     "@moc/main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.6",
+    "@moc/voting": "git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#v3.0.3",
+    "@moc/periphery": "https://github.com/money-on-chain/MoC-Periphery.git#v3.0.6",
     "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@nomicfoundation/hardhat-ethers": "https://github.com/money-on-chain/hardhat/releases/download/v3.0.10-moc/nomicfoundation-hardhat-ethers-4.0.2.tgz",
     "@nomicfoundation/hardhat-ignition": "https://github.com/money-on-chain/hardhat/releases/download/v3.0.10-moc/nomicfoundation-hardhat-ignition-3.0.3.tgz",
@@ -76,5 +78,6 @@
       "scrypt"
     ]
   },
-  "type": "module"
+  "type": "module",
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
 }
