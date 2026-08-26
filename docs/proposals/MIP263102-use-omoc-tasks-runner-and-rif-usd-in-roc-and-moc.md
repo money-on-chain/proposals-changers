@@ -260,6 +260,4 @@ The upgrade will be executed through a changer contract that reconfigures _RoC_ 
 | :---------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AddTasksRunnerChanger` | [`0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA`](https://rootstock.blockscout.com/address/0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA?tab=contract) |
 
----
-
 > :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA?tab=contract) linked above.

@@ -8,7 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
-- `MIP#263102` — [Use OMOC's TasksRunner and RIF/USD in RoC and MoC](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md) — **DRAFT**
+- `MIP#263102` — [Use OMOC's TasksRunner and RIF/USD in RoC and MoC](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md)
 - `MIP#263101` — [Add RIF/USD and TasksRunner to OMOC; Use RIF/USD0 for Liquidity](MIP263101-add-rif-usd-and-tasks-runner-to-omoc.md)
 - `MIP#262702` — [Code Cleanup for Deprecated BTCX Leveraged Positions (and Bug Fixes)](MIP262702-btcx-code-cleanup.md)
 - `MIP#262701` — [Implementation of an Oracle Circuit Breaker and some other improvements](MIP262701-omoc-circuit-breaker.md)
