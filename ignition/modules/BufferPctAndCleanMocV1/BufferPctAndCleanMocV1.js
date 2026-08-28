@@ -1,6 +1,7 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { batchModule } from "ignition-utils";
 
-export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
+const BufferPctAndCleanMocV1Module = buildModule("BufferPctAndCleanMocV1Module", (m) => {
   const oracleManagerProxy = m.getParameter("oracleManagerProxy");
   const coinPairProxy = m.getParameter("coinPairProxy");
   const mocRewardsBufferProxy = m.getParameter("mocRewardsBufferProxy");
@@ -134,3 +135,5 @@ export default buildModule("BufferPctAndCleanMocV1Module", (m) => {
     changer,
   };
 });
+
+export default batchModule(BufferPctAndCleanMocV1Module);

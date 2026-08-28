@@ -19,3 +19,10 @@ peerDependencyRules:
   allowedVersions:
     "main-sc-protocol-v2@3.0.9>hardhat": "3.9.0"
     "hardhat-watcher@2.5.0>hardhat": "3.9.0"
+
+neverBuiltDependencies:
+  - keccak
+  - scrypt
+  - secp256k1
+  - sha3
+  - websocket
