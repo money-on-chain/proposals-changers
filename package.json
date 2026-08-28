@@ -1,4 +1,9 @@
 {
+  "name": "@moneyonchain/proposals-changers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Money on Chain governance proposals and changers",
+  "license": "UNLICENSED",
   "devDependencies": {
     "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.5",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.6",
@@ -78,6 +83,14 @@
       "scrypt"
     ]
   },
+  "peerDependencies": {
+    "@moc/main": "3.0.6",
+    "@moc/oracles": "3.0.5",
+    "@moc/periphery": "3.0.6",
+    "@moc/rbtc": "3.0.6",
+    "@moc/roc": "3.0.5",
+    "@moc/voting": "3.0.3"
+  },
   "type": "module",
-  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
+  "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065"
 }
