@@ -1,6 +1,7 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { batchModule } from "ignition-utils";
 
-export default buildModule("HardeningIIModule", (m) => {
+const HardeningIIModule = buildModule("HardeningIIModule", (m) => {
   const mocV1Proxy = m.getParameter("mocV1Proxy");
   const mocStateV1Proxy = m.getParameter("mocStateV1Proxy");
   const mocExchangeV1Proxy = m.getParameter("mocExchangeV1Proxy");
@@ -70,3 +71,5 @@ export default buildModule("HardeningIIModule", (m) => {
     changer,
   };
 });
+
+export default batchModule(HardeningIIModule);

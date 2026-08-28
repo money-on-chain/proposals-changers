@@ -1,6 +1,7 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { batchModule } from "ignition-utils";
 
-export default buildModule("VotingMachineUpgradeChangerModule", (m) => {
+const VotingMachineUpgradeChangerModule = buildModule("VotingMachineUpgradeChangerModule", (m) => {
   const votingMachineProxy = m.getParameter("votingMachineProxy");
   const upgradeDelegator = m.getParameter("upgradeDelegator");
   const acceptedStepPriorityTimeDelta = m.getParameter(
@@ -32,3 +33,5 @@ export default buildModule("VotingMachineUpgradeChangerModule", (m) => {
     changer,
   };
 });
+
+export default batchModule(VotingMachineUpgradeChangerModule);
