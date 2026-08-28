@@ -151,10 +151,10 @@ contract BufferPctAndCleanMocV1 is IChangeContract {
 
   function fixDOCBucketInfinity() internal {
     docBucketProxy.setTCInterestParams(
-            docBucketProxy.tcInterestCollectorAddress(),
-            docBucketProxy.tcInterestRate(),
-            HALF_INFINITY
-        );
+      docBucketProxy.tcInterestCollectorAddress(),
+      docBucketProxy.tcInterestRate(),
+      HALF_INFINITY
+    );
     docBucketProxy.setSettlementTimeSpan(HALF_INFINITY);
     docBucketProxy.setEmaCalculationTimeSpan(HALF_INFINITY);
   }

@@ -82,12 +82,10 @@ contract BtcUsdOracleHistoricalSignerBypassTest is OracleTestHelper {
   // BTCUSD CoinPairPrice proxy used in existing repo fork tests
   address internal constant COIN_PAIR_PRICE_PROXY = 0xa288319eCb63301e21963E21EF3Ca8fb720d2672;
   address internal constant UPGRADE_DELEGATOR = 0x131564703310a294C1bFDC09D10EC0659f18E253;
-  address internal constant DEPLOYED_COIN_PAIR_IMPL =
-    0xA34F7F544DE6398d4Ce44De4a1fad1d84f297f79;
+  address internal constant DEPLOYED_COIN_PAIR_IMPL = 0xA34F7F544DE6398d4Ce44De4a1fad1d84f297f79;
   address internal constant DEPLOYED_ORACLE_MANAGER_IMPL =
     0xF74653be82F0f117a2f237ebA9988C14fF91F530;
-  address internal constant DEPLOYED_UPGRADE_PROPOSAL =
-    0x8168488D431Ab46A9abF905a9578F53BECc08F59;
+  address internal constant DEPLOYED_UPGRADE_PROPOSAL = 0x8168488D431Ab46A9abF905a9578F53BECc08F59;
 
   // EIP-1967 slots (used by AdminUpgradeabilityProxy / Transparent proxies)
   bytes32 internal constant IMPLEMENTATION_SLOT =

@@ -1,7 +1,7 @@
 lockfileVersion: '9.0'
 
 settings:
-  autoInstallPeers: true
+  autoInstallPeers: false
   excludeLinksFromLockfile: false
 
 importers:
@@ -11,6 +11,9 @@ importers:
       '@moc/flow':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.3
         version: '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
+      '@moc/lending':
+        specifier: git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v1.0.1
+        version: lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#ec08ee1fa04de5241a61a6ec3002901da823b6e4
       '@moc/main':
         specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
         version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
@@ -19,55 +22,70 @@ importers:
         version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
       '@moc/oracles':
         specifier: git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.10
-        version: '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0))(ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76))(typescript@6.0.3)(zod@3.25.76)'
+        version: '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)'
       '@moc/periphery':
-        specifier: https://github.com/money-on-chain/MoC-Periphery.git#v3.0.7
+        specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.7
         version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@moc/price-oracle-interfaces':
         specifier: git+ssh://git@github.com/money-on-chain/price_oracle_interfaces.git#v0.1.0
         version: price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@moc/rbtc':
         specifier: git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.5
-        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(@codechecks/client@0.1.12(supports-color@6.0.0)(typescript@6.0.3))(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
+        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
       '@moc/roc':
         specifier: git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.2.1
-        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(37f28dea702ff1d18de6db5d7b6f2dc1)
+        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(089fc51ab41e059ebe829f8698e58f41)
       '@moc/voting':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#v3.0.4
-        version: '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@6.0.3)(zod@3.25.76)'
+        version: '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@5.9.3)(zod@3.25.76)'
       '@nomicfoundation/hardhat-ethers':
         specifier: 4.0.15
         version: 4.0.15(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-ethers-chai-matchers':
+        specifier: 3.0.3
+        version: 3.0.3(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(chai@5.3.3)(ethers@6.17.0)(hardhat@3.9.0)
       '@nomicfoundation/hardhat-ignition':
         specifier: 3.1.8
         version: 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
       '@nomicfoundation/hardhat-ignition-ethers':
         specifier: 3.1.6
         version: 3.1.6(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/ignition-core@3.1.9)(ethers@6.17.0)(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-keystore':
+        specifier: 3.0.12
+        version: 3.0.12(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-mocha':
+        specifier: 3.0.0
+        version: 3.0.0(supports-color@8.1.1)
       '@nomicfoundation/hardhat-network-helpers':
         specifier: 3.0.11
         version: 3.0.11(hardhat@3.9.0)
       '@nomicfoundation/hardhat-toolbox-mocha-ethers':
         specifier: 3.0.7
-        version: 3.0.7(6729725b4b0284a15e17b5440302a064)
+        version: 3.0.7(3094442c457e08bca1a004ea111f08b5)
+      '@nomicfoundation/hardhat-typechain':
+        specifier: 3.0.0
+        version: 3.0.0(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(ethers@6.17.0)(hardhat@3.9.0)(supports-color@8.1.1)(typescript@5.9.3)
       '@nomicfoundation/hardhat-verify':
         specifier: 3.1.0
         version: 3.1.0(hardhat@3.9.0)
       '@openzeppelin/contracts':
-        specifier: 4.9.0
-        version: 4.9.0
+        specifier: 4.9.3
+        version: 4.9.3
       '@openzeppelin/contracts-ethereum-package':
         specifier: 3.0.0
         version: 3.0.0
       '@openzeppelin/contracts-upgradeable':
-        specifier: 4.9.0
-        version: 4.9.0
+        specifier: 4.9.3
+        version: 4.9.3
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.41.0
-        version: 8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+        version: 8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       '@typescript-eslint/parser':
         specifier: ^8.41.0
-        version: 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+        version: 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@uniswap/swap-router-contracts':
+        specifier: 1.3.1
+        version: 1.3.1(hardhat@3.9.0)
       chai:
         specifier: ^5.3.1
         version: 5.3.3
@@ -76,22 +94,22 @@ importers:
         version: 17.4.2
       eslint:
         specifier: ^9.34.0
-        version: 9.39.5(supports-color@6.0.0)
+        version: 9.39.5(supports-color@8.1.1)
       eslint-config-prettier:
         specifier: ^9.1.2
-        version: 9.1.2(eslint@9.39.5(supports-color@6.0.0))
+        version: 9.1.2(eslint@9.39.5(supports-color@8.1.1))
       eslint-import-resolver-node:
         specifier: ^0.3.9
-        version: 0.3.10(supports-color@6.0.0)
+        version: 0.3.10(supports-color@8.1.1)
       eslint-import-resolver-typescript:
         specifier: ^4.4.4
-        version: 4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)
+        version: 4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)
       eslint-plugin-import:
         specifier: ^2.32.0
-        version: 2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)
+        version: 2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)
       eslint-plugin-n:
         specifier: ^17.21.3
-        version: 17.24.0(eslint@9.39.5(supports-color@6.0.0))(typescript@6.0.3)
+        version: 17.24.0(eslint@9.39.5(supports-color@8.1.1))(typescript@5.9.3)
       ethers:
         specifier: ^6.15.0
         version: 6.17.0
@@ -109,13 +127,25 @@ importers:
         version: 9.1.7
       ignition-utils:
         specifier: https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f
-        version: https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@6.0.3)(zod@3.25.76)
+        version: https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@5.9.3)(zod@3.25.76)
       lint-staged:
         specifier: ^16.1.6
         version: 16.4.0
+      moc-governance:
+        specifier: github:money-on-chain/Areopagus-Governance#v0.3.1-optimizer
+        version: https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3(openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)))(openzeppelin-solidity@2.3.0)(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76))
       moc-main-latest:
-        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
+        specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2#v3.0.9
         version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
+      mocha:
+        specifier: ^11.0.0
+        version: 11.8.0
+      openzeppelin-eth:
+        specifier: 2.1.3
+        version: 2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76))
+      openzeppelin-solidity:
+        specifier: 2.3.0
+        version: 2.3.0
       prettier:
         specifier: 2.8.8
         version: 2.8.8
@@ -124,13 +154,22 @@ importers:
         version: 1.4.3(prettier@2.8.8)
       solhint:
         specifier: ^6.0.1
-        version: 6.2.4(typescript@6.0.3)
+        version: 6.2.4(typescript@5.9.3)
       ts-test-helpers:
-        specifier: git+ssh://git@github.com/money-on-chain/ts-test-helpers.git#v0.1.2
-        version: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76)
+        specifier: git+ssh://git@github.com/money-on-chain/ts-test-helpers#v0.1.2
+        version: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(typescript@5.9.3)(zod@3.25.76)
+      typechain:
+        specifier: 8.3.2
+        version: 8.3.2(supports-color@8.1.1)(typescript@5.9.3)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       typescript-eslint:
         specifier: ^8.41.0
-        version: 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+        version: 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      zos-lib:
+        specifier: 2.3.1
+        version: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
 
 packages:
 
@@ -156,11 +195,6 @@ packages:
   '@babel/helper-validator-identifier@7.29.7':
     resolution: {integrity: sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==}
     engines: {node: '>=6.9.0'}
-
-  '@codechecks/client@0.1.12':
-    resolution: {integrity: sha512-2GHHvhO3kaOyxFXxOaiznlY8ARmz33/p+WQdhc2y6wzWw5eOl2wSwg1eZxx3LsWlAnB963Y4bd1YjZcGIhKRzA==}
-    engines: {node: '>=6'}
-    hasBin: true
 
   '@cto.af/wtf8@0.0.5':
     resolution: {integrity: sha512-LfUFi+Vv4eDzj+XAtR89e3wwjXA/NZjUSwU5NhwbBrLecxPaBYFy3exCuc1j+D4UZeOVdqlsl8G7LmOt18V0tg==}
@@ -584,13 +618,13 @@ packages:
   '@nomicfoundation/hardhat-errors@3.0.21':
     resolution: {integrity: sha512-jXgqgxmI1D7vYcWRQnb6HsRDssxE87a4xJ48FQAdkZUPclB0aVISx6IoVG1Kttx2jJ7tNuo9GasJxpOv7stqyg==}
 
-  '@nomicfoundation/hardhat-ethers-chai-matchers@3.0.11':
-    resolution: {integrity: sha512-pAOTjBQRNKqCh8cLJD6dsOeGWrU8fe9Wrz4UqO03qhJbwmj0md2bq2LEPaMZAgDtxVS0ZteiVGx64DgBfyb7XA==}
+  '@nomicfoundation/hardhat-ethers-chai-matchers@3.0.3':
+    resolution: {integrity: sha512-X02s5neeaBsHiXYcPsXeqbHJ2bRytsBmQRkh0JyO6AYbkIY4pM9g+M4wnCUMWPnh1wQnLyT3Iqx+g8nJ8Ont6A==}
     peerDependencies:
-      '@nomicfoundation/hardhat-ethers': ^4.0.7
+      '@nomicfoundation/hardhat-ethers': ^4.0.0
       chai: '>=5.1.2 <7'
       ethers: ^6.14.0
-      hardhat: ^3.8.0
+      hardhat: ^3.0.0
 
   '@nomicfoundation/hardhat-ethers@4.0.15':
     resolution: {integrity: sha512-qLBvq2RcKuffObX08LVZr9LixDSnsJwwxeRKYCfr5p1VTkMT0XP5JU2Y8AOIady39O5v7ZuzIEY+xH+DdqrBKA==}
@@ -607,16 +641,6 @@ packages:
       ethers: ^6.14.0
       hardhat: ^3.8.0
 
-  '@nomicfoundation/hardhat-ignition-viem@3.1.6':
-    resolution: {integrity: sha512-ggjHftjDNLQPnHBMEtDcTafYJfTzqTMlorKlAWj0HunzwiDhC5p7ox2MuEGmZHqt2oVjrnPF5E+Dp3G0RlYRgg==}
-    peerDependencies:
-      '@nomicfoundation/hardhat-ignition': ^3.1.2
-      '@nomicfoundation/hardhat-verify': ^3.0.0
-      '@nomicfoundation/hardhat-viem': ^3.0.4
-      '@nomicfoundation/ignition-core': ^3.0.7
-      hardhat: ^3.8.0
-      viem: ^2.47.6
-
   '@nomicfoundation/hardhat-ignition@3.1.8':
     resolution: {integrity: sha512-zVsR1SA1gqjd3SF3C+BljttSEMOaIbSIEvHgFhXF/A1IgeecJYD/MqGcvGAW4s51r5ZGQnUSl9t/5VQKvuExlw==}
     peerDependencies:
@@ -628,11 +652,8 @@ packages:
     peerDependencies:
       hardhat: ^3.8.0
 
-  '@nomicfoundation/hardhat-mocha@3.1.0':
-    resolution: {integrity: sha512-bZgm1NWoVvwPdc2SQwjyj/HuFePG5LjS+zuLqqwwW8w5hq5+NIFZtgcOoTFNhShDFXeItLxOYiC2K2Pk/q2scw==}
-    peerDependencies:
-      hardhat: ^3.12.0
-      mocha: ^11.0.0
+  '@nomicfoundation/hardhat-mocha@3.0.0':
+    resolution: {integrity: sha512-Ws16bRQDlJTaFvNlGAA1cyonDqdh06OehpXQUCXUNztuU4245sKJHvakrj52a4akeVKJ+ViGTnO4fwipQ6/TNw==}
 
   '@nomicfoundation/hardhat-network-helpers@3.0.11':
     resolution: {integrity: sha512-3/xuORejAOGbfqBmIen+OCHu9ExK9O8pjE11ILU9NcN37zy3GDbyNCKV9keK1gSjWWVb0okAlAR/yvewfEE4TA==}
@@ -680,12 +701,15 @@ packages:
       hardhat: ^3.8.0
       viem: ^2.47.6
 
-  '@nomicfoundation/hardhat-typechain@3.1.1':
-    resolution: {integrity: sha512-2+G5L6RPNVpdQtr2nqNOv/qnNNo9GNmJ5V/w2ozJnApEdMxyLiEOOcVcFtZIFQ6Un2clzMph2HbkSwaIT7buEQ==}
+  '@nomicfoundation/hardhat-typechain@3.0.0':
+    resolution: {integrity: sha512-wwPNrb+a/IrvMpj94VsXyKM64T0SJFXsmmqCHnGfh/iAdZmX5J9ILBLeDUE9JW5rL6ove8TB7OcXZkGp8unB4w==}
     peerDependencies:
       '@nomicfoundation/hardhat-ethers': ^4.0.0
       ethers: ^6.14.0
-      hardhat: ^3.8.0
+      hardhat: ^3.0.0
+
+  '@nomicfoundation/hardhat-utils@3.0.6':
+    resolution: {integrity: sha512-AD/LPNdjXNFRrZcaAAewgJpdnHpPppZxo5p+x6wGMm5Hz4B3+oLf/LUzVn8qb4DDy9RE2c24l2F8vmL/w6ZuXg==}
 
   '@nomicfoundation/hardhat-utils@4.1.9':
     resolution: {integrity: sha512-vUyHQ2H1VfknTUxO3Vat7z0y9WkDUF69pLrrLZN2K1/+TKJN+TVzEMeXW/2GXJzIhm2uc2qZXOYwQUh+SU9PbQ==}
@@ -766,14 +790,11 @@ packages:
     resolution: {integrity: sha512-Xg33RtX7FGbSK/YnroLhcGNAvH30/C84NRW8KvbSdXXYiLA8YqM1bOA9sAeLjmQxXqYUn/YL4AUVTgDnG51NOw==}
     deprecated: This package has been deprecated and replaced by @openzeppelin/contracts-upgradeable.
 
-  '@openzeppelin/contracts-upgradeable@4.9.0':
-    resolution: {integrity: sha512-+6i2j6vr2fdudTqkBvG+UOosankukxYzg3WN1nqU7ijjQ5A4osWaD3ip6CEz6YvDoSdZgcFVZoiGr7zRlUUoZw==}
-
   '@openzeppelin/contracts-upgradeable@4.9.3':
     resolution: {integrity: sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A==}
 
-  '@openzeppelin/contracts@4.9.0':
-    resolution: {integrity: sha512-DUP74AFGKlic2sQb/CmgrN2aUPMFGxRrmCTUxLHsiU2RzwWqVuMPZBxiAyvlff6Pea77uylAX6B5x9W6evEbhA==}
+  '@openzeppelin/contracts@3.4.2-solc-0.7':
+    resolution: {integrity: sha512-W6QmqgkADuFcTLzHL8vVoNBtkwjvQRpYIAom7KiUNoLKghyx3FgH0GBjt8NRvigV1ZmMOBllvE1By1C+bi8WpA==}
 
   '@openzeppelin/contracts@4.9.3':
     resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
@@ -1009,6 +1030,27 @@ packages:
     resolution: {integrity: sha512-YR65gGdGvTUAWLldC3xLOvOzamdGzB4A5/N8rehEaHs3Zvoe39BhgY+u0SPch1OvrVTfLcc55wsSgK2NcnTS/A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@uniswap/lib@4.0.1-alpha':
+    resolution: {integrity: sha512-f6UIliwBbRsgVLxIaBANF6w09tYqc6Y/qXdsrbEmXHyFA7ILiKrIwRFXe1yOg8M3cksgVsO9N7yuL2DdCGQKBA==}
+    engines: {node: '>=10'}
+
+  '@uniswap/swap-router-contracts@1.3.1':
+    resolution: {integrity: sha512-mh/YNbwKb7Mut96VuEtL+Z5bRe0xVIbjjiryn+iMMrK2sFKhR4duk/86mEz0UO5gSx4pQIw9G5276P5heY/7Rg==}
+    engines: {node: '>=10'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
+  '@uniswap/v2-core@1.0.1':
+    resolution: {integrity: sha512-MtybtkUPSyysqLY2U210NBDeCHX+ltHt3oADGdjqoThZaFRDKwM6k1Nb3F0A3hk5hwuQvytFWhrWHOEq6nVJ8Q==}
+    engines: {node: '>=10'}
+
+  '@uniswap/v3-core@1.0.1':
+    resolution: {integrity: sha512-7pVk4hEm00j9tc71Y9+ssYpO6ytkeI0y7WE9P6UcmNzhxPePwyAxImuhVsTqWK9YFvzgtvzJHi64pBl4jUzKMQ==}
+    engines: {node: '>=10'}
+
+  '@uniswap/v3-periphery@1.4.4':
+    resolution: {integrity: sha512-S4+m+wh8HbWSO3DKk4LwUCPZJTpCugIsHrWR86m/OrUyvSqGDTXKFfc2sMuGXCZrD1ZqO3rhQsKgdWg3Hbb2Kw==}
+    engines: {node: '>=10'}
+
   '@unrs/resolver-binding-android-arm-eabi@1.12.2':
     resolution: {integrity: sha512-g5T90pqg1bo/7mytQx6F4iBNC0Wsh9cu+z9veDbFjc7HjpesJFWD7QMS0NGStXM075+7dJPPVvBbpZlnrdpi/w==}
     cpu: [arm]
@@ -1227,9 +1269,6 @@ packages:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
 
-  ansicolors@0.3.2:
-    resolution: {integrity: sha512-QXu7BPrP29VllRxH8GwB7x5iX5qWKAAMLqKQGWTeLWVlNHNOpVMJ91dsxQAIWXpjuW5wqvxu3Jd/nRjrJ+0pqg==}
-
   antlr4ts@0.5.0-alpha.4:
     resolution: {integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==}
 
@@ -1239,9 +1278,6 @@ packages:
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
-
-  arg@4.1.3:
-    resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -1353,6 +1389,9 @@ packages:
 
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+
+  base64-sol@1.0.1:
+    resolution: {integrity: sha512-ld3cCNMeXt4uJXmLZBHFGMvVpK9KsLVEhPpFRXnvSVAqABKbuNZg/+dsq3NuM+wxFLb/UrVkz7m1ciWmkMfTbg==}
 
   bcrypt-pbkdf@1.0.2:
     resolution: {integrity: sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==}
@@ -1519,10 +1558,6 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cardinal@2.1.1:
-    resolution: {integrity: sha512-JSr5eOgoEymtYHBjNWyjrMqet9Am2miJhlfKNdqLp6zoeAh0KN5dRAcxlecj5mAJrmQomgiOBj35xHLrFjqBpw==}
-    hasBin: true
-
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
 
@@ -1572,6 +1607,10 @@ packages:
     resolution: {integrity: sha512-dGmKLDdT3Gdl7fBUe8XK+gAtGmzy5Fn0XkkWQuYxGIgWVPPse2CxFA5mtrlD0TOHaHjEUqkWNyP1XdHoJES/4A==}
     engines: {node: '>= 8.10.0'}
 
+  chokidar@3.6.0:
+    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
+    engines: {node: '>= 8.10.0'}
+
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
@@ -1598,10 +1637,6 @@ packages:
   cli-table3@0.5.1:
     resolution: {integrity: sha512-7Qg2Jrep1S/+Q3EceiZtQcDPWxhAvBw+ERf1162v4sikJrvojMHFqXt8QIVha8UlH9rgU0BeWPytZ9/TzYqlUw==}
     engines: {node: '>=6'}
-
-  cli-table@0.3.11:
-    resolution: {integrity: sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==}
-    engines: {node: '>= 0.2.0'}
 
   cli-truncate@5.2.0:
     resolution: {integrity: sha512-xRwvIOMGrfOAnM1JYtqQImuaNtDEv9v6oIYAs4LIHwTiKee8uwvIi363igssOC0O5U04i4AlENs79LQLu9tEMw==}
@@ -1639,10 +1674,6 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
-
-  colors@1.0.3:
-    resolution: {integrity: sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==}
-    engines: {node: '>=0.1.90'}
 
   colors@1.4.0:
     resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
@@ -1745,10 +1776,6 @@ packages:
 
   cross-fetch@4.1.0:
     resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
-
-  cross-spawn@6.0.6:
-    resolution: {integrity: sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==}
-    engines: {node: '>=4.8'}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -1924,10 +1951,6 @@ packages:
     resolution: {integrity: sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==}
     engines: {node: '>=0.3.1'}
 
-  diff@4.0.4:
-    resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==}
-    engines: {node: '>=0.3.1'}
-
   diff@7.0.0:
     resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
     engines: {node: '>=0.3.1'}
@@ -1958,6 +1981,10 @@ packages:
   dot-prop@4.2.1:
     resolution: {integrity: sha512-l0p4+mIuJIua0mhxGoh4a+iNL9bmeK5DvnSVQa6T0OhrVmaEa1XScX5Etc673FePCJOArq/4Pa2cLGODUWTPOQ==}
     engines: {node: '>=4'}
+
+  dotenv@14.3.2:
+    resolution: {integrity: sha512-vwEppIphpFdvaMCaHfCEv9IgwcxMljMw2TnAQBB4VWPvzXQLTb82jwmdOKzlEVUL3gNFT4l4TPKO+Bn+sqcrVQ==}
+    engines: {node: '>=12'}
 
   dotenv@17.4.2:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
@@ -2033,6 +2060,10 @@ packages:
   entities@7.0.1:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
+
+  env-paths@2.2.1:
+    resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
+    engines: {node: '>=6'}
 
   env-paths@4.0.0:
     resolution: {integrity: sha512-pxP8eL2SwwaTRi/KHYwLYXinDs7gL3jxFcBYmEdYfZmZXbaVDvdppd0XBU8qVz03rDfKZMXg1omHCbsJjZrMsw==}
@@ -2313,10 +2344,6 @@ packages:
   evp_bytestokey@1.0.3:
     resolution: {integrity: sha512-/f2Go4TognH/KvCISP7OUsHn85hT9nUkxxA9BEWxFn+Oj9o8ZNLm/40hdlgSLyuOimsrTKLUMEorQexp/aPQeA==}
 
-  execa@1.0.0:
-    resolution: {integrity: sha512-adbxcyWV46qiHyvSp50TKt05tB4tK3HcmF7/nxfAdhnox83seTDbwnaqKO4sXRy7roHAIFqJP/Rw/AuEbX61LA==}
-    engines: {node: '>=6'}
-
   express@4.22.2:
     resolution: {integrity: sha512-IuL+Elrou2ZvCFHs18/CIzy2Nzvo25nZ1/D2eIZlz7c+QUayAcYoiM2BthCjs+EBHVpjYjcuLDAiCWgeIX3X1Q==}
     engines: {node: '>= 0.10.0'}
@@ -2340,6 +2367,10 @@ packages:
 
   fast-diff@1.3.0:
     resolution: {integrity: sha512-VxPP4NqbUjj6MaAOafWeUn2cXWLcCtljklUtZf0Ind4XQ+QPtmA0b18zZy0jIQx+ExRVCR/ZQpBmik5lXshNsw==}
+
+  fast-equals@5.4.1:
+    resolution: {integrity: sha512-DjlFSM5Pk9cGcL0q5QXl66eGzx0N6szNgaswwc5ZphlBohjTVJSnGgI+rJVOgOi65qUoQnDZN4nDqi33udtydQ==}
+    engines: {node: '>=6.0.0'}
 
   fast-equals@6.0.2:
     resolution: {integrity: sha512-sAjhj9ZhOxYCGiNMnZLaucOqf5ZeFnHNoKoAZiD9thhJ0N8RP85qJK759/97C/3L7NzzmGVB5uiX9AUpySZmUQ==}
@@ -2680,6 +2711,11 @@ packages:
     engines: {node: '>=6'}
     deprecated: this library is no longer supported
 
+  hardhat-watcher@2.5.0:
+    resolution: {integrity: sha512-Su2qcSMIo2YO2PrmJ0/tdkf+6pSt8zf9+4URR5edMVti6+ShI8T3xhPrwugdyTOFuyj8lKHrcTZNKUFYowYiyA==}
+    peerDependencies:
+      hardhat: ^2.0.0
+
   hardhat@3.9.0:
     resolution: {integrity: sha512-MjLHYgxCbqhpLfu6FBkHkhTu9igJmtwgILJwdw7XUZ3xjnXLdGeXtwhykPA16hjeRrmWZH4yv5Tv4maw0dJASw==}
     hasBin: true
@@ -2687,10 +2723,6 @@ packages:
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
     engines: {node: '>= 0.4'}
-
-  has-flag@2.0.0:
-    resolution: {integrity: sha512-P+1n3MnwjR/Epg9BBo1KT8qbye2g2Ou4sFumihwt6I4tsUX7jnLcX4BTOSKg/B1ZrIYMN9FcEnG4x5a7NB8Eng==}
-    engines: {node: '>=0.10.0'}
 
   has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
@@ -3076,10 +3108,6 @@ packages:
     resolution: {integrity: sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==}
     hasBin: true
 
-  js-yaml@3.15.2:
-    resolution: {integrity: sha512-6EuL879VkRA+1Cz578mKMiKvjPNEuk6+r1JaFzoSWejZmtf7xWbIyw1e3KkxlkzTIt9Taw6JBhEppG7utc1P+w==}
-    hasBin: true
-
   js-yaml@4.3.2:
     resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
     hasBin: true
@@ -3158,6 +3186,10 @@ packages:
   latest-version@7.0.0:
     resolution: {integrity: sha512-KvNT4XqAMzdcL6ka6Tl3i2lYeFDgXNCuIX+xNx6ZMVR1dFq+idXd9FLKNMOIx0t9mJ9/HudyX4oZWXZQ0UJHeg==}
     engines: {node: '>=14.16'}
+
+  lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#ec08ee1fa04de5241a61a6ec3002901da823b6e4:
+    resolution: {commit: ec08ee1fa04de5241a61a6ec3002901da823b6e4, repo: git@github.com:money-on-chain/lending-and-borrowing-sc.git, type: git}
+    version: 1.0.1
 
   leven@2.1.0:
     resolution: {integrity: sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==}
@@ -3396,21 +3428,8 @@ packages:
     resolution: {integrity: sha512-2w31R7SJtieJJnQtGc7RVL2StM2vGYVfqUOvUDxH6bC6aJTxPxTF0GnIgCyu7tjockiUWAYQRbxa7vKn34s5sQ==}
     engines: {node: '>=4'}
 
-  make-error@1.3.6:
-    resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
-
   markdown-table@1.1.3:
     resolution: {integrity: sha512-1RUZVgQlpJSPWYbFSpmudq5nHY1doEIv89gBtF0s4gW1GF2XorxcA/70M5vq7rLv0a6mhOUccRsqkwhwLCIQ2Q==}
-
-  marked-terminal@3.3.0:
-    resolution: {integrity: sha512-+IUQJ5VlZoAFsM5MHNT7g3RHSkA3eETqhRCdXv4niUMAKHQ7lb1yvAcuGPmm4soxhmtX13u4Li6ZToXtvSEH+A==}
-    peerDependencies:
-      marked: ^0.4.0 || ^0.5.0 || ^0.6.0 || ^0.7.0
-
-  marked@0.7.0:
-    resolution: {integrity: sha512-c+yYdCZJQrsRjTPhUx7VKkApw9bwDkNbHUKo1ovgcfDjb2kc8rLuRbIFyXL5WOEUwzSSKo3IXpph2K6DqB/KZg==}
-    engines: {node: '>=0.10.0'}
-    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -3537,12 +3556,11 @@ packages:
     hasBin: true
 
   moc-governance@https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3}
+    resolution: {gitHosted: true, integrity: sha512-BR/Ctnh8Xo1NjgEfnr0naZWm3cRkGVhNOQuTMW89ryn3GMFtYqGSL2Ji8Z6jOrmxr9+EZt+GdgHYsUyWolDu9Q==, tarball: https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3}
     version: 0.1.0
     peerDependencies:
       openzeppelin-eth: 2.1.3
       openzeppelin-solidity: 2.3.0
-      zos: 2.3.1
       zos-lib: 2.3.1
 
   mocha@11.8.0:
@@ -3614,12 +3632,6 @@ packages:
   next-tick@1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
 
-  nice-try@1.0.5:
-    resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
-
-  node-emoji@1.11.0:
-    resolution: {integrity: sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==}
-
   node-environment-flags@1.0.6:
     resolution: {integrity: sha512-5Evy2epuL+6TM0lCQGpFIj6KwiEsGh1SrHUhTbNX+sLbBtjidPZFAnVK9y5yU1+h//RitLbRHTIMyxQPtxMdHw==}
 
@@ -3650,10 +3662,6 @@ packages:
 
   npm-programmatic@0.0.12:
     resolution: {integrity: sha512-fvZdiJS038ZH31z59cEiIywOcgX1u23aLc0wAKF4btyhbYQxE93wTQjzs/URERK+GhS/QghDILQmEvgxu77/zQ==}
-
-  npm-run-path@2.0.2:
-    resolution: {integrity: sha512-lJxZYlT4DW/bRUtFh1MQIWqmLwQfAxnqWG4HhEdjMlkrJYnJn0Jrr2u3mgxqaWsdiBc76TYkTG/mhrnYTuzfHw==}
-    engines: {node: '>=4'}
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -3868,10 +3876,6 @@ packages:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
-  path-key@2.0.1:
-    resolution: {integrity: sha512-fEHGKCSmUSDPv4uoj8AlD+joPlq3peND+HRYyxFz4KPw4z926S/b8rIuFs2FYJg3BwsxJf6A9/3eIdLaYC+9Dw==}
-    engines: {node: '>=4'}
-
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
@@ -4085,12 +4089,13 @@ packages:
     resolution: {integrity: sha512-crk4Qu3pmXwgxdSgGhgA/eXiJAPQiX4GMOZZMXnqKxHX7TaoL+3gQVo/WeuAiogr07DpnfjIMpXXa+PAIvwPGQ==}
     engines: {node: '>= 8'}
 
+  readdirp@3.6.0:
+    resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
+    engines: {node: '>=8.10.0'}
+
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
-
-  redeyed@2.1.1:
-    resolution: {integrity: sha512-FNpGGo1DycYAdnrKFxCMmKYgo/mILAqtRYbkdQD8Ep/Hk2PQ5+aEAEx+IU713RTDmuBaH0c8P5ZozurNu5ObRQ==}
 
   reduce-flatten@2.0.0:
     resolution: {integrity: sha512-EJ4UNY/U1t2P/2k6oqotuX2Cc3T6nxJwsM0N0asT7dhrtH1ltUxDn4NalSYmPE2rCkVpcf/X6R0wDwcFpzhd4w==}
@@ -4130,13 +4135,6 @@ packages:
     resolution: {integrity: sha512-wcW+sIUiWnKgNY0dqCpOZkUbF/I+YPi+f09JZIDa39Ec+q82CpSYniDp+ISgTTbKmnpJWASeJBPZmoxH84wt3g==}
     engines: {node: '>=0.12.0'}
     deprecated: request-promise-native has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
-    peerDependencies:
-      request: ^2.34
-
-  request-promise@4.2.6:
-    resolution: {integrity: sha512-HCHI3DJJUakkOr8fNoCc73E5nU5bqITjOYFMDrKHYOXWXrgD/SBaC7LjwuPymUprRyuF06UK7hd/lMHkmUXglQ==}
-    engines: {node: '>=0.10.0'}
-    deprecated: request-promise has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
     peerDependencies:
       request: ^2.34
 
@@ -4349,17 +4347,9 @@ packages:
   sha3@1.2.6:
     resolution: {integrity: sha512-KgLGmJGrmNB4JWVsAV11Yk6KbvsAiygWJc7t5IebWva/0NukNrjJqhtKhzy3Eiv2AKuGvhZZt7dt1mDo7HkoiQ==}
 
-  shebang-command@1.2.0:
-    resolution: {integrity: sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg==}
-    engines: {node: '>=0.10.0'}
-
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
-
-  shebang-regex@1.0.0:
-    resolution: {integrity: sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==}
-    engines: {node: '>=0.10.0'}
 
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
@@ -4424,13 +4414,6 @@ packages:
 
   sonic-boom@0.7.7:
     resolution: {integrity: sha512-Ei5YOo5J64GKClHIL/5evJPgASXFVpfVYbJV9PILZQytTK6/LCwHvsZJW2Ig4p9FMC2OrBrMnXKgRN/OEoAWfg==}
-
-  source-map-support@0.5.21:
-    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
-
-  source-map@0.6.1:
-    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
-    engines: {node: '>=0.10.0'}
 
   split2@3.2.2:
     resolution: {integrity: sha512-9NThjpgZnifTkJpzTZ7Eue85S49QwpNhZTq6GRJwObb6jnLFNGB7Qm73V5HewTROPyxD0C29xqmaI68bQtV+hg==}
@@ -4535,10 +4518,6 @@ packages:
   strip-dirs@2.1.0:
     resolution: {integrity: sha512-JOCxOeKLm2CAS73y/U4ZeZPTkE+gNVCzKt7Eox84Iej1LT/2pTWYpZKJuxwQpvX1LiZb1xokNR7RLfuBAa7T3g==}
 
-  strip-eof@1.0.0:
-    resolution: {integrity: sha512-7FCwGGmx8mD5xQd3RPUvnSpUXHM3BWuzjtpD4TXsfcZ9EL4azvVVUscFYwD9nx8Kh+uCBC00XBtAykoMHwTh8Q==}
-    engines: {node: '>=0.10.0'}
-
   strip-hex-prefix@1.0.0:
     resolution: {integrity: sha512-q8d4ue7JGEiVcypji1bALTos+0pWtyGlivAWyPuTkHzuTCJqrK9sWxYQZUq6Nq3cuyv3bm734IhHvHtGGURU6A==}
     engines: {node: '>=6.5.0', npm: '>=3'}
@@ -4566,10 +4545,6 @@ packages:
   supports-color@8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
     engines: {node: '>=10'}
-
-  supports-hyperlinks@1.0.1:
-    resolution: {integrity: sha512-HHi5kVSefKaJkGYXbDuKbUGRVxqnWGn3J2e39CYcNJEfWciGq2zYtOhXLTlvrOZW1QU7VX67w7fMmWafHX9Pfw==}
-    engines: {node: '>=4'}
 
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -4712,20 +4687,10 @@ packages:
     peerDependencies:
       typescript: '>=4.0.0'
 
-  ts-essentials@1.0.4:
-    resolution: {integrity: sha512-q3N1xS4vZpRouhYHDPwO0bDW3EZ6SK9CrrDHxi/D6BPReSjpVgWIOpLS2o0gSBZm+7q/wyKp6RVM1AeeW7uyfQ==}
-
   ts-essentials@7.0.3:
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
     peerDependencies:
       typescript: '>=3.7.0'
-
-  ts-node@8.10.2:
-    resolution: {integrity: sha512-ISJJGgkIpDdBhWVu3jufsWpK3Rzo7bdiIXJjQc0ynKxVOVcg2oIrf2H2cejminGrptVc6q6/uynAHNCuWGbpVA==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: '>=2.7'
 
   ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2:
     resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2}
@@ -4813,8 +4778,8 @@ packages:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: '>=4.8.4 <6.1.0'
 
-  typescript@6.0.3:
-    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4873,9 +4838,6 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
-
-  url-join@4.0.1:
-    resolution: {integrity: sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==}
 
   url-parse-lax@1.0.0:
     resolution: {integrity: sha512-BVA4lR5PIviy2PMseNd2jbFQ+jwSwQGdJejf5ctd1rEXt0Ypd7yanUK9+lYechVlN5VaTJGsu2U/3MDDu6KgBA==}
@@ -5168,12 +5130,12 @@ packages:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
   websocket@https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2}
+    resolution: {gitHosted: true, integrity: sha512-UiGxTvi2OGFSerEcPCj7ZFmS7pohtF3IB1IGL+Ubg16+JJuxY/ZqnNWYbIgLvDaEhaogTORoy45tzSctw0wt2g==, tarball: https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2}
     version: 1.0.26
     engines: {node: '>=0.10.0'}
 
   websocket@https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400}
+    resolution: {gitHosted: true, integrity: sha512-UjyccLdH0rGoNh6R/AVesVpqyV+UdHWaZz97IzF3oYkVgehHWys0xa4bGwZ4IK5ckGnoHAad98Q8V4Ad0g1dsw==, tarball: https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400}
     version: 1.0.29
     engines: {node: '>=0.10.0'}
 
@@ -5369,10 +5331,6 @@ packages:
   yauzl@2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}
 
-  yn@3.1.1:
-    resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
-    engines: {node: '>=6'}
-
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
@@ -5416,32 +5374,6 @@ snapshots:
       picocolors: 1.1.1
 
   '@babel/helper-validator-identifier@7.29.7': {}
-
-  '@codechecks/client@0.1.12(supports-color@6.0.0)(typescript@6.0.3)':
-    dependencies:
-      bluebird: 3.7.2
-      chalk: 2.4.2
-      commander: 2.20.3
-      debug: 4.4.3(supports-color@6.0.0)
-      execa: 1.0.0
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      js-yaml: 3.15.2
-      json5: 2.2.3
-      lodash: 4.18.1
-      marked: 0.7.0
-      marked-terminal: 3.3.0(marked@0.7.0)
-      mkdirp: 0.5.6
-      ms: 2.1.3
-      promise: 8.3.0
-      request: 2.88.2
-      request-promise: 4.2.6(request@2.88.2)
-      ts-essentials: 1.0.4
-      ts-node: 8.10.2(typescript@6.0.3)
-      url-join: 4.0.1
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
 
   '@cto.af/wtf8@0.0.5': {}
 
@@ -5539,17 +5471,17 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5(supports-color@6.0.0))':
+  '@eslint-community/eslint-utils@4.10.1(eslint@9.39.5(supports-color@8.1.1))':
     dependencies:
-      eslint: 9.39.5(supports-color@6.0.0)
+      eslint: 9.39.5(supports-color@8.1.1)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
 
-  '@eslint/config-array@0.21.2(supports-color@6.0.0)':
+  '@eslint/config-array@0.21.2(supports-color@8.1.1)':
     dependencies:
       '@eslint/object-schema': 2.1.7
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
       minimatch: 3.1.5
     transitivePeerDependencies:
       - supports-color
@@ -5562,10 +5494,10 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@eslint/eslintrc@3.3.6(supports-color@6.0.0)':
+  '@eslint/eslintrc@3.3.6(supports-color@8.1.1)':
     dependencies:
       ajv: 6.15.0
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -5760,15 +5692,15 @@ snapshots:
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@openzeppelin/contracts-ethereum-package': 3.0.0
 
-  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0))(ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76))(typescript@6.0.3)(zod@3.25.76)':
+  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)':
     dependencies:
       '@moc/moc-main': main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@openzeppelin/contracts': 4.9.3
       '@openzeppelin/contracts-ethereum-package': 3.0.0
       '@openzeppelin/contracts-upgradeable': 4.9.3
-      ts-test-helpers: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76)
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      ts-test-helpers: https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(typescript@5.9.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -5779,12 +5711,12 @@ snapshots:
     dependencies:
       '@openzeppelin/contracts-ethereum-package': 3.0.0
 
-  '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@6.0.3)(zod@3.25.76)':
+  '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@5.9.3)(zod@3.25.76)':
     dependencies:
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@openzeppelin/contracts': 4.9.3
       '@openzeppelin/contracts-ethereum-package': 3.0.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -5856,7 +5788,7 @@ snapshots:
     dependencies:
       '@nomicfoundation/hardhat-utils': 4.1.9
 
-  '@nomicfoundation/hardhat-ethers-chai-matchers@3.0.11(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(chai@5.3.3)(ethers@6.17.0)(hardhat@3.9.0)':
+  '@nomicfoundation/hardhat-ethers-chai-matchers@3.0.3(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(chai@5.3.3)(ethers@6.17.0)(hardhat@3.9.0)':
     dependencies:
       '@nomicfoundation/hardhat-ethers': 4.0.15(hardhat@3.9.0)
       '@nomicfoundation/hardhat-utils': 4.1.9
@@ -5890,16 +5822,6 @@ snapshots:
       ethers: 6.17.0
       hardhat: 3.9.0
 
-  '@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))':
-    dependencies:
-      '@nomicfoundation/hardhat-errors': 3.0.21
-      '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/ignition-core': 3.1.9
-      hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
-
   '@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.0.21
@@ -5924,15 +5846,19 @@ snapshots:
       hardhat: 3.9.0
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-mocha@3.1.0(hardhat@3.9.0)(mocha@11.8.0)':
+  '@nomicfoundation/hardhat-mocha@3.0.0(supports-color@8.1.1)':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.0.21
-      '@nomicfoundation/hardhat-utils': 4.1.9
+      '@nomicfoundation/hardhat-utils': 3.0.6(supports-color@8.1.1)
       '@nomicfoundation/hardhat-zod-utils': 3.0.6(zod@3.25.76)
       hardhat: 3.9.0
       mocha: 11.8.0
       tsx: 4.23.12
       zod: 3.25.76
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
 
   '@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0)':
     dependencies:
@@ -5955,16 +5881,16 @@ snapshots:
       tsx: 4.23.12
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-toolbox-mocha-ethers@3.0.7(6729725b4b0284a15e17b5440302a064)':
+  '@nomicfoundation/hardhat-toolbox-mocha-ethers@3.0.7(3094442c457e08bca1a004ea111f08b5)':
     dependencies:
       '@nomicfoundation/hardhat-ethers': 4.0.15(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-ethers-chai-matchers': 3.0.11(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(chai@5.3.3)(ethers@6.17.0)(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-ethers-chai-matchers': 3.0.3(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(chai@5.3.3)(ethers@6.17.0)(hardhat@3.9.0)
       '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
       '@nomicfoundation/hardhat-ignition-ethers': 3.1.6(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/ignition-core@3.1.9)(ethers@6.17.0)(hardhat@3.9.0)
       '@nomicfoundation/hardhat-keystore': 3.0.12(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-mocha': 3.1.0(hardhat@3.9.0)(mocha@11.8.0)
+      '@nomicfoundation/hardhat-mocha': 3.0.0(supports-color@8.1.1)
       '@nomicfoundation/hardhat-network-helpers': 3.0.11(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-typechain': 3.1.1(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(ethers@6.17.0)(hardhat@3.9.0)(supports-color@6.0.0)(typescript@6.0.3)
+      '@nomicfoundation/hardhat-typechain': 3.0.0(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(ethers@6.17.0)(hardhat@3.9.0)(supports-color@8.1.1)(typescript@5.9.3)
       '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
       '@nomicfoundation/ignition-core': 3.1.9
       chai: 5.3.3
@@ -5972,49 +5898,61 @@ snapshots:
       hardhat: 3.9.0
       mocha: 11.8.0
 
-  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33)':
+  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.0.21(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.7)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-ignition-viem': 3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/hardhat-keystore': 3.0.12(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-network-helpers': 3.0.11(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-node-test-runner': 3.0.17(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/ignition-core': 3.1.9
-      hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
-    optional: true
-
-  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(c776d79d980bd301f6440c4b99e522d9)':
-    dependencies:
-      '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-ignition-viem': 3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
       '@nomicfoundation/hardhat-keystore': 3.0.12(hardhat@3.9.0)
       '@nomicfoundation/hardhat-network-helpers': 3.0.11(hardhat@3.9.0)
       '@nomicfoundation/hardhat-node-test-runner': 3.0.17(hardhat@3.9.0)
       '@nomicfoundation/hardhat-verify': 3.0.21(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
       '@nomicfoundation/ignition-core': 3.1.7
       hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
 
-  '@nomicfoundation/hardhat-typechain@3.1.1(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(ethers@6.17.0)(hardhat@3.9.0)(supports-color@6.0.0)(typescript@6.0.3)':
+  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))':
+    dependencies:
+      '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-keystore': 3.0.12(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-network-helpers': 3.0.11(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-node-test-runner': 3.0.17(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
+      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
+      '@nomicfoundation/ignition-core': 3.1.9
+      hardhat: 3.9.0
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
+    optional: true
+
+  '@nomicfoundation/hardhat-typechain@3.0.0(@nomicfoundation/hardhat-ethers@4.0.15(hardhat@3.9.0))(ethers@6.17.0)(hardhat@3.9.0)(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.0.21
       '@nomicfoundation/hardhat-ethers': 4.0.15(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-utils': 4.1.9
+      '@nomicfoundation/hardhat-utils': 3.0.6(supports-color@8.1.1)
       '@nomicfoundation/hardhat-zod-utils': 3.0.6(zod@3.25.76)
-      '@typechain/ethers-v6': 0.5.1(ethers@6.17.0)(typechain@8.3.2(supports-color@6.0.0)(typescript@6.0.3))(typescript@6.0.3)
+      '@typechain/ethers-v6': 0.5.1(ethers@6.17.0)(typechain@8.3.2(supports-color@8.1.1)(typescript@5.9.3))(typescript@5.9.3)
+      debug: 4.4.3(supports-color@8.1.1)
       ethers: 6.17.0
       hardhat: 3.9.0
-      typechain: 8.3.2(supports-color@6.0.0)(typescript@6.0.3)
+      typechain: 8.3.2(supports-color@8.1.1)(typescript@5.9.3)
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
       - typescript
+
+  '@nomicfoundation/hardhat-utils@3.0.6(supports-color@8.1.1)':
+    dependencies:
+      '@streamparser/json-node': 0.0.22
+      debug: 4.4.3(supports-color@8.1.1)
+      env-paths: 2.2.1
+      ethereum-cryptography: 2.2.1
+      fast-equals: 5.4.1
+      json-stream-stringify: 3.1.7
+      rfdc: 1.4.1
+      undici: 6.28.0
+    transitivePeerDependencies:
+      - supports-color
 
   '@nomicfoundation/hardhat-utils@4.1.9':
     dependencies:
@@ -6048,20 +5986,20 @@ snapshots:
       hardhat: 3.9.0
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))':
+  '@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.0.21
       '@nomicfoundation/hardhat-utils': 4.1.9
-      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
       hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
 
-  '@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))':
+  '@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.0.21
       '@nomicfoundation/hardhat-utils': 4.1.9
       hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
 
   '@nomicfoundation/hardhat-zod-utils@3.0.6(zod@3.25.76)':
     dependencies:
@@ -6134,11 +6072,9 @@ snapshots:
 
   '@openzeppelin/contracts-ethereum-package@3.0.0': {}
 
-  '@openzeppelin/contracts-upgradeable@4.9.0': {}
-
   '@openzeppelin/contracts-upgradeable@4.9.3': {}
 
-  '@openzeppelin/contracts@4.9.0': {}
+  '@openzeppelin/contracts@3.4.2-solc-0.7': {}
 
   '@openzeppelin/contracts@4.9.3': {}
 
@@ -6157,32 +6093,32 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@resolver-engine/core@0.2.1(supports-color@6.0.0)':
+  '@resolver-engine/core@0.2.1(supports-color@8.1.1)':
     dependencies:
-      debug: 3.2.7(supports-color@6.0.0)
+      debug: 3.2.7(supports-color@8.1.1)
       request: 2.88.2
     transitivePeerDependencies:
       - supports-color
 
-  '@resolver-engine/fs@0.2.1(supports-color@6.0.0)':
+  '@resolver-engine/fs@0.2.1(supports-color@8.1.1)':
     dependencies:
-      '@resolver-engine/core': 0.2.1(supports-color@6.0.0)
-      debug: 3.2.7(supports-color@6.0.0)
+      '@resolver-engine/core': 0.2.1(supports-color@8.1.1)
+      debug: 3.2.7(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@resolver-engine/imports-fs@0.2.2(supports-color@6.0.0)':
+  '@resolver-engine/imports-fs@0.2.2(supports-color@8.1.1)':
     dependencies:
-      '@resolver-engine/fs': 0.2.1(supports-color@6.0.0)
-      '@resolver-engine/imports': 0.2.2(supports-color@6.0.0)
-      debug: 3.2.7(supports-color@6.0.0)
+      '@resolver-engine/fs': 0.2.1(supports-color@8.1.1)
+      '@resolver-engine/imports': 0.2.2(supports-color@8.1.1)
+      debug: 3.2.7(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  '@resolver-engine/imports@0.2.2(supports-color@6.0.0)':
+  '@resolver-engine/imports@0.2.2(supports-color@8.1.1)':
     dependencies:
-      '@resolver-engine/core': 0.2.1(supports-color@6.0.0)
-      debug: 3.2.7(supports-color@6.0.0)
+      '@resolver-engine/core': 0.2.1(supports-color@8.1.1)
+      debug: 3.2.7(supports-color@8.1.1)
       hosted-git-info: 2.8.9
     transitivePeerDependencies:
       - supports-color
@@ -6261,13 +6197,13 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@typechain/ethers-v6@0.5.1(ethers@6.17.0)(typechain@8.3.2(supports-color@6.0.0)(typescript@6.0.3))(typescript@6.0.3)':
+  '@typechain/ethers-v6@0.5.1(ethers@6.17.0)(typechain@8.3.2(supports-color@8.1.1)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
       ethers: 6.17.0
       lodash: 4.18.1
-      ts-essentials: 7.0.3(typescript@6.0.3)
-      typechain: 8.3.2(supports-color@6.0.0)(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-essentials: 7.0.3(typescript@5.9.3)
+      typechain: 8.3.2(supports-color@8.1.1)(typescript@5.9.3)
+      typescript: 5.9.3
 
   '@types/bn.js@4.11.6':
     dependencies:
@@ -6284,7 +6220,7 @@ snapshots:
 
   '@types/concat-stream@1.6.1':
     dependencies:
-      '@types/node': 8.10.66
+      '@types/node': 26.4.0
 
   '@types/deep-eql@4.0.2': {}
 
@@ -6292,7 +6228,7 @@ snapshots:
 
   '@types/form-data@0.0.33':
     dependencies:
-      '@types/node': 8.10.66
+      '@types/node': 26.4.0
 
   '@types/http-cache-semantics@4.2.0': {}
 
@@ -6330,9 +6266,9 @@ snapshots:
 
   '@types/semver@5.5.0': {}
 
-  '@types/web3@1.2.2(typescript@6.0.3)(zod@3.25.76)':
+  '@types/web3@1.2.2(typescript@5.9.3)(zod@3.25.76)':
     dependencies:
-      web3: 4.16.0(typescript@6.0.3)(zod@3.25.76)
+      web3: 4.16.0(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -6344,40 +6280,40 @@ snapshots:
     dependencies:
       '@types/node': 26.4.0
 
-  '@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.68.0
-      '@typescript-eslint/type-utils': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+      '@typescript-eslint/type-utils': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.68.0
-      eslint: 9.39.5(supports-color@6.0.0)
+      eslint: 9.39.5(supports-color@8.1.1)
       ignore: 7.0.6
       natural-compare: 1.4.0
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.68.0
       '@typescript-eslint/types': 8.68.0
-      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@6.0.0)(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@8.1.1)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.68.0
-      debug: 4.4.3(supports-color@6.0.0)
-      eslint: 9.39.5(supports-color@6.0.0)
-      typescript: 6.0.3
+      debug: 4.4.3(supports-color@8.1.1)
+      eslint: 9.39.5(supports-color@8.1.1)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.68.0(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/project-service@8.68.0(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.68.0(typescript@6.0.3)
+      '@typescript-eslint/tsconfig-utils': 8.68.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.68.0
-      debug: 4.4.3(supports-color@6.0.0)
-      typescript: 6.0.3
+      debug: 4.4.3(supports-color@8.1.1)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -6386,47 +6322,47 @@ snapshots:
       '@typescript-eslint/types': 8.68.0
       '@typescript-eslint/visitor-keys': 8.68.0
 
-  '@typescript-eslint/tsconfig-utils@8.68.0(typescript@6.0.3)':
+  '@typescript-eslint/tsconfig-utils@8.68.0(typescript@5.9.3)':
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
-  '@typescript-eslint/type-utils@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/type-utils@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 8.68.0
-      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      debug: 4.4.3(supports-color@6.0.0)
-      eslint: 9.39.5(supports-color@6.0.0)
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      debug: 4.4.3(supports-color@8.1.1)
+      eslint: 9.39.5(supports-color@8.1.1)
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
   '@typescript-eslint/types@8.68.0': {}
 
-  '@typescript-eslint/typescript-estree@8.68.0(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/typescript-estree@8.68.0(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.68.0(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/tsconfig-utils': 8.68.0(typescript@6.0.3)
+      '@typescript-eslint/project-service': 8.68.0(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/tsconfig-utils': 8.68.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.68.0
       '@typescript-eslint/visitor-keys': 8.68.0
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
       minimatch: 10.2.6
       semver: 7.8.5
       tinyglobby: 0.2.17
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)':
+  '@typescript-eslint/utils@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@6.0.0))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@8.1.1))
       '@typescript-eslint/scope-manager': 8.68.0
       '@typescript-eslint/types': 8.68.0
-      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@6.0.0)(typescript@6.0.3)
-      eslint: 9.39.5(supports-color@6.0.0)
-      typescript: 6.0.3
+      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@8.1.1)(typescript@5.9.3)
+      eslint: 9.39.5(supports-color@8.1.1)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -6434,6 +6370,31 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.68.0
       eslint-visitor-keys: 5.0.1
+
+  '@uniswap/lib@4.0.1-alpha': {}
+
+  '@uniswap/swap-router-contracts@1.3.1(hardhat@3.9.0)':
+    dependencies:
+      '@openzeppelin/contracts': 3.4.2-solc-0.7
+      '@uniswap/v2-core': 1.0.1
+      '@uniswap/v3-core': 1.0.1
+      '@uniswap/v3-periphery': 1.4.4
+      dotenv: 14.3.2
+      hardhat-watcher: 2.5.0(hardhat@3.9.0)
+    transitivePeerDependencies:
+      - hardhat
+
+  '@uniswap/v2-core@1.0.1': {}
+
+  '@uniswap/v3-core@1.0.1': {}
+
+  '@uniswap/v3-periphery@1.4.4':
+    dependencies:
+      '@openzeppelin/contracts': 3.4.2-solc-0.7
+      '@uniswap/lib': 4.0.1-alpha
+      '@uniswap/v2-core': 1.0.1
+      '@uniswap/v3-core': 1.0.1
+      base64-sol: 1.0.1
 
   '@unrs/resolver-binding-android-arm-eabi@1.12.2':
     optional: true
@@ -6505,15 +6466,15 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  abitype@0.7.1(typescript@6.0.3)(zod@3.25.76):
+  abitype@0.7.1(typescript@5.9.3)(zod@3.25.76):
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
     optionalDependencies:
       zod: 3.25.76
 
-  abitype@1.2.3(typescript@6.0.3)(zod@3.25.76):
+  abitype@1.2.3(typescript@5.9.3)(zod@3.25.76):
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
       zod: 3.25.76
 
   accepts@1.3.8:
@@ -6577,8 +6538,6 @@ snapshots:
 
   ansi-styles@6.2.3: {}
 
-  ansicolors@0.3.2: {}
-
   antlr4ts@0.5.0-alpha.4: {}
 
   any-promise@1.3.0: {}
@@ -6587,8 +6546,6 @@ snapshots:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.2
-
-  arg@4.1.3: {}
 
   argparse@1.0.10:
     dependencies:
@@ -6706,9 +6663,9 @@ snapshots:
 
   aws4@1.13.2: {}
 
-  axios@0.18.1(supports-color@6.0.0):
+  axios@0.18.1(supports-color@8.1.1):
     dependencies:
-      follow-redirects: 1.5.10(supports-color@6.0.0)
+      follow-redirects: 1.5.10(supports-color@8.1.1)
       is-buffer: 2.0.5
     transitivePeerDependencies:
       - supports-color
@@ -6718,6 +6675,8 @@ snapshots:
   balanced-match@4.0.4: {}
 
   base64-js@1.5.1: {}
+
+  base64-sol@1.0.1: {}
 
   bcrypt-pbkdf@1.0.2:
     dependencies:
@@ -6767,11 +6726,11 @@ snapshots:
 
   bn.js@5.2.5: {}
 
-  body-parser@1.20.6(supports-color@6.0.0):
+  body-parser@1.20.6(supports-color@8.1.1):
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       depd: 2.0.0
       destroy: 1.2.0
       http-errors: 2.0.1
@@ -6923,11 +6882,6 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cardinal@2.1.1:
-    dependencies:
-      ansicolors: 0.3.2
-      redeyed: 2.1.1
-
   caseless@0.12.0: {}
 
   cbor2@1.12.0: {}
@@ -7001,6 +6955,18 @@ snapshots:
     optionalDependencies:
       fsevents: 2.1.3
 
+  chokidar@3.6.0:
+    dependencies:
+      anymatch: 3.1.3
+      braces: 3.0.3
+      glob-parent: 5.1.2
+      is-binary-path: 2.1.0
+      is-glob: 4.0.3
+      normalize-path: 3.0.0
+      readdirp: 3.6.0
+    optionalDependencies:
+      fsevents: 2.3.3
+
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
@@ -7029,10 +6995,6 @@ snapshots:
       string-width: 2.1.1
     optionalDependencies:
       colors: 1.4.0
-
-  cli-table@0.3.11:
-    dependencies:
-      colors: 1.0.3
 
   cli-truncate@5.2.0:
     dependencies:
@@ -7072,8 +7034,6 @@ snapshots:
   color-name@1.1.4: {}
 
   colorette@2.0.20: {}
-
-  colors@1.0.3: {}
 
   colors@1.4.0: {}
 
@@ -7149,14 +7109,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@8.3.6(typescript@6.0.3):
+  cosmiconfig@8.3.6(typescript@5.9.3):
     dependencies:
       import-fresh: 3.3.1
       js-yaml: 4.3.2
       parse-json: 5.2.0
       path-type: 4.0.0
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
   crc-32@1.2.2: {}
 
@@ -7187,14 +7147,6 @@ snapshots:
       node-fetch: 2.7.0
     transitivePeerDependencies:
       - encoding
-
-  cross-spawn@6.0.6:
-    dependencies:
-      nice-try: 1.0.5
-      path-key: 2.0.1
-      semver: 5.7.2
-      shebang-command: 1.2.0
-      which: 1.3.1
 
   cross-spawn@7.0.6:
     dependencies:
@@ -7259,35 +7211,29 @@ snapshots:
 
   dateformat@3.0.3: {}
 
-  debug@2.6.9(supports-color@6.0.0):
+  debug@2.6.9(supports-color@8.1.1):
     dependencies:
       ms: 2.0.0
     optionalDependencies:
-      supports-color: 6.0.0
+      supports-color: 8.1.1
 
-  debug@3.1.0(supports-color@6.0.0):
+  debug@3.1.0(supports-color@8.1.1):
     dependencies:
       ms: 2.0.0
     optionalDependencies:
-      supports-color: 6.0.0
+      supports-color: 8.1.1
 
   debug@3.2.6(supports-color@6.0.0):
     dependencies:
-      ms: 2.1.1
-    optionalDependencies:
-      supports-color: 6.0.0
-
-  debug@3.2.7(supports-color@6.0.0):
-    dependencies:
       ms: 2.1.3
     optionalDependencies:
       supports-color: 6.0.0
 
-  debug@4.4.3(supports-color@6.0.0):
+  debug@3.2.7(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
     optionalDependencies:
-      supports-color: 6.0.0
+      supports-color: 8.1.1
 
   debug@4.4.3(supports-color@8.1.1):
     dependencies:
@@ -7386,8 +7332,6 @@ snapshots:
 
   diff@3.5.0: {}
 
-  diff@4.0.4: {}
-
   diff@7.0.0: {}
 
   diffie-hellman@5.0.3:
@@ -7424,6 +7368,8 @@ snapshots:
     dependencies:
       is-obj: 1.0.1
 
+  dotenv@14.3.2: {}
+
   dotenv@17.4.2: {}
 
   drbg.js@1.0.1:
@@ -7453,14 +7399,14 @@ snapshots:
     dependencies:
       bn.js: 4.12.5
       brorand: 1.1.0
-      hash.js: 1.1.3
+      hash.js: 1.1.7
       inherits: 2.0.4
 
   elliptic@6.5.4:
     dependencies:
       bn.js: 4.12.5
       brorand: 1.1.0
-      hash.js: 1.1.3
+      hash.js: 1.1.7
       hmac-drbg: 1.0.1
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
@@ -7510,6 +7456,8 @@ snapshots:
   entities@6.0.1: {}
 
   entities@7.0.1: {}
+
+  env-paths@2.2.1: {}
 
   env-paths@4.0.0:
     dependencies:
@@ -7670,14 +7618,14 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-compat-utils@0.5.1(eslint@9.39.5(supports-color@6.0.0)):
+  eslint-compat-utils@0.5.1(eslint@9.39.5(supports-color@8.1.1)):
     dependencies:
-      eslint: 9.39.5(supports-color@6.0.0)
+      eslint: 9.39.5(supports-color@8.1.1)
       semver: 7.8.5
 
-  eslint-config-prettier@9.1.2(eslint@9.39.5(supports-color@6.0.0)):
+  eslint-config-prettier@9.1.2(eslint@9.39.5(supports-color@8.1.1)):
     dependencies:
-      eslint: 9.39.5(supports-color@6.0.0)
+      eslint: 9.39.5(supports-color@8.1.1)
 
   eslint-import-context@0.1.9(unrs-resolver@1.12.2):
     dependencies:
@@ -7686,18 +7634,18 @@ snapshots:
     optionalDependencies:
       unrs-resolver: 1.12.2
 
-  eslint-import-resolver-node@0.3.10(supports-color@6.0.0):
+  eslint-import-resolver-node@0.3.10(supports-color@8.1.1):
     dependencies:
-      debug: 3.2.7(supports-color@6.0.0)
+      debug: 3.2.7(supports-color@8.1.1)
       is-core-module: 2.16.2
       resolve: 2.0.0-next.7
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0):
+  eslint-import-resolver-typescript@4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
-      debug: 4.4.3(supports-color@6.0.0)
-      eslint: 9.39.5(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
+      eslint: 9.39.5(supports-color@8.1.1)
       eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
       get-tsconfig: 4.14.3
       is-bun-module: 2.0.0
@@ -7705,40 +7653,40 @@ snapshots:
       tinyglobby: 0.2.17
       unrs-resolver: 1.12.2
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@6.0.0))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0):
+  eslint-module-utils@2.14.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10(supports-color@8.1.1))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
-      debug: 3.2.7(supports-color@6.0.0)
+      debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
-      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      eslint: 9.39.5(supports-color@6.0.0)
-      eslint-import-resolver-node: 0.3.10(supports-color@6.0.0)
-      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)
+      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      eslint: 9.39.5(supports-color@8.1.1)
+      eslint-import-resolver-node: 0.3.10(supports-color@8.1.1)
+      eslint-import-resolver-typescript: 4.4.5(eslint-plugin-import@2.32.0)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-es-x@7.8.0(eslint@9.39.5(supports-color@6.0.0)):
+  eslint-plugin-es-x@7.8.0(eslint@9.39.5(supports-color@8.1.1)):
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@6.0.0))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@8.1.1))
       '@eslint-community/regexpp': 4.12.2
-      eslint: 9.39.5(supports-color@6.0.0)
-      eslint-compat-utils: 0.5.1(eslint@9.39.5(supports-color@6.0.0))
+      eslint: 9.39.5(supports-color@8.1.1)
+      eslint-compat-utils: 0.5.1(eslint@9.39.5(supports-color@8.1.1))
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
       array.prototype.findlastindex: 1.2.6
       array.prototype.flat: 1.3.3
       array.prototype.flatmap: 1.3.3
-      debug: 3.2.7(supports-color@6.0.0)
+      debug: 3.2.7(supports-color@8.1.1)
       doctrine: 2.1.0
-      eslint: 9.39.5(supports-color@6.0.0)
-      eslint-import-resolver-node: 0.3.10(supports-color@6.0.0)
-      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.10(supports-color@6.0.0))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)
+      eslint: 9.39.5(supports-color@8.1.1)
+      eslint-import-resolver-node: 0.3.10(supports-color@8.1.1)
+      eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.10(supports-color@8.1.1))(eslint-import-resolver-typescript@4.4.5)(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)
       hasown: 2.0.4
       is-core-module: 2.16.2
       is-glob: 4.0.3
@@ -7750,24 +7698,24 @@ snapshots:
       string.prototype.trimend: 1.0.10
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
+      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-n@17.24.0(eslint@9.39.5(supports-color@6.0.0))(typescript@6.0.3):
+  eslint-plugin-n@17.24.0(eslint@9.39.5(supports-color@8.1.1))(typescript@5.9.3):
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@6.0.0))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@8.1.1))
       enhanced-resolve: 5.24.5
-      eslint: 9.39.5(supports-color@6.0.0)
-      eslint-plugin-es-x: 7.8.0(eslint@9.39.5(supports-color@6.0.0))
+      eslint: 9.39.5(supports-color@8.1.1)
+      eslint-plugin-es-x: 7.8.0(eslint@9.39.5(supports-color@8.1.1))
       get-tsconfig: 4.14.3
       globals: 15.15.0
       globrex: 0.1.2
       ignore: 5.3.2
       semver: 7.8.5
-      ts-declaration-location: 1.0.7(typescript@6.0.3)
+      ts-declaration-location: 1.0.7(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
@@ -7782,14 +7730,14 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@9.39.5(supports-color@6.0.0):
+  eslint@9.39.5(supports-color@8.1.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@6.0.0))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@9.39.5(supports-color@8.1.1))
       '@eslint-community/regexpp': 4.12.2
-      '@eslint/config-array': 0.21.2(supports-color@6.0.0)
+      '@eslint/config-array': 0.21.2(supports-color@8.1.1)
       '@eslint/config-helpers': 0.4.2
       '@eslint/core': 0.17.0
-      '@eslint/eslintrc': 3.3.6(supports-color@6.0.0)
+      '@eslint/eslintrc': 3.3.6(supports-color@8.1.1)
       '@eslint/js': 9.39.5
       '@eslint/plugin-kit': 0.4.1
       '@humanfs/node': 0.16.8
@@ -7799,7 +7747,7 @@ snapshots:
       ajv: 6.15.0
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -7855,9 +7803,8 @@ snapshots:
       idna-uts46-hx: 2.3.1
       js-sha3: 0.5.7
 
-  eth-gas-reporter@0.2.22(@codechecks/client@0.1.12(supports-color@6.0.0)(typescript@6.0.3)):
+  eth-gas-reporter@0.2.22:
     dependencies:
-      '@codechecks/client': 0.1.12(supports-color@6.0.0)(typescript@6.0.3)
       '@ethersproject/abi': 5.8.0
       '@solidity-parser/parser': 0.12.2
       cli-table3: 0.5.1
@@ -7874,13 +7821,13 @@ snapshots:
       sha1: 1.1.1
       sync-request: 6.1.0
 
-  eth-lib@0.1.27(supports-color@6.0.0):
+  eth-lib@0.1.27(supports-color@8.1.1):
     dependencies:
-      bn.js: 4.11.6
+      bn.js: 4.12.5
       elliptic: 6.6.1
       keccakjs: 0.2.3
       nano-json-stream-parser: 0.1.2
-      servify: 0.1.12(supports-color@6.0.0)
+      servify: 0.1.12(supports-color@8.1.1)
       ws: 3.3.3
       xhr-request-promise: 0.1.3
     transitivePeerDependencies:
@@ -7888,12 +7835,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  eth-lib@0.1.29(supports-color@6.0.0):
+  eth-lib@0.1.29(supports-color@8.1.1):
     dependencies:
       bn.js: 4.12.5
       elliptic: 6.6.1
       nano-json-stream-parser: 0.1.2
-      servify: 0.1.12(supports-color@6.0.0)
+      servify: 0.1.12(supports-color@8.1.1)
       ws: 3.3.3
       xhr-request-promise: 0.1.3
     transitivePeerDependencies:
@@ -8003,31 +7950,21 @@ snapshots:
       md5.js: 1.3.5
       safe-buffer: 5.2.1
 
-  execa@1.0.0:
-    dependencies:
-      cross-spawn: 6.0.6
-      get-stream: 4.1.0
-      is-stream: 1.1.0
-      npm-run-path: 2.0.2
-      p-finally: 1.0.0
-      signal-exit: 3.0.7
-      strip-eof: 1.0.0
-
-  express@4.22.2(supports-color@6.0.0):
+  express@4.22.2(supports-color@8.1.1):
     dependencies:
       accepts: 1.3.8
       array-flatten: 1.1.1
-      body-parser: 1.20.6(supports-color@6.0.0)
+      body-parser: 1.20.6(supports-color@8.1.1)
       content-disposition: 0.5.4
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.0.7
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 1.3.2(supports-color@6.0.0)
+      finalhandler: 1.3.2(supports-color@8.1.1)
       fresh: 0.5.2
       http-errors: 2.0.1
       merge-descriptors: 1.0.3
@@ -8039,8 +7976,8 @@ snapshots:
       qs: 6.15.3
       range-parser: 1.2.1
       safe-buffer: 5.2.1
-      send: 0.19.2(supports-color@6.0.0)
-      serve-static: 1.16.3(supports-color@6.0.0)
+      send: 0.19.2(supports-color@8.1.1)
+      serve-static: 1.16.3(supports-color@8.1.1)
       setprototypeof: 1.2.0
       statuses: 2.0.2
       type-is: 1.6.18
@@ -8066,6 +8003,8 @@ snapshots:
   fast-deep-equal@3.1.3: {}
 
   fast-diff@1.3.0: {}
+
+  fast-equals@5.4.1: {}
 
   fast-equals@6.0.2: {}
 
@@ -8109,9 +8048,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@1.3.2(supports-color@6.0.0):
+  finalhandler@1.3.2(supports-color@8.1.1):
     dependencies:
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -8153,13 +8092,13 @@ snapshots:
 
   flatted@3.4.4: {}
 
-  follow-redirects@1.16.0(debug@4.4.3(supports-color@6.0.0)):
+  follow-redirects@1.16.0(debug@4.4.3(supports-color@8.1.1)):
     optionalDependencies:
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
 
-  follow-redirects@1.5.10(supports-color@6.0.0):
+  follow-redirects@1.5.10(supports-color@8.1.1):
     dependencies:
-      debug: 3.1.0(supports-color@6.0.0)
+      debug: 3.1.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -8345,7 +8284,7 @@ snapshots:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.4
+      minimatch: 3.1.5
       once: 1.4.0
       path-is-absolute: 1.0.1
 
@@ -8449,6 +8388,11 @@ snapshots:
       ajv: 6.15.0
       har-schema: 2.0.0
 
+  hardhat-watcher@2.5.0(hardhat@3.9.0):
+    dependencies:
+      chokidar: 3.6.0
+      hardhat: 3.9.0
+
   hardhat@3.9.0:
     dependencies:
       '@nomicfoundation/edr': 0.12.0
@@ -8474,8 +8418,6 @@ snapshots:
       - utf-8-validate
 
   has-bigints@1.1.0: {}
-
-  has-flag@2.0.0: {}
 
   has-flag@3.0.0: {}
 
@@ -8526,7 +8468,7 @@ snapshots:
 
   hmac-drbg@1.0.1:
     dependencies:
-      hash.js: 1.1.3
+      hash.js: 1.1.7
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
@@ -8589,19 +8531,19 @@ snapshots:
 
   ieee754@1.2.1: {}
 
-  ignition-utils@https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@6.0.3)(zod@3.25.76):
+  ignition-utils@https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@nomicfoundation/hardhat-keystore': 3.0.12(hardhat@3.9.0)
       '@nomicfoundation/hardhat-network-helpers': 3.0.11(hardhat@3.9.0)
       '@nomicfoundation/hardhat-node-test-runner': 3.0.17(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-toolbox-viem': 5.0.7(c776d79d980bd301f6440c4b99e522d9)
+      '@nomicfoundation/hardhat-toolbox-viem': 5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.0.21(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.7)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
       '@nomicfoundation/hardhat-verify': 3.0.21(hardhat@3.9.0)
-      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
-      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem': 3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem-assertions': 3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
       '@nomicfoundation/ignition-core': 3.1.7
       '@openzeppelin/contracts': 4.9.3
       hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - '@nomicfoundation/hardhat-ignition'
       - '@nomicfoundation/hardhat-ignition-viem'
@@ -8870,11 +8812,6 @@ snapshots:
       argparse: 1.0.10
       esprima: 4.0.1
 
-  js-yaml@3.15.2:
-    dependencies:
-      argparse: 1.0.10
-      esprima: 4.0.1
-
   js-yaml@4.3.2:
     dependencies:
       argparse: 2.0.1
@@ -8947,6 +8884,8 @@ snapshots:
   latest-version@7.0.0:
     dependencies:
       package-json: 8.1.1
+
+  lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#ec08ee1fa04de5241a61a6ec3002901da823b6e4: {}
 
   leven@2.1.0: {}
 
@@ -9130,21 +9069,7 @@ snapshots:
     dependencies:
       pify: 3.0.0
 
-  make-error@1.3.6: {}
-
   markdown-table@1.1.3: {}
-
-  marked-terminal@3.3.0(marked@0.7.0):
-    dependencies:
-      ansi-escapes: 3.2.0
-      cardinal: 2.1.1
-      chalk: 2.4.2
-      cli-table: 0.3.11
-      marked: 0.7.0
-      node-emoji: 1.11.0
-      supports-hyperlinks: 1.0.1
-
-  marked@0.7.0: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -9248,12 +9173,19 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
-  moc-governance@https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3(openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)))(openzeppelin-solidity@2.3.0)(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76))(zos@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)):
+  moc-governance@https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3(openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)))(openzeppelin-solidity@2.3.0)(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)):
     dependencies:
-      openzeppelin-eth: 2.1.3(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76))
+      openzeppelin-eth: 2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76))
       openzeppelin-solidity: 2.3.0
-      zos: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
-      zos-lib: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
+      zos: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
+      zos-lib: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+      - zod
 
   mocha@11.8.0:
     dependencies:
@@ -9308,15 +9240,15 @@ snapshots:
 
   mock-fs@4.14.0: {}
 
-  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(@codechecks/client@0.1.12(supports-color@6.0.0)(typescript@6.0.3))(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76):
+  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@thinkanddev/solidoc': 3.0.1
-      eth-gas-reporter: 0.2.22(@codechecks/client@0.1.12(supports-color@6.0.0)(typescript@6.0.3))
-      moc-governance: https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3(openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)))(openzeppelin-solidity@2.3.0)(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76))(zos@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76))
-      openzeppelin-eth: 2.1.3(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76))
+      eth-gas-reporter: 0.2.22
+      moc-governance: https://codeload.github.com/money-on-chain/Areopagus-Governance/tar.gz/61bbbec607b0b7c5b1b52b20faab9587e4b830d3(openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)))(openzeppelin-solidity@2.3.0)(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76))
+      openzeppelin-eth: 2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76))
       openzeppelin-solidity: 2.3.0
-      zos: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
-      zos-lib: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
+      zos: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
+      zos-lib: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - '@codechecks/client'
       - bufferutil
@@ -9366,12 +9298,6 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  nice-try@1.0.5: {}
-
-  node-emoji@1.11.0:
-    dependencies:
-      lodash: 4.18.1
-
   node-environment-flags@1.0.6:
     dependencies:
       object.getownpropertydescriptors: 2.1.9
@@ -9397,10 +9323,6 @@ snapshots:
   npm-programmatic@0.0.12:
     dependencies:
       bluebird: 3.7.2
-
-  npm-run-path@2.0.2:
-    dependencies:
-      path-key: 2.0.1
 
   nth-check@2.1.1:
     dependencies:
@@ -9496,9 +9418,9 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)):
+  openzeppelin-eth@2.1.3(zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)):
     dependencies:
-      zos-lib: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
+      zos-lib: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
 
   openzeppelin-solidity@2.3.0: {}
 
@@ -9531,7 +9453,7 @@ snapshots:
       object-keys: 1.1.1
       safe-push-apply: 1.0.0
 
-  ox@0.14.29(typescript@6.0.3)(zod@3.25.76):
+  ox@0.14.29(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
       '@noble/ciphers': 1.3.0
@@ -9539,10 +9461,10 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.2.3(typescript@6.0.3)(zod@3.25.76)
+      abitype: 1.2.3(typescript@5.9.3)(zod@3.25.76)
       eventemitter3: 5.0.1
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - zod
 
@@ -9640,8 +9562,6 @@ snapshots:
   path-exists@4.0.0: {}
 
   path-is-absolute@1.0.1: {}
-
-  path-key@2.0.1: {}
 
   path-key@3.1.1: {}
 
@@ -9855,11 +9775,11 @@ snapshots:
     dependencies:
       picomatch: 2.3.2
 
-  readdirp@4.1.2: {}
-
-  redeyed@2.1.1:
+  readdirp@3.6.0:
     dependencies:
-      esprima: 4.0.1
+      picomatch: 2.3.2
+
+  readdirp@4.1.2: {}
 
   reduce-flatten@2.0.0: {}
 
@@ -9906,14 +9826,6 @@ snapshots:
 
   request-promise-native@1.0.9(request@2.88.2):
     dependencies:
-      request: 2.88.2
-      request-promise-core: 1.1.4(request@2.88.2)
-      stealthy-require: 1.1.1
-      tough-cookie: 2.5.0
-
-  request-promise@4.2.6(request@2.88.2):
-    dependencies:
-      bluebird: 3.7.2
       request: 2.88.2
       request-promise-core: 1.1.4(request@2.88.2)
       stealthy-require: 1.1.1
@@ -10002,17 +9914,17 @@ snapshots:
     dependencies:
       bn.js: 5.2.5
 
-  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(37f28dea702ff1d18de6db5d7b6f2dc1):
+  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(089fc51ab41e059ebe829f8698e58f41):
     dependencies:
       '@moc/flow': '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
-      '@moc/oracles': '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0))(ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76))(typescript@6.0.3)(zod@3.25.76)'
+      '@moc/oracles': '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)'
       '@moc/price-oracle-interfaces': price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
       '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
       hardhat: 3.9.0
-      ignition-utils: https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@6.0.3)(zod@3.25.76)))(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@6.0.3)(zod@3.25.76)
+      ignition-utils: https://codeload.github.com/money-on-chain/ignition-utils/tar.gz/786b080cda2b7636fcc48e14cf2d5fff2a36915f(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(typescript@5.9.3)(zod@3.25.76)
       moc-main-latest: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
-      solc: 0.8.24(debug@4.4.3(supports-color@6.0.0))
+      solc: 0.8.24(debug@4.4.3(supports-color@8.1.1))
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -10091,9 +10003,9 @@ snapshots:
 
   semver@7.8.5: {}
 
-  send@0.19.2(supports-color@6.0.0):
+  send@0.19.2(supports-color@8.1.1):
     dependencies:
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       depd: 2.0.0
       destroy: 1.2.0
       encodeurl: 2.0.0
@@ -10113,20 +10025,20 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
-  serve-static@1.16.3(supports-color@6.0.0):
+  serve-static@1.16.3(supports-color@8.1.1):
     dependencies:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 0.19.2(supports-color@6.0.0)
+      send: 0.19.2(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  servify@0.1.12(supports-color@6.0.0):
+  servify@0.1.12(supports-color@8.1.1):
     dependencies:
-      body-parser: 1.20.6(supports-color@6.0.0)
+      body-parser: 1.20.6(supports-color@8.1.1)
       cors: 2.8.6
-      express: 4.22.2(supports-color@6.0.0)
+      express: 4.22.2(supports-color@8.1.1)
       request: 2.88.2
       xhr: 2.6.0
     transitivePeerDependencies:
@@ -10177,15 +10089,9 @@ snapshots:
     dependencies:
       nan: 2.13.2
 
-  shebang-command@1.2.0:
-    dependencies:
-      shebang-regex: 1.0.0
-
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
-
-  shebang-regex@1.0.0: {}
 
   shebang-regex@3.0.0: {}
 
@@ -10229,9 +10135,9 @@ snapshots:
       once: 1.4.0
       simple-concat: 1.0.1
 
-  simple-git@1.132.0(supports-color@6.0.0):
+  simple-git@1.132.0(supports-color@8.1.1):
     dependencies:
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -10253,11 +10159,11 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
 
-  solc@0.8.24(debug@4.4.3(supports-color@6.0.0)):
+  solc@0.8.24(debug@4.4.3(supports-color@8.1.1)):
     dependencies:
       command-exists: 1.2.9
       commander: 8.3.0
-      follow-redirects: 1.16.0(debug@4.4.3(supports-color@6.0.0))
+      follow-redirects: 1.16.0(debug@4.4.3(supports-color@8.1.1))
       js-sha3: 0.8.0
       memorystream: 0.3.1
       semver: 5.7.2
@@ -10265,7 +10171,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  solhint@6.2.4(typescript@6.0.3):
+  solhint@6.2.4(typescript@5.9.3):
     dependencies:
       '@solidity-parser/parser': 0.20.2
       ajv: 8.20.0
@@ -10273,7 +10179,7 @@ snapshots:
       better-ajv-errors: 2.0.3(ajv@8.20.0)
       chalk: 4.1.2
       commander: 10.0.1
-      cosmiconfig: 8.3.6(typescript@6.0.3)
+      cosmiconfig: 8.3.6(typescript@5.9.3)
       fast-diff: 1.3.0
       glob: 13.0.6
       ignore: 5.3.2
@@ -10293,13 +10199,6 @@ snapshots:
     dependencies:
       atomic-sleep: 1.0.0
       flatstr: 1.0.12
-
-  source-map-support@0.5.21:
-    dependencies:
-      buffer-from: 1.1.2
-      source-map: 0.6.1
-
-  source-map@0.6.1: {}
 
   split2@3.2.2:
     dependencies:
@@ -10424,8 +10323,6 @@ snapshots:
     dependencies:
       is-natural-number: 4.0.1
 
-  strip-eof@1.0.0: {}
-
   strip-hex-prefix@1.0.0:
     dependencies:
       is-hex-prefixed: 1.0.0
@@ -10450,19 +10347,14 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  supports-hyperlinks@1.0.1:
-    dependencies:
-      has-flag: 2.0.0
-      supports-color: 5.5.0
-
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swarm-js@0.1.37(supports-color@6.0.0):
+  swarm-js@0.1.37(supports-color@8.1.1):
     dependencies:
       bluebird: 3.7.2
       buffer: 5.7.1
       decompress: 4.2.1
-      eth-lib: 0.1.29(supports-color@6.0.0)
+      eth-lib: 0.1.29(supports-color@8.1.1)
       fs-extra: 2.1.2
       fs-promise: 2.0.3
       got: 7.1.0
@@ -10477,12 +10369,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  swarm-js@0.1.39(supports-color@6.0.0):
+  swarm-js@0.1.39(supports-color@8.1.1):
     dependencies:
       bluebird: 3.7.2
       buffer: 5.7.1
       decompress: 4.2.1
-      eth-lib: 0.1.29(supports-color@6.0.0)
+      eth-lib: 0.1.29(supports-color@8.1.1)
       fs-extra: 4.0.3
       got: 7.1.0
       mime-types: 2.1.35
@@ -10621,14 +10513,14 @@ snapshots:
 
   tr46@0.0.3: {}
 
-  truffle-config@1.1.2(supports-color@6.0.0):
+  truffle-config@1.1.2(supports-color@8.1.1):
     dependencies:
       configstore: 4.0.0
       find-up: 2.1.0
       lodash: 4.17.10
       original-require: 1.0.1
       truffle-error: 0.0.3
-      truffle-provider: 0.1.16(supports-color@6.0.0)
+      truffle-provider: 0.1.16(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -10636,9 +10528,9 @@ snapshots:
 
   truffle-error@0.0.3: {}
 
-  truffle-flattener@1.6.0(supports-color@6.0.0):
+  truffle-flattener@1.6.0(supports-color@8.1.1):
     dependencies:
-      '@resolver-engine/imports-fs': 0.2.2(supports-color@6.0.0)
+      '@resolver-engine/imports-fs': 0.2.2(supports-color@8.1.1)
       '@solidity-parser/parser': 0.14.5
       find-up: 2.1.0
       mkdirp: 1.0.4
@@ -10646,30 +10538,30 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  truffle-interface-adapter@0.2.5(supports-color@6.0.0):
+  truffle-interface-adapter@0.2.5(supports-color@8.1.1):
     dependencies:
       bn.js: 4.12.5
       ethers: 4.0.49
       lodash: 4.18.1
-      web3: 1.2.1(supports-color@6.0.0)
+      web3: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  truffle-provider@0.1.16(supports-color@6.0.0):
+  truffle-provider@0.1.16(supports-color@8.1.1):
     dependencies:
       '@truffle/error': 0.0.6
-      truffle-interface-adapter: 0.2.5(supports-color@6.0.0)
-      web3: 1.2.1(supports-color@6.0.0)
+      truffle-interface-adapter: 0.2.5(supports-color@8.1.1)
+      web3: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  ts-api-utils@2.5.0(typescript@6.0.3):
+  ts-api-utils@2.5.0(typescript@5.9.3):
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
   ts-command-line-args@2.5.1:
     dependencies:
@@ -10678,32 +10570,21 @@ snapshots:
       command-line-usage: 6.1.3
       string-format: 2.0.0
 
-  ts-declaration-location@1.0.7(typescript@6.0.3):
+  ts-declaration-location@1.0.7(typescript@5.9.3):
     dependencies:
       picomatch: 4.0.7
-      typescript: 6.0.3
+      typescript: 5.9.3
 
-  ts-essentials@1.0.4: {}
-
-  ts-essentials@7.0.3(typescript@6.0.3):
+  ts-essentials@7.0.3(typescript@5.9.3):
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
-  ts-node@8.10.2(typescript@6.0.3):
-    dependencies:
-      arg: 4.1.3
-      diff: 4.0.4
-      make-error: 1.3.6
-      source-map-support: 0.5.21
-      typescript: 6.0.3
-      yn: 3.1.1
-
-  ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(8f98d6a23cc81977431b4b8b23335f33))(hardhat@3.9.0)(typescript@6.0.3)(zod@3.25.76):
+  ts-test-helpers@https://codeload.github.com/money-on-chain/ts-test-helpers/tar.gz/6177adbe32646487c88dc9553b160c22d498e8e2(@nomicfoundation/hardhat-toolbox-viem@5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       hardhat: 3.9.0
-      viem: 2.53.1(typescript@6.0.3)(zod@3.25.76)
+      viem: 2.53.1(typescript@5.9.3)(zod@3.25.76)
     optionalDependencies:
-      '@nomicfoundation/hardhat-toolbox-viem': 5.0.7(8f98d6a23cc81977431b4b8b23335f33)
+      '@nomicfoundation/hardhat-toolbox-viem': 5.0.7(@nomicfoundation/hardhat-ignition@3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0))(@nomicfoundation/hardhat-keystore@3.0.12(hardhat@3.9.0))(@nomicfoundation/hardhat-network-helpers@3.0.11(hardhat@3.9.0))(@nomicfoundation/hardhat-node-test-runner@3.0.17(hardhat@3.9.0))(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(@nomicfoundation/hardhat-viem-assertions@3.1.2(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/hardhat-viem@3.0.9(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.9)(hardhat@3.9.0)(viem@2.53.1(typescript@5.9.3)(zod@3.25.76))
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -10751,10 +10632,10 @@ snapshots:
 
   type@2.7.3: {}
 
-  typechain@8.3.2(supports-color@6.0.0)(typescript@6.0.3):
+  typechain@8.3.2(supports-color@8.1.1)(typescript@5.9.3):
     dependencies:
       '@types/prettier': 2.7.3
-      debug: 4.4.3(supports-color@6.0.0)
+      debug: 4.4.3(supports-color@8.1.1)
       fs-extra: 7.0.1
       glob: 7.1.7
       js-sha3: 0.8.0
@@ -10762,8 +10643,8 @@ snapshots:
       mkdirp: 1.0.4
       prettier: 2.8.8
       ts-command-line-args: 2.5.1
-      ts-essentials: 7.0.3(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-essentials: 7.0.3(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10806,18 +10687,18 @@ snapshots:
 
   typedarray@0.0.6: {}
 
-  typescript-eslint@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3):
+  typescript-eslint@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3))(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@6.0.0)(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@6.0.0))(supports-color@6.0.0)(typescript@6.0.3)
-      eslint: 9.39.5(supports-color@6.0.0)
-      typescript: 6.0.3
+      '@typescript-eslint/eslint-plugin': 8.68.0(@typescript-eslint/parser@8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3))(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.68.0(supports-color@8.1.1)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.68.0(eslint@9.39.5(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)
+      eslint: 9.39.5(supports-color@8.1.1)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  typescript@6.0.3: {}
+  typescript@5.9.3: {}
 
   typical@4.0.0: {}
 
@@ -10888,8 +10769,6 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  url-join@4.0.1: {}
-
   url-parse-lax@1.0.0:
     dependencies:
       prepend-http: 1.0.4
@@ -10932,18 +10811,18 @@ snapshots:
       core-util-is: 1.0.2
       extsprintf: 1.3.0
 
-  viem@2.53.1(typescript@6.0.3)(zod@3.25.76):
+  viem@2.53.1(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@noble/curves': 1.9.1
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.2.3(typescript@6.0.3)(zod@3.25.76)
+      abitype: 1.2.3(typescript@5.9.3)(zod@3.25.76)
       isows: 1.0.7(ws@8.20.1)
-      ox: 0.14.29(typescript@6.0.3)(zod@3.25.76)
+      ox: 0.14.29(typescript@5.9.3)(zod@3.25.76)
       ws: 8.20.1
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -10953,31 +10832,31 @@ snapshots:
     dependencies:
       defaults: 1.0.4
 
-  web3-bzz@1.0.0-beta.37(supports-color@6.0.0):
+  web3-bzz@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       got: 7.1.0
-      swarm-js: 0.1.37(supports-color@6.0.0)
+      swarm-js: 0.1.37(supports-color@8.1.1)
       underscore: 1.8.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-bzz@1.2.1(supports-color@6.0.0):
+  web3-bzz@1.2.1(supports-color@8.1.1):
     dependencies:
       got: 9.6.0
-      swarm-js: 0.1.39(supports-color@6.0.0)
+      swarm-js: 0.1.39(supports-color@8.1.1)
       underscore: 1.9.1
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-core-helpers@1.0.0-beta.37(supports-color@6.0.0):
+  web3-core-helpers@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-eth-iban: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-eth-iban: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -10989,13 +10868,13 @@ snapshots:
       web3-eth-iban: 1.2.1
       web3-utils: 1.2.1
 
-  web3-core-method@1.0.0-beta.37(supports-color@6.0.0):
+  web3-core-method@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
       web3-core-promievent: 1.0.0-beta.37
-      web3-core-subscriptions: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-subscriptions: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11019,33 +10898,33 @@ snapshots:
       any-promise: 1.3.0
       eventemitter3: 3.1.2
 
-  web3-core-requestmanager@1.0.0-beta.37(supports-color@6.0.0):
+  web3-core-requestmanager@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-providers-http: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-providers-ipc: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-providers-ws: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-providers-http: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-providers-ipc: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-providers-ws: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-core-requestmanager@1.2.1(supports-color@6.0.0):
+  web3-core-requestmanager@1.2.1(supports-color@8.1.1):
     dependencies:
       underscore: 1.9.1
       web3-core-helpers: 1.2.1
       web3-providers-http: 1.2.1
       web3-providers-ipc: 1.2.1
-      web3-providers-ws: 1.2.1(supports-color@6.0.0)
+      web3-providers-ws: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
-  web3-core-subscriptions@1.0.0-beta.37(supports-color@6.0.0):
+  web3-core-subscriptions@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       eventemitter3: 1.1.1
       underscore: 1.8.3
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11057,22 +10936,22 @@ snapshots:
       underscore: 1.9.1
       web3-core-helpers: 1.2.1
 
-  web3-core@1.0.0-beta.37(supports-color@6.0.0):
+  web3-core@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-requestmanager: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-requestmanager: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-core@1.2.1(supports-color@6.0.0):
+  web3-core@1.2.1(supports-color@8.1.1):
     dependencies:
       web3-core-helpers: 1.2.1
       web3-core-method: 1.2.1
-      web3-core-requestmanager: 1.2.1(supports-color@6.0.0)
+      web3-core-requestmanager: 1.2.1(supports-color@8.1.1)
       web3-utils: 1.2.1
     transitivePeerDependencies:
       - supports-color
@@ -11098,11 +10977,11 @@ snapshots:
     dependencies:
       web3-types: 1.10.0
 
-  web3-eth-abi@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-abi@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       ethers: 4.0.0-beta.1
       underscore: 1.8.3
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11114,9 +10993,9 @@ snapshots:
       underscore: 1.9.1
       web3-utils: 1.2.1
 
-  web3-eth-abi@4.4.1(typescript@6.0.3)(zod@3.25.76):
+  web3-eth-abi@4.4.1(typescript@5.9.3)(zod@3.25.76):
     dependencies:
-      abitype: 0.7.1(typescript@6.0.3)(zod@3.25.76)
+      abitype: 0.7.1(typescript@5.9.3)(zod@3.25.76)
       web3-errors: 1.3.1
       web3-types: 1.10.0
       web3-utils: 4.3.3
@@ -11125,7 +11004,7 @@ snapshots:
       - typescript
       - zod
 
-  web3-eth-accounts@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-accounts@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       any-promise: 1.3.0
       crypto-browserify: 3.12.0
@@ -11133,16 +11012,16 @@ snapshots:
       scrypt.js: 0.2.0
       underscore: 1.8.3
       uuid: 2.0.1
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-eth-accounts@1.2.1(supports-color@6.0.0):
+  web3-eth-accounts@1.2.1(supports-color@8.1.1):
     dependencies:
       any-promise: 1.3.0
       crypto-browserify: 3.12.0
@@ -11151,7 +11030,7 @@ snapshots:
       semver: 6.2.0
       underscore: 1.9.1
       uuid: 3.3.2
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-helpers: 1.2.1
       web3-core-method: 1.2.1
       web3-utils: 1.2.1
@@ -11168,25 +11047,25 @@ snapshots:
       web3-utils: 4.3.3
       web3-validator: 2.0.6
 
-  web3-eth-contract@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-contract@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
       web3-core-promievent: 1.0.0-beta.37
-      web3-core-subscriptions: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-abi: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-subscriptions: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-abi: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-eth-contract@1.2.1(supports-color@6.0.0):
+  web3-eth-contract@1.2.1(supports-color@8.1.1):
     dependencies:
       underscore: 1.9.1
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-helpers: 1.2.1
       web3-core-method: 1.2.1
       web3-core-promievent: 1.2.1
@@ -11196,13 +11075,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  web3-eth-contract@4.7.2(typescript@6.0.3)(zod@3.25.76):
+  web3-eth-contract@4.7.2(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@ethereumjs/rlp': 5.0.2
       web3-core: 4.7.1
       web3-errors: 1.3.1
-      web3-eth: 4.11.1(typescript@6.0.3)(zod@3.25.76)
-      web3-eth-abi: 4.4.1(typescript@6.0.3)(zod@3.25.76)
+      web3-eth: 4.11.1(typescript@5.9.3)(zod@3.25.76)
+      web3-eth-abi: 4.4.1(typescript@5.9.3)(zod@3.25.76)
       web3-types: 1.10.0
       web3-utils: 4.3.3
       web3-validator: 2.0.6
@@ -11213,41 +11092,41 @@ snapshots:
       - utf-8-validate
       - zod
 
-  web3-eth-ens@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-ens@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       eth-ens-namehash: 2.0.8
       underscore: 1.8.3
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
       web3-core-promievent: 1.0.0-beta.37
-      web3-eth-abi: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-contract: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-eth-abi: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-contract: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-eth-ens@1.2.1(supports-color@6.0.0):
+  web3-eth-ens@1.2.1(supports-color@8.1.1):
     dependencies:
       eth-ens-namehash: 2.0.8
       underscore: 1.9.1
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-helpers: 1.2.1
       web3-core-promievent: 1.2.1
       web3-eth-abi: 1.2.1
-      web3-eth-contract: 1.2.1(supports-color@6.0.0)
+      web3-eth-contract: 1.2.1(supports-color@8.1.1)
       web3-utils: 1.2.1
     transitivePeerDependencies:
       - supports-color
 
-  web3-eth-ens@4.4.0(typescript@6.0.3)(zod@3.25.76):
+  web3-eth-ens@4.4.0(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
       web3-core: 4.7.1
       web3-errors: 1.3.1
-      web3-eth: 4.11.1(typescript@6.0.3)(zod@3.25.76)
-      web3-eth-contract: 4.7.2(typescript@6.0.3)(zod@3.25.76)
+      web3-eth: 4.11.1(typescript@5.9.3)(zod@3.25.76)
+      web3-eth-contract: 4.7.2(typescript@5.9.3)(zod@3.25.76)
       web3-net: 4.1.0
       web3-types: 1.10.0
       web3-utils: 4.3.3
@@ -11259,10 +11138,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  web3-eth-iban@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-iban@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       bn.js: 4.11.6
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11280,32 +11159,32 @@ snapshots:
       web3-utils: 4.3.3
       web3-validator: 2.0.6
 
-  web3-eth-personal@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth-personal@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-net: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-net: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-eth-personal@1.2.1(supports-color@6.0.0):
+  web3-eth-personal@1.2.1(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-helpers: 1.2.1
       web3-core-method: 1.2.1
-      web3-net: 1.2.1(supports-color@6.0.0)
+      web3-net: 1.2.1(supports-color@8.1.1)
       web3-utils: 1.2.1
     transitivePeerDependencies:
       - supports-color
 
-  web3-eth-personal@4.1.0(typescript@6.0.3)(zod@3.25.76):
+  web3-eth-personal@4.1.0(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       web3-core: 4.7.1
-      web3-eth: 4.11.1(typescript@6.0.3)(zod@3.25.76)
+      web3-eth: 4.11.1(typescript@5.9.3)(zod@3.25.76)
       web3-rpc-methods: 1.3.0
       web3-types: 1.10.0
       web3-utils: 4.3.3
@@ -11317,50 +11196,50 @@ snapshots:
       - utf-8-validate
       - zod
 
-  web3-eth@1.0.0-beta.37(supports-color@6.0.0):
+  web3-eth@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-subscriptions: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-abi: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-accounts: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-contract: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-ens: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-iban: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-personal: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-net: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-subscriptions: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-abi: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-accounts: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-contract: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-ens: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-iban: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-personal: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-net: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-eth@1.2.1(supports-color@6.0.0):
+  web3-eth@1.2.1(supports-color@8.1.1):
     dependencies:
       underscore: 1.9.1
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-helpers: 1.2.1
       web3-core-method: 1.2.1
       web3-core-subscriptions: 1.2.1
       web3-eth-abi: 1.2.1
-      web3-eth-accounts: 1.2.1(supports-color@6.0.0)
-      web3-eth-contract: 1.2.1(supports-color@6.0.0)
-      web3-eth-ens: 1.2.1(supports-color@6.0.0)
+      web3-eth-accounts: 1.2.1(supports-color@8.1.1)
+      web3-eth-contract: 1.2.1(supports-color@8.1.1)
+      web3-eth-ens: 1.2.1(supports-color@8.1.1)
       web3-eth-iban: 1.2.1
-      web3-eth-personal: 1.2.1(supports-color@6.0.0)
-      web3-net: 1.2.1(supports-color@6.0.0)
+      web3-eth-personal: 1.2.1(supports-color@8.1.1)
+      web3-net: 1.2.1(supports-color@8.1.1)
       web3-utils: 1.2.1
     transitivePeerDependencies:
       - supports-color
 
-  web3-eth@4.11.1(typescript@6.0.3)(zod@3.25.76):
+  web3-eth@4.11.1(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       setimmediate: 1.0.5
       web3-core: 4.7.1
       web3-errors: 1.3.1
-      web3-eth-abi: 4.4.1(typescript@6.0.3)(zod@3.25.76)
+      web3-eth-abi: 4.4.1(typescript@5.9.3)(zod@3.25.76)
       web3-eth-accounts: 4.3.1
       web3-net: 4.1.0
       web3-providers-ws: 4.0.8
@@ -11375,19 +11254,19 @@ snapshots:
       - utf-8-validate
       - zod
 
-  web3-net@1.0.0-beta.37(supports-color@6.0.0):
+  web3-net@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-net@1.2.1(supports-color@6.0.0):
+  web3-net@1.2.1(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-method: 1.2.1
       web3-utils: 1.2.1
     transitivePeerDependencies:
@@ -11404,9 +11283,9 @@ snapshots:
       - encoding
       - utf-8-validate
 
-  web3-providers-http@1.0.0-beta.37(supports-color@6.0.0):
+  web3-providers-http@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
       xhr2-cookies: 1.1.0
     transitivePeerDependencies:
       - bufferutil
@@ -11427,11 +11306,11 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  web3-providers-ipc@1.0.0-beta.37(supports-color@6.0.0):
+  web3-providers-ipc@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       oboe: 2.1.3
       underscore: 1.8.3
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11450,21 +11329,21 @@ snapshots:
       web3-utils: 4.3.3
     optional: true
 
-  web3-providers-ws@1.0.0-beta.37(supports-color@6.0.0):
+  web3-providers-ws@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       underscore: 1.8.3
-      web3-core-helpers: 1.0.0-beta.37(supports-color@6.0.0)
-      websocket: https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2(supports-color@6.0.0)
+      web3-core-helpers: 1.0.0-beta.37(supports-color@8.1.1)
+      websocket: https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-providers-ws@1.2.1(supports-color@6.0.0):
+  web3-providers-ws@1.2.1(supports-color@8.1.1):
     dependencies:
       underscore: 1.9.1
       web3-core-helpers: 1.2.1
-      websocket: https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400(supports-color@6.0.0)
+      websocket: https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11503,32 +11382,32 @@ snapshots:
       - encoding
       - utf-8-validate
 
-  web3-shh@1.0.0-beta.37(supports-color@6.0.0):
+  web3-shh@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-method: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core-subscriptions: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-net: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-method: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core-subscriptions: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-net: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3-shh@1.2.1(supports-color@6.0.0):
+  web3-shh@1.2.1(supports-color@8.1.1):
     dependencies:
-      web3-core: 1.2.1(supports-color@6.0.0)
+      web3-core: 1.2.1(supports-color@8.1.1)
       web3-core-method: 1.2.1
       web3-core-subscriptions: 1.2.1
-      web3-net: 1.2.1(supports-color@6.0.0)
+      web3-net: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
   web3-types@1.10.0: {}
 
-  web3-utils@1.0.0-beta.37(supports-color@6.0.0):
+  web3-utils@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
       bn.js: 4.11.6
-      eth-lib: 0.1.27(supports-color@6.0.0)
+      eth-lib: 0.1.27(supports-color@8.1.1)
       ethjs-unit: 0.1.6
       number-to-bn: 1.7.0
       randomhex: 0.1.5
@@ -11565,45 +11444,45 @@ snapshots:
       web3-types: 1.10.0
       zod: 3.25.76
 
-  web3@1.0.0-beta.37(supports-color@6.0.0):
+  web3@1.0.0-beta.37(supports-color@8.1.1):
     dependencies:
-      web3-bzz: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-core: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-eth-personal: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-net: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-shh: 1.0.0-beta.37(supports-color@6.0.0)
-      web3-utils: 1.0.0-beta.37(supports-color@6.0.0)
+      web3-bzz: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-core: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-eth-personal: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-net: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-shh: 1.0.0-beta.37(supports-color@8.1.1)
+      web3-utils: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3@1.2.1(supports-color@6.0.0):
+  web3@1.2.1(supports-color@8.1.1):
     dependencies:
-      web3-bzz: 1.2.1(supports-color@6.0.0)
-      web3-core: 1.2.1(supports-color@6.0.0)
-      web3-eth: 1.2.1(supports-color@6.0.0)
-      web3-eth-personal: 1.2.1(supports-color@6.0.0)
-      web3-net: 1.2.1(supports-color@6.0.0)
-      web3-shh: 1.2.1(supports-color@6.0.0)
+      web3-bzz: 1.2.1(supports-color@8.1.1)
+      web3-core: 1.2.1(supports-color@8.1.1)
+      web3-eth: 1.2.1(supports-color@8.1.1)
+      web3-eth-personal: 1.2.1(supports-color@8.1.1)
+      web3-net: 1.2.1(supports-color@8.1.1)
+      web3-shh: 1.2.1(supports-color@8.1.1)
       web3-utils: 1.2.1
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  web3@4.16.0(typescript@6.0.3)(zod@3.25.76):
+  web3@4.16.0(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       web3-core: 4.7.1
       web3-errors: 1.3.1
-      web3-eth: 4.11.1(typescript@6.0.3)(zod@3.25.76)
-      web3-eth-abi: 4.4.1(typescript@6.0.3)(zod@3.25.76)
+      web3-eth: 4.11.1(typescript@5.9.3)(zod@3.25.76)
+      web3-eth-abi: 4.4.1(typescript@5.9.3)(zod@3.25.76)
       web3-eth-accounts: 4.3.1
-      web3-eth-contract: 4.7.2(typescript@6.0.3)(zod@3.25.76)
-      web3-eth-ens: 4.4.0(typescript@6.0.3)(zod@3.25.76)
+      web3-eth-contract: 4.7.2(typescript@5.9.3)(zod@3.25.76)
+      web3-eth-ens: 4.4.0(typescript@5.9.3)(zod@3.25.76)
       web3-eth-iban: 4.0.7
-      web3-eth-personal: 4.1.0(typescript@6.0.3)(zod@3.25.76)
+      web3-eth-personal: 4.1.0(typescript@5.9.3)(zod@3.25.76)
       web3-net: 4.1.0
       web3-providers-http: 4.2.0
       web3-providers-ws: 4.0.8
@@ -11621,18 +11500,18 @@ snapshots:
 
   webidl-conversions@3.0.1: {}
 
-  websocket@https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2(supports-color@6.0.0):
+  websocket@https://codeload.github.com/frozeman/WebSocket-Node/tar.gz/6c72925e3f8aaaea8dc8450f97627e85263999f2(supports-color@8.1.1):
     dependencies:
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       nan: 2.28.0
       typedarray-to-buffer: 3.1.5
       yaeti: 0.0.6
     transitivePeerDependencies:
       - supports-color
 
-  websocket@https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400(supports-color@6.0.0):
+  websocket@https://codeload.github.com/web3-js/WebSocket-Node/tar.gz/ef5ea2f41daf4a2113b80c9223df884b4d56c400(supports-color@8.1.1):
     dependencies:
-      debug: 2.6.9(supports-color@6.0.0)
+      debug: 2.6.9(supports-color@8.1.1)
       es5-ext: 0.10.64
       nan: 2.28.0
       typedarray-to-buffer: 3.1.5
@@ -11848,16 +11727,14 @@ snapshots:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
 
-  yn@3.1.1: {}
-
   yocto-queue@0.1.0: {}
 
   zod@3.25.76: {}
 
-  zos-lib@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76):
+  zos-lib@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
-      '@types/web3': 1.2.2(typescript@6.0.3)(zod@3.25.76)
-      axios: 0.18.1(supports-color@6.0.0)
+      '@types/web3': 1.2.2(typescript@5.9.3)(zod@3.25.76)
+      axios: 0.18.1(supports-color@8.1.1)
       bignumber.js: 7.2.1
       chalk: 2.4.2
       ethers: 4.0.49
@@ -11884,8 +11761,8 @@ snapshots:
       lodash.values: 4.3.0
       lodash.without: 4.4.0
       semver: 5.7.2
-      truffle-flattener: 1.6.0(supports-color@6.0.0)
-      web3: 1.0.0-beta.37(supports-color@6.0.0)
+      truffle-flattener: 1.6.0(supports-color@8.1.1)
+      web3: 1.0.0-beta.37(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -11894,13 +11771,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  zos@2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76):
+  zos@2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@types/npm': 2.0.32
       '@types/semver': 5.5.0
-      '@types/web3': 1.2.2(typescript@6.0.3)(zod@3.25.76)
+      '@types/web3': 1.2.2(typescript@5.9.3)(zod@3.25.76)
       ajv: 6.15.0
-      axios: 0.18.1(supports-color@6.0.0)
+      axios: 0.18.1(supports-color@8.1.1)
       bignumber.js: 8.1.1
       chalk: 2.4.2
       cheerio: 1.2.0
@@ -11942,10 +11819,10 @@ snapshots:
       npm-programmatic: 0.0.12
       ora: 3.4.0
       semver: 5.7.2
-      simple-git: 1.132.0(supports-color@6.0.0)
-      truffle-config: 1.1.2(supports-color@6.0.0)
-      web3: 1.0.0-beta.37(supports-color@6.0.0)
-      zos-lib: 2.3.1(supports-color@6.0.0)(typescript@6.0.3)(zod@3.25.76)
+      simple-git: 1.132.0(supports-color@8.1.1)
+      truffle-config: 1.1.2(supports-color@8.1.1)
+      web3: 1.0.0-beta.37(supports-color@8.1.1)
+      zos-lib: 2.3.1(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
     transitivePeerDependencies:
       - bufferutil
       - encoding

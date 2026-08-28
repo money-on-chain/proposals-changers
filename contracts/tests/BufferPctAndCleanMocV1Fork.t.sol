@@ -565,10 +565,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
       "oracleManager implementation did not change"
     );
     require(mocImplAfter != mocImplBefore, "MoC implementation did not change");
-    require(
-      mocStateImplAfter != mocStateImplBefore,
-      "MoCState implementation did not change"
-    );
+    require(mocStateImplAfter != mocStateImplBefore, "MoCState implementation did not change");
     require(
       mocExchangeImplAfter != mocExchangeImplBefore,
       "MoCExchange implementation did not change"
@@ -1267,104 +1264,128 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
   }
 
   function test_ExecuteChangerSetsInfinityHalfTimeSpans() public {
-        address collectorBefore = docBucketProxy.tcInterestCollectorAddress();
-        uint256 rateBefore = docBucketProxy.tcInterestRate();
+    address collectorBefore = docBucketProxy.tcInterestCollectorAddress();
+    uint256 rateBefore = docBucketProxy.tcInterestRate();
 
-        _executeChanger();
+    _executeChanger();
 
-        assertEq(docBucketProxy.tcInterestCollectorAddress(), collectorBefore, "TC collector should not change");
-        assertEq(docBucketProxy.tcInterestRate(), rateBefore, "TC interest rate should not change");
-        assertEq(
-            docBucketProxy.tcInterestPaymentTimeSpan(),
-            HALF_INFINITY,
-            "TC interest payment span should be half infinity"
-        );
-        assertEq(docBucketProxy.settlementTimeSpan(), HALF_INFINITY, "Settlement span should be half infinity");
-        assertEq(docBucketProxy.emaCalculationTimeSpan(), HALF_INFINITY, "EMA span should be half infinity");
-    }
+    assertEq(
+      docBucketProxy.tcInterestCollectorAddress(),
+      collectorBefore,
+      "TC collector should not change"
+    );
+    assertEq(docBucketProxy.tcInterestRate(), rateBefore, "TC interest rate should not change");
+    assertEq(
+      docBucketProxy.tcInterestPaymentTimeSpan(),
+      HALF_INFINITY,
+      "TC interest payment span should be half infinity"
+    );
+    assertEq(
+      docBucketProxy.settlementTimeSpan(),
+      HALF_INFINITY,
+      "Settlement span should be half infinity"
+    );
+    assertEq(
+      docBucketProxy.emaCalculationTimeSpan(),
+      HALF_INFINITY,
+      "EMA span should be half infinity"
+    );
+  }
 
-    function test_TimeBasedTasksSetNextTimesInfinitelyFarAfterExecution() public {
-        _executeChanger();
+  function test_TimeBasedTasksSetNextTimesInfinitelyFarAfterExecution() public {
+    _executeChanger();
 
-        docBucketProxy.tcHoldersInterestPayment();
-        docBucketProxy.updateEmas();
-        docBucketProxy.execSettlement();
+    docBucketProxy.tcHoldersInterestPayment();
+    docBucketProxy.updateEmas();
+    docBucketProxy.execSettlement();
 
-        uint256 ultraFutureThreshold = block.timestamp + (HUNDRED_YEARS_IN_SECONDS * 100); // 10,000 years in the future
+    uint256 ultraFutureThreshold = block.timestamp + (HUNDRED_YEARS_IN_SECONDS * 100); // 10,000 years in the future
 
-        assertEq(
-            docBucketProxy.nextTCInterestPayment(),
-            block.timestamp + HALF_INFINITY,
-            "nextTCInterestPayment should be recalculated with half infinity"
-        );
-        assertEq(
-            docBucketProxy.nextEmaCalculation(),
-            block.timestamp + HALF_INFINITY,
-            "nextEmaCalculation should be recalculated with half infinity"
-        );
-        assertEq(
-            docBucketProxy.nextSettlementTime(),
-            block.timestamp + HALF_INFINITY,
-            "nextSettlementTime should be recalculated with half infinity"
-        );
+    assertEq(
+      docBucketProxy.nextTCInterestPayment(),
+      block.timestamp + HALF_INFINITY,
+      "nextTCInterestPayment should be recalculated with half infinity"
+    );
+    assertEq(
+      docBucketProxy.nextEmaCalculation(),
+      block.timestamp + HALF_INFINITY,
+      "nextEmaCalculation should be recalculated with half infinity"
+    );
+    assertEq(
+      docBucketProxy.nextSettlementTime(),
+      block.timestamp + HALF_INFINITY,
+      "nextSettlementTime should be recalculated with half infinity"
+    );
 
-        assertGt(
-            docBucketProxy.nextTCInterestPayment(),
-            ultraFutureThreshold,
-            "nextTCInterestPayment should be far in the future"
-        );
-        assertGt(
-            docBucketProxy.nextEmaCalculation(),
-            ultraFutureThreshold,
-            "nextEmaCalculation should be far in the future"
-        );
-        assertGt(
-            docBucketProxy.nextSettlementTime(),
-            ultraFutureThreshold,
-            "nextSettlementTime should be far in the future"
-        );
+    assertGt(
+      docBucketProxy.nextTCInterestPayment(),
+      ultraFutureThreshold,
+      "nextTCInterestPayment should be far in the future"
+    );
+    assertGt(
+      docBucketProxy.nextEmaCalculation(),
+      ultraFutureThreshold,
+      "nextEmaCalculation should be far in the future"
+    );
+    assertGt(
+      docBucketProxy.nextSettlementTime(),
+      ultraFutureThreshold,
+      "nextSettlementTime should be far in the future"
+    );
 
-        // cannot be executed again in the same block due to time-based checks
-        vm.expectRevert(MocCore.MissingTimeToTCInterestPayment.selector);
-        docBucketProxy.tcHoldersInterestPayment();
-        docBucketProxy.updateEmas();
-        vm.expectRevert(MocCore.MissingTimeToSettlement.selector);
-        docBucketProxy.execSettlement();
-    }
+    // cannot be executed again in the same block due to time-based checks
+    vm.expectRevert(MocCore.MissingTimeToTCInterestPayment.selector);
+    docBucketProxy.tcHoldersInterestPayment();
+    docBucketProxy.updateEmas();
+    vm.expectRevert(MocCore.MissingTimeToSettlement.selector);
+    docBucketProxy.execSettlement();
+  }
 
-    function test_TimeBasedTasksWithoutChangerWrapNextTimesToCurrentTimestamp() public {
-        // This test validates current on-chain behavior without running the changer.
-        // It expects spans already configured as "infinite" in the forked state.
-        uint256 maxUint = type(uint256).max;
-        assertEq(docBucketProxy.tcInterestPaymentTimeSpan(), maxUint, "Expected max uint TC interest span before changer");
-        assertEq(docBucketProxy.emaCalculationTimeSpan(), maxUint, "Expected max uint EMA span before changer");
-        assertEq(docBucketProxy.settlementTimeSpan(), maxUint, "Expected max uint settlement span before changer");
+  function test_TimeBasedTasksWithoutChangerWrapNextTimesToCurrentTimestamp() public {
+    // This test validates current on-chain behavior without running the changer.
+    // It expects spans already configured as "infinite" in the forked state.
+    uint256 maxUint = type(uint256).max;
+    assertEq(
+      docBucketProxy.tcInterestPaymentTimeSpan(),
+      maxUint,
+      "Expected max uint TC interest span before changer"
+    );
+    assertEq(
+      docBucketProxy.emaCalculationTimeSpan(),
+      maxUint,
+      "Expected max uint EMA span before changer"
+    );
+    assertEq(
+      docBucketProxy.settlementTimeSpan(),
+      maxUint,
+      "Expected max uint settlement span before changer"
+    );
 
-        docBucketProxy.tcHoldersInterestPayment();
-        docBucketProxy.updateEmas();
-        docBucketProxy.execSettlement();
+    docBucketProxy.tcHoldersInterestPayment();
+    docBucketProxy.updateEmas();
+    docBucketProxy.execSettlement();
 
-        assertEq(
-            docBucketProxy.nextTCInterestPayment(),
-            block.timestamp - 1,
-            "nextTCInterestPayment should wrap to current timestamp"
-        );
-        assertEq(
-            docBucketProxy.nextEmaCalculation(),
-            block.timestamp - 1,
-            "nextEmaCalculation should wrap to current timestamp"
-        );
-        assertEq(
-            docBucketProxy.nextSettlementTime(),
-            block.timestamp - 1,
-            "nextSettlementTime should wrap to current timestamp"
-        );
+    assertEq(
+      docBucketProxy.nextTCInterestPayment(),
+      block.timestamp - 1,
+      "nextTCInterestPayment should wrap to current timestamp"
+    );
+    assertEq(
+      docBucketProxy.nextEmaCalculation(),
+      block.timestamp - 1,
+      "nextEmaCalculation should wrap to current timestamp"
+    );
+    assertEq(
+      docBucketProxy.nextSettlementTime(),
+      block.timestamp - 1,
+      "nextSettlementTime should wrap to current timestamp"
+    );
 
-        // can be executed again in the same block
-        docBucketProxy.tcHoldersInterestPayment();
-        docBucketProxy.updateEmas();
-        docBucketProxy.execSettlement();
-    }
+    // can be executed again in the same block
+    docBucketProxy.tcHoldersInterestPayment();
+    docBucketProxy.updateEmas();
+    docBucketProxy.execSettlement();
+  }
 
   function _isErrorString(
     bytes memory revertData,
@@ -1473,10 +1494,7 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
     require(docBucketProxy_ != address(0), "docBucketProxy is zero");
     require(upgradeDelegatorOracle_ != address(0), "upgradeDelegatorOracle is zero");
     require(upgradeDelegatorMoc_ != address(0), "upgradeDelegatorMoc is zero");
-    require(
-      coinPairPriceImplementation_ != address(0),
-      "coinPairPriceImplementation is zero"
-    );
+    require(coinPairPriceImplementation_ != address(0), "coinPairPriceImplementation is zero");
   }
 
   function _readMainnetDeployedAddressesFromJson()
@@ -1537,11 +1555,17 @@ contract BufferPctAndCleanMocV1ForkTest is OracleTestHelper, Test {
     require(maxOpDifferenceProvider_ != address(0), "maxOpDifference provider is zero");
     require(changerAddress_ != address(0), "changer is zero");
 
-    require(oracleManagerImplementation_.code.length != 0, "oracleManager implementation missing code");
+    require(
+      oracleManagerImplementation_.code.length != 0,
+      "oracleManager implementation missing code"
+    );
     require(mocImplementation_.code.length != 0, "MoC implementation missing code");
     require(mocStateImplementation_.code.length != 0, "MoCState implementation missing code");
     require(mocExchangeImplementation_.code.length != 0, "MoCExchange implementation missing code");
-    require(mocSettlementImplementation_.code.length != 0, "MoCSettlement implementation missing code");
+    require(
+      mocSettlementImplementation_.code.length != 0,
+      "MoCSettlement implementation missing code"
+    );
     require(maxAbsoluteOpProvider_.code.length != 0, "maxAbsolute provider missing code");
     require(maxOpDifferenceProvider_.code.length != 0, "maxOpDifference provider missing code");
     require(changerAddress_.code.length != 0, "changer missing code");
