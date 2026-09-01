@@ -1,7 +1,7 @@
 {
   "VotingMachineUpgradeChangerModule": {
-    "votingMachineProxy": "0x0000000000000000000000000000000000000000",
-    "upgradeDelegator": "0x0000000000000000000000000000000000000000",
+    "votingMachineProxy": "0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3",
+    "upgradeDelegator": "0x546afdf647d0b5c73323366b090ebe6c0c4d9b2c",
     "acceptedStepPriorityTimeDelta": 86400
   }
 }
