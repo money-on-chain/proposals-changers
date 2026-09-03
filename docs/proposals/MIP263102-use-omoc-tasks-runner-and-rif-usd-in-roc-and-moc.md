@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263102`
 
-> :warning: **`In voting`**
+> :warning: **`Implemented`**
 
 ## Overview
 
@@ -261,3 +261,15 @@ The upgrade will be executed through a changer contract that reconfigures _RoC_ 
 | `AddTasksRunnerChanger` | [`0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA`](https://rootstock.blockscout.com/address/0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA?tab=contract) |
 
 > :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0xA20737eCBd96bFAf9CA670b6f9EbbD5F77c9D3EA?tab=contract) linked above.
+
+---
+
+## Status
+
+📣 The voting process is over:
+* `29.5%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0x6cbe4d8ff6159fbb73db44f44e27bbeee139caf468d8dbf01097e3e31b22f10d`](https://rootstock.blockscout.com/tx/0x6cbe4d8ff6159fbb73db44f44e27bbeee139caf468d8dbf01097e3e31b22f10d)
