@@ -1,0 +1,56 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-e967b3af63e465f2ebd5522b87eb54fae0604eaf",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/changers/testnet-only/TestnetVotingQuorumChanger.sol": "project/contracts/changers/testnet-only/TestnetVotingQuorumChanger.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "london",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200,
+        "details": {
+          "yulDetails": {
+            "optimizerSteps": "dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul"
+          }
+        }
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers",
+            "storageLayout"
+          ]
+        }
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "project/contracts/changers/testnet-only/TestnetVotingQuorumChanger.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24;\n\nimport { IChangeContract } from \"../../interfaces/IChangeContract.sol\";\n\ninterface IQuorumRegistry {\n  function setUint(bytes32 key, uint248 value) external;\n}\n\n/**\n * @title TestnetVotingQuorumChanger\n * @notice Sets the voting quorum threshold to 14% for testnet maintenance.\n * @dev This changer is intended exclusively for testnet and must never be\n *      executed on mainnet.\n */\ncontract TestnetVotingQuorumChanger is IChangeContract {\n  bytes32 public constant MOC_VOTING_MACHINE_VOTE_MIN_PCT_FOR_QUORUM =\n    0xde1ede48948567c43c504b761af8cd6af5363fafeceb1239b3083955d809714f;\n\n  uint248 public constant QUORUM_PERCENTAGE = 14;\n\n  IQuorumRegistry public immutable registry;\n\n  event VotingQuorumPercentageSet(uint248 value);\n\n  constructor(IQuorumRegistry registry_) {\n    require(address(registry_) != address(0), \"Invalid registry\");\n    registry = registry_;\n  }\n\n  function execute() external override {\n    registry.setUint(MOC_VOTING_MACHINE_VOTE_MIN_PCT_FOR_QUORUM, QUORUM_PERCENTAGE);\n    emit VotingQuorumPercentageSet(QUORUM_PERCENTAGE);\n  }\n}\n"
+      },
+      "project/contracts/interfaces/IChangeContract.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\n/**\n  @title IChangeContract\n  @notice This interface is the one used by the governance system.\n  @dev If you plan to do some changes to a system governed by this project you should write a contract\n  that does those changes, like a recipe. This contract MUST not have ANY kind of public or external function\n  that modifies the state of this ChangeContract, otherwise you could run into front-running issues when the governance\n  system is fully in place.\n */\ninterface IChangeContract {\n  /**\n    @notice Override this function with a recipe of the changes to be done when this ChangeContract\n    is executed\n   */\n  function execute() external;\n}\n"
+      }
+    }
+  }
+}
