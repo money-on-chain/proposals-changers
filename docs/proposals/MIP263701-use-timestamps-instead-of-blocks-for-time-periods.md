@@ -31,9 +31,10 @@ dependence on Rootstock's average block time.
 
 After this proposal, the legacy EMA schedule represents one day, the BitPro/RiskPro interest
 schedule represents one week, and the Coiner schedule represents a simple average month of
-30 days and 10 hours. These periods remain stable even if Rootstock blocks accelerate or slow
-down. The protocol will therefore no longer need to retune these three schedules when block
-production changes.
+30 days and 10 hours. Existing RIF on Chain timestamp periods and oracle round periods are also
+normalized to those exact calendar durations. Supporters remains block-based, but its lower-impact
+reward-streaming period is recalibrated using a 30-second Rootstock block assumption. The principal
+payment and issuance schedules will therefore no longer need retuning when block production changes.
 
 ---
 
@@ -44,14 +45,14 @@ four newly deployed implementations. It reads all legacy scheduling state before
 upgrades the existing proxies, and initializes their new timestamp fields in the same governance
 transaction. The proxies, balances, ownership, and all unrelated protocol state remain in place.
 
-### Legacy MoC
+### [Legacy MoC](https://rootstock.blockscout.com/address/0xf773B590aF754D597770937Fa8ea7AbDf2668370)
 
 The legacy MoC proxy is upgraded because its facade exposed
 `getBitProInterestBlockSpan()`, an API belonging to the removed block-based schedule. The new
 implementation removes that forwarding function. Payment calculation, the interest destination,
 the configured rate, bucket accounting, pausing, and all mint and redeem behavior are unchanged.
 
-### Legacy MoCState and EMA calculator
+### [Legacy MoCState and EMA calculator](https://rootstock.blockscout.com/address/0xb9C42EFc8ec54490a37cA91c423F7285Fa01e257)
 
 The EMA schedule stops reading `lastEmaCalculation` and `emaCalculationBlockSpan`. Those
 historical storage slots remain in their original positions to preserve proxy storage layout, but
@@ -71,7 +72,7 @@ proposal anchor. The initializer is restricted to an authorized governance chang
 once, rejects zero, and the scheduling code reverts while the field is uninitialized. There is no
 temporary mode in which the upgraded implementation can fall back to block scheduling.
 
-### Legacy MoCInrate weekly payment
+### [Legacy MoCInrate weekly payment](https://rootstock.blockscout.com/address/0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3)
 
 The weekly BitPro/RiskPro payment stops reading `lastBitProInterestBlock` and
 `bitProInterestBlockSpan`. Those values remain only as historical storage-layout slots.
@@ -89,7 +90,7 @@ The migration initializes the new field from the legacy last-payment block using
 anchor. As with EMA, initialization is governance-only, nonzero, and one-time; the upgraded
 schedule cannot operate before initialization and never falls back to block arithmetic.
 
-### MOC Flow Coiner
+### [MOC Flow Coiner](https://rootstock.blockscout.com/address/0x661F7d510cdB40638f5Afd9f9dF8877398500593)
 
 The Coiner stops using `_mintBlockInterval` and `_nextMintFromBlock` to determine whether a
 round can execute. These fields remain in place solely to preserve the deployed proxy's storage
@@ -115,6 +116,47 @@ first post-migration deadline in September.
 Coiner initialization is also governance-only, nonzero, and one-time. Both new timestamp fields
 must be initialized before minting can become eligible, and the new implementation contains no
 block-scheduling fallback.
+
+### [Supporters](https://rootstock.blockscout.com/address/0xB1fc9817C4ad3C40562DfF1159732d657831558A)
+
+Supporters progressively unlocks each reward allocation between `startEarnings` and `endEarnings`,
+both stored as block numbers. Converting that implementation to timestamps is substantially harder
+than converting a discrete payment deadline: a migration would have to preserve the exact vested
+fraction of an active earning stream, and every balance calculation would have to change from block
+progress to elapsed seconds.
+
+Supporters is expected to become economically less significant over time than Coiner issuance,
+interest collection, and the actively maintained RIF on Chain schedules. MIP26-3701 therefore does
+not add a new Supporters implementation. It recalibrates `period` from 106,902 to 87,600 blocks,
+which represents 30 days and 10 hours at an assumed 30 seconds per block. The active
+`endEarnings` value is deliberately not changed, preserving rewards already in progress. The new
+period takes effect when the next distribution begins.
+
+### [RIF on Chain](https://rootstock.blockscout.com/address/0xA27024Ed70035E46dba712609fc2Afa1c97aA36A)
+
+RIF on Chain already uses timestamps, so it needs no implementation upgrade. Its deployed periods,
+however, were obtained by multiplying the March 2025 block values by 24 seconds. This froze the old
+block-time estimate into seconds: settlement is 2,565,648 seconds, weekly TC interest is 590,040
+seconds, and the daily decay and EMA periods are 84,288 seconds. They no longer vary with block
+production, but they are approximately 2.44% shorter than their intended calendar durations.
+
+The changer sets settlement to 2,628,000 seconds, a simple 365-day Gregorian year divided into
+twelve equal periods; TC interest to 604,800 seconds; and decay and EMA to 86,400 seconds. It reads
+and preserves the deployed TC interest collector, interest rate, and flux-capacitor providers. It
+also leaves `nextSettlementTime`, `nextTCInterestPayment`, and `nextEmaCalculation` unchanged, so
+no action is duplicated or made immediately eligible merely because its future period changed.
+
+### Oracle and TasksRunner rounds
+
+The [BTC/USD CoinPair](https://rootstock.blockscout.com/address/0xa288319eCb63301e21963E21EF3Ca8fb720d2672),
+[RIF/USD CoinPair](https://rootstock.blockscout.com/address/0xaFb1B8C320ACc776c1279bcDB24Ab8F84aB727A4),
+and [TasksRunner](https://rootstock.blockscout.com/address/0xd99a43ba443068Ea539CeB623aE24e6C9910b975)
+already end their rounds using `lockPeriodTimestamp`. Their existing 2,592,000-second period is
+exactly 30 days, which produces an extra round approximately every six years. Since switching these
+rounds distributes oracle rewards, the changer normalizes `roundLockPeriodSecs` to 2,628,000 seconds,
+the same simple Gregorian average month used for Coiner and RIF on Chain settlement. Current
+`lockPeriodTimestamp` values are not changed; the new duration begins with each contract's next round.
+The testnet deployment keeps its intentionally accelerated 10,800-second oracle rounds.
 
 ## Schedule Conversion at Execution
 
@@ -159,9 +201,9 @@ action.
 Queues remain block-based. Their waiting and execution rules are transaction-ordering mechanisms,
 not calendar payment schedules, and changing them is unnecessary for this proposal.
 
-Price providers and oracle publication windows also remain block-based. Their block freshness and
-round rules are intentionally coupled to chain progress and do not create the monthly or weekly
-outbound-payment risk addressed here.
+Price providers and oracle publication windows remain block-based. Their short block freshness and
+emergency-publication windows are intentionally coupled to chain progress. Oracle round endings are
+already timestamp-based and are only recalibrated from 30 days to the Gregorian-average month.
 
 `MoCSettlement` remains block-based. Settlement processes legacy queued settlement and BProx
 functionality; it is not the recurring Coiner or weekly interest payment. Its behavior and current
@@ -172,8 +214,8 @@ Legacy daily inrate collection is not migrated. It is not currently being collec
 outbound payment, so migrating its dormant schedule would add contract and operational risk
 without a corresponding benefit.
 
-RIF on Chain receives no contract upgrade from MIP26-3701. Its reviewed block-dependent
-components are queues, providers, or otherwise outside the selected outbound schedules.
+RIF on Chain receives no contract upgrade from MIP26-3701. Its existing timestamp periods are
+corrected through governance setters, while its queues and providers remain outside the proposal.
 
 EMA is included even though recalculating it is not an outbound payment. It is frequently reached
 through normal protocol operation, has a clear intended daily cadence, and is safe to make due
@@ -196,9 +238,11 @@ setters must not be used after the upgrade.
 
 ## Expected Outcome
 
-After execution, EMA eligibility follows elapsed days, the weekly payment follows elapsed weeks,
-and Coiner issuance follows twelve equal periods per simple 365-day year. Changes in Rootstock
-block production no longer shorten or extend these schedules.
+After execution, EMA eligibility follows elapsed days, weekly payments follow elapsed weeks, and
+Coiner issuance, RIF on Chain settlement, and oracle rounds follow twelve equal periods per simple
+365-day year. Changes in Rootstock block production no longer shorten or extend these schedules.
+Supporters remains the deliberate exception and uses an 87,600-block approximation based on
+30-second blocks.
 
 The first Coiner round corrects the drift accumulated under the current block interval and is
 expected during September 2026. Every later deadline is based on the timestamp of the actual
@@ -214,9 +258,12 @@ Rootstock mainnet-fork test that:
 2. deploys the four new implementations and the changer;
 3. executes the changer through the deployed governor and both upgrade delegators;
 4. verifies the migrated timestamp slots and exact periods;
-5. prints the migrated EMA previous-calculation timestamp, weekly-interest previous-payment
+5. verifies Supporters' new period without changing the active earning allocation;
+6. verifies the RIF on Chain periods while preserving its active deadlines and economic parameters;
+7. verifies the three oracle round periods while preserving their active deadlines;
+8. prints the migrated EMA previous-calculation timestamp, weekly-interest previous-payment
    timestamp, and Coiner next-round timestamp; and
-6. asserts that the first Coiner deadline is in September 2026 and not October.
+9. asserts that the first Coiner deadline is in September 2026 and not October.
 
 ## Governance Process
 

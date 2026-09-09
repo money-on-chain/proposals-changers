@@ -65,6 +65,50 @@ contract UpgradeDelegatorMock is IUpgradeDelegator {
   }
 }
 
+contract GovernedPeriodMock {
+  uint256 public period;
+
+  function delegateCallToChanger(bytes calldata data) external returns (bytes memory) {
+    period = abi.decode(data, (uint256));
+    return "";
+  }
+}
+
+contract RifOnChainTimeSpansMock {
+  address public tcInterestCollectorAddress = address(0x11);
+  uint256 public tcInterestRate = 42;
+  address public maxAbsoluteOpProvider = address(0x12);
+  address public maxOpDiffProvider = address(0x13);
+  uint256 public tcInterestPaymentTimeSpan;
+  uint256 public settlementTimeSpan;
+  uint256 public decayTimeSpan;
+  uint256 public emaCalculationTimeSpan;
+
+  function setTCInterestParams(address collector, uint256 rate, uint256 timeSpan) external {
+    tcInterestCollectorAddress = collector;
+    tcInterestRate = rate;
+    tcInterestPaymentTimeSpan = timeSpan;
+  }
+
+  function setSettlementTimeSpan(uint256 timeSpan) external {
+    settlementTimeSpan = timeSpan;
+  }
+
+  function setFluxCapacitorParams(
+    address absoluteProvider,
+    address diffProvider,
+    uint256 timeSpan
+  ) external {
+    maxAbsoluteOpProvider = absoluteProvider;
+    maxOpDiffProvider = diffProvider;
+    decayTimeSpan = timeSpan;
+  }
+
+  function setEmaCalculationTimeSpan(uint256 timeSpan) external {
+    emaCalculationTimeSpan = timeSpan;
+  }
+}
+
 contract MIP263701UseTimestampsTest is Test {
   uint256 internal constant ANCHOR_BLOCK = 1_000_000;
   uint256 internal constant ANCHOR_TIMESTAMP = 1_700_000_000;
@@ -73,20 +117,26 @@ contract MIP263701UseTimestampsTest is Test {
     LegacyStateMock state = new LegacyStateMock(999_900);
     LegacyInrateMock inrate = new LegacyInrateMock(1_000_100);
     LegacyCoinerMock coiner = new LegacyCoinerMock(1_000_500, 100);
+    GovernedPeriodMock supporters = new GovernedPeriodMock();
+    GovernedPeriodMock btcUsdCoinPair = new GovernedPeriodMock();
+    GovernedPeriodMock rifUsdCoinPair = new GovernedPeriodMock();
+    GovernedPeriodMock tasksRunner = new GovernedPeriodMock();
+    RifOnChainTimeSpansMock rifOnChain = new RifOnChainTimeSpansMock();
     UpgradeDelegatorMock mocUpgrader = new UpgradeDelegatorMock();
     UpgradeDelegatorMock flowUpgrader = new UpgradeDelegatorMock();
 
     MIP263701UseTimestamps changer = new MIP263701UseTimestamps(
-      address(0x1),
-      address(state),
-      address(inrate),
-      address(coiner),
-      mocUpgrader,
-      flowUpgrader,
-      address(0x2),
-      address(0x3),
-      address(0x4),
-      address(0x5),
+      [address(0x1), address(state), address(inrate), address(coiner)],
+      [
+        address(supporters),
+        address(rifOnChain),
+        address(btcUsdCoinPair),
+        address(rifUsdCoinPair),
+        address(tasksRunner)
+      ],
+      [address(mocUpgrader), address(flowUpgrader)],
+      [address(0x2), address(0x3), address(0x4), address(0x5)],
+      30 days + 10 hours,
       ANCHOR_BLOCK,
       ANCHOR_TIMESTAMP
     );
@@ -98,24 +148,39 @@ contract MIP263701UseTimestampsTest is Test {
     assertEq(coiner.initializedAt(), ANCHOR_TIMESTAMP + 400 * 29 + changer.COINER_MINT_TIME_SPAN());
     assertEq(mocUpgrader.upgrades(), 3);
     assertEq(flowUpgrader.upgrades(), 1);
+    assertEq(supporters.period(), 87_600);
+    assertEq(btcUsdCoinPair.period(), 30 days + 10 hours);
+    assertEq(rifUsdCoinPair.period(), 30 days + 10 hours);
+    assertEq(tasksRunner.period(), 30 days + 10 hours);
+    assertEq(rifOnChain.tcInterestCollectorAddress(), address(0x11));
+    assertEq(rifOnChain.tcInterestRate(), 42);
+    assertEq(rifOnChain.maxAbsoluteOpProvider(), address(0x12));
+    assertEq(rifOnChain.maxOpDiffProvider(), address(0x13));
+    assertEq(rifOnChain.tcInterestPaymentTimeSpan(), 7 days);
+    assertEq(rifOnChain.settlementTimeSpan(), 30 days + 10 hours);
+    assertEq(rifOnChain.decayTimeSpan(), 1 days);
+    assertEq(rifOnChain.emaCalculationTimeSpan(), 1 days);
   }
 
   function testUninitializedLegacySchedulesAreImmediatelyDue() public {
     LegacyStateMock state = new LegacyStateMock(0);
     LegacyInrateMock inrate = new LegacyInrateMock(0);
     LegacyCoinerMock coiner = new LegacyCoinerMock(0, 100);
+    GovernedPeriodMock periodTarget = new GovernedPeriodMock();
+    RifOnChainTimeSpansMock rifOnChain = new RifOnChainTimeSpansMock();
     UpgradeDelegatorMock upgrader = new UpgradeDelegatorMock();
     MIP263701UseTimestamps changer = new MIP263701UseTimestamps(
-      address(0x1),
-      address(state),
-      address(inrate),
-      address(coiner),
-      upgrader,
-      upgrader,
-      address(0x2),
-      address(0x3),
-      address(0x4),
-      address(0x5),
+      [address(0x1), address(state), address(inrate), address(coiner)],
+      [
+        address(periodTarget),
+        address(rifOnChain),
+        address(periodTarget),
+        address(periodTarget),
+        address(periodTarget)
+      ],
+      [address(upgrader), address(upgrader)],
+      [address(0x2), address(0x3), address(0x4), address(0x5)],
+      30 days + 10 hours,
       ANCHOR_BLOCK,
       ANCHOR_TIMESTAMP
     );

@@ -4,8 +4,14 @@
     "mocStateProxy": "0xb9C42EFc8ec54490a37cA91c423F7285Fa01e257",
     "mocInrateProxy": "0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3",
     "coinerProxy": "0x661F7d510cdB40638f5Afd9f9dF8877398500593",
+    "supporters": "0xB1fc9817C4ad3C40562DfF1159732d657831558A",
+    "rifOnChain": "0xA27024Ed70035E46dba712609fc2Afa1c97aA36A",
+    "btcUsdCoinPair": "0xa288319eCb63301e21963E21EF3Ca8fb720d2672",
+    "rifUsdCoinPair": "0xaFb1B8C320ACc776c1279bcDB24Ab8F84aB727A4",
+    "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
     "mocUpgradeDelegator": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
     "flowUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "roundLockPeriod": "2628000",
     "anchorBlockNumber": "9220195",
     "anchorTimestamp": "1788817028"
   }

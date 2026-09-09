@@ -35,6 +35,25 @@ interface ICoinerTimestampSchedule {
   function initializeMintSchedule(uint256 nextMintAt) external;
 }
 
+interface IGovernedDelegateCall {
+  function delegateCallToChanger(bytes calldata data) external returns (bytes memory);
+}
+
+interface IRifOnChainTimeSpans {
+  function tcInterestCollectorAddress() external view returns (address);
+  function tcInterestRate() external view returns (uint256);
+  function maxAbsoluteOpProvider() external view returns (address);
+  function maxOpDiffProvider() external view returns (address);
+  function setTCInterestParams(address collector, uint256 rate, uint256 timeSpan) external;
+  function setSettlementTimeSpan(uint256 timeSpan) external;
+  function setFluxCapacitorParams(
+    address maxAbsoluteProvider,
+    address maxDiffProvider,
+    uint256 timeSpan
+  ) external;
+  function setEmaCalculationTimeSpan(uint256 timeSpan) external;
+}
+
 /**
  * @title MIP263701UseTimestamps
  * @notice Converts legacy block schedules through a fixed block/timestamp
@@ -42,47 +61,68 @@ interface ICoinerTimestampSchedule {
  */
 contract MIP263701UseTimestamps is IChangeContract {
   uint256 public constant BLOCK_TIME = 29 seconds;
-  uint256 public constant COINER_MINT_TIME_SPAN = 30 days + 10 hours;
+  uint256 public constant GREGORIAN_AVERAGE_MONTH = 30 days + 10 hours;
+  uint256 public constant COINER_MINT_TIME_SPAN = GREGORIAN_AVERAGE_MONTH;
+  uint256 public constant SUPPORTERS_ASSUMED_BLOCK_TIME = 30 seconds;
+  uint256 public constant SUPPORTERS_PERIOD =
+    GREGORIAN_AVERAGE_MONTH / SUPPORTERS_ASSUMED_BLOCK_TIME;
+  uint256 public constant RIF_INTEREST_PAYMENT_TIME_SPAN = 7 days;
+  uint256 public constant RIF_SETTLEMENT_TIME_SPAN = GREGORIAN_AVERAGE_MONTH;
+  uint256 public constant RIF_DECAY_TIME_SPAN = 1 days;
+  uint256 public constant RIF_EMA_CALCULATION_TIME_SPAN = 1 days;
+
+  // Compiler-verified against @moneyonchain/oracles 3.0.10. These are the
+  // absolute proxy storage slots for SupportersData.period and
+  // RoundInfo.roundLockPeriodSecs, respectively.
+  uint256 private constant SUPPORTERS_PERIOD_STORAGE_SLOT = 111;
+  uint256 private constant ROUND_LOCK_PERIOD_STORAGE_SLOT = 108;
 
   address public immutable mocProxy;
   address public immutable mocStateProxy;
   address public immutable mocInrateProxy;
   address public immutable coinerProxy;
+  address public immutable supporters;
+  address public immutable rifOnChain;
+  address public immutable btcUsdCoinPair;
+  address public immutable rifUsdCoinPair;
+  address public immutable tasksRunner;
   IUpgradeDelegator public immutable mocUpgradeDelegator;
   IUpgradeDelegator public immutable flowUpgradeDelegator;
   address public immutable newMocImplementation;
   address public immutable newMocStateImplementation;
   address public immutable newMocInrateImplementation;
   address public immutable newCoinerImplementation;
+  uint256 public immutable roundLockPeriod;
   uint256 public immutable anchorBlockNumber;
   uint256 public immutable anchorTimestamp;
 
   constructor(
-    address _mocProxy,
-    address _mocStateProxy,
-    address _mocInrateProxy,
-    address _coinerProxy,
-    IUpgradeDelegator _mocUpgradeDelegator,
-    IUpgradeDelegator _flowUpgradeDelegator,
-    address _newMocImplementation,
-    address _newMocStateImplementation,
-    address _newMocInrateImplementation,
-    address _newCoinerImplementation,
+    address[4] memory _legacyProxies,
+    address[5] memory _additionalTargets,
+    address[2] memory _upgradeDelegators,
+    address[4] memory _newImplementations,
+    uint256 _roundLockPeriod,
     uint256 _anchorBlockNumber,
     uint256 _anchorTimestamp
   ) {
     require(_anchorTimestamp > 0, "invalid anchor timestamp");
 
-    mocProxy = _mocProxy;
-    mocStateProxy = _mocStateProxy;
-    mocInrateProxy = _mocInrateProxy;
-    coinerProxy = _coinerProxy;
-    mocUpgradeDelegator = _mocUpgradeDelegator;
-    flowUpgradeDelegator = _flowUpgradeDelegator;
-    newMocImplementation = _newMocImplementation;
-    newMocStateImplementation = _newMocStateImplementation;
-    newMocInrateImplementation = _newMocInrateImplementation;
-    newCoinerImplementation = _newCoinerImplementation;
+    mocProxy = _legacyProxies[0];
+    mocStateProxy = _legacyProxies[1];
+    mocInrateProxy = _legacyProxies[2];
+    coinerProxy = _legacyProxies[3];
+    supporters = _additionalTargets[0];
+    rifOnChain = _additionalTargets[1];
+    btcUsdCoinPair = _additionalTargets[2];
+    rifUsdCoinPair = _additionalTargets[3];
+    tasksRunner = _additionalTargets[4];
+    mocUpgradeDelegator = IUpgradeDelegator(_upgradeDelegators[0]);
+    flowUpgradeDelegator = IUpgradeDelegator(_upgradeDelegators[1]);
+    newMocImplementation = _newImplementations[0];
+    newMocStateImplementation = _newImplementations[1];
+    newMocInrateImplementation = _newImplementations[2];
+    newCoinerImplementation = _newImplementations[3];
+    roundLockPeriod = _roundLockPeriod;
     anchorBlockNumber = _anchorBlockNumber;
     anchorTimestamp = _anchorTimestamp;
   }
@@ -102,6 +142,54 @@ contract MIP263701UseTimestamps is IChangeContract {
       lastInterestPaymentTimestamp
     );
     ICoinerTimestampSchedule(coinerProxy).initializeMintSchedule(nextMintTimestamp);
+
+    _updateRifOnChainTimeSpans();
+    IGovernedDelegateCall(supporters).delegateCallToChanger(abi.encode(SUPPORTERS_PERIOD));
+    IGovernedDelegateCall(btcUsdCoinPair).delegateCallToChanger(abi.encode(roundLockPeriod));
+    IGovernedDelegateCall(rifUsdCoinPair).delegateCallToChanger(abi.encode(roundLockPeriod));
+    IGovernedDelegateCall(tasksRunner).delegateCallToChanger(abi.encode(roundLockPeriod));
+  }
+
+  /**
+   * @dev Called through Governed.delegateCallToChanger in the target's storage
+   *      context. The slots below are verified against the exact storage layout
+   *      of the moneyonchain/oracles 3.0.10 package used by the deployed targets.
+   */
+  function impersonate(bytes calldata data) external {
+    uint256 period = abi.decode(data, (uint256));
+    address target = address(this);
+
+    if (target == supporters) {
+      require(period == SUPPORTERS_PERIOD, "invalid supporters period");
+      assembly {
+        sstore(SUPPORTERS_PERIOD_STORAGE_SLOT, period)
+      }
+    } else {
+      require(
+        target == btcUsdCoinPair || target == rifUsdCoinPair || target == tasksRunner,
+        "invalid delegate target"
+      );
+      require(period == roundLockPeriod, "invalid round period");
+      assembly {
+        sstore(ROUND_LOCK_PERIOD_STORAGE_SLOT, period)
+      }
+    }
+  }
+
+  function _updateRifOnChainTimeSpans() internal {
+    IRifOnChainTimeSpans rif = IRifOnChainTimeSpans(rifOnChain);
+    rif.setTCInterestParams(
+      rif.tcInterestCollectorAddress(),
+      rif.tcInterestRate(),
+      RIF_INTEREST_PAYMENT_TIME_SPAN
+    );
+    rif.setSettlementTimeSpan(RIF_SETTLEMENT_TIME_SPAN);
+    rif.setFluxCapacitorParams(
+      rif.maxAbsoluteOpProvider(),
+      rif.maxOpDiffProvider(),
+      RIF_DECAY_TIME_SPAN
+    );
+    rif.setEmaCalculationTimeSpan(RIF_EMA_CALCULATION_TIME_SPAN);
   }
 
   function legacyLastEmaCalculationTimestamp() public view returns (uint256) {

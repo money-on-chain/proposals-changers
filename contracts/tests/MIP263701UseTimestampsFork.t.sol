@@ -29,6 +29,33 @@ interface ICoinerTimestampScheduleProbe {
   function getMintTimestampInterval() external view returns (uint256);
 }
 
+interface ISupportersScheduleProbe {
+  function period() external view returns (uint256);
+  function getEarningsInfo() external view returns (uint256, uint256, uint256);
+}
+
+interface IRoundManagerScheduleProbe {
+  function roundLockPeriodSecs() external view returns (uint256);
+  function getRoundInfo()
+    external
+    view
+    returns (uint256, uint256, uint256, uint256, address[] memory, address[] memory);
+}
+
+interface IRifOnChainTimeSpansProbe {
+  function tcInterestCollectorAddress() external view returns (address);
+  function tcInterestRate() external view returns (uint256);
+  function tcInterestPaymentTimeSpan() external view returns (uint256);
+  function nextTCInterestPayment() external view returns (uint256);
+  function settlementTimeSpan() external view returns (uint256);
+  function nextSettlementTime() external view returns (uint256);
+  function maxAbsoluteOpProvider() external view returns (address);
+  function maxOpDiffProvider() external view returns (address);
+  function decayTimeSpan() external view returns (uint256);
+  function emaCalculationTimeSpan() external view returns (uint256);
+  function nextEmaCalculation() external view returns (uint256);
+}
+
 /**
  * @notice Applies MIP26-3701 to the deployed Rootstock mainnet state at the
  *         proposal anchor and reports the timestamps produced by the migration.
@@ -44,10 +71,29 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal mocStateProxy;
   address internal mocInrateProxy;
   address internal coinerProxy;
+  address internal supporters;
+  address internal rifOnChain;
+  address internal btcUsdCoinPair;
+  address internal rifUsdCoinPair;
+  address internal tasksRunner;
   address internal mocUpgradeDelegator;
   address internal flowUpgradeDelegator;
   uint256 internal anchorBlockNumber;
   uint256 internal anchorTimestamp;
+  uint256 internal roundLockPeriod;
+  uint256 internal supportersEarningsBefore;
+  uint256 internal supportersDistributedBefore;
+  uint256 internal supportersNextBefore;
+  uint256 internal btcRoundDeadlineBefore;
+  uint256 internal rifRoundDeadlineBefore;
+  uint256 internal tasksRoundDeadlineBefore;
+  address internal interestCollectorBefore;
+  uint256 internal interestRateBefore;
+  address internal maxAbsoluteProviderBefore;
+  address internal maxDiffProviderBefore;
+  uint256 internal nextInterestPaymentBefore;
+  uint256 internal nextSettlementBefore;
+  uint256 internal nextEmaCalculationBefore;
 
   MIP263701UseTimestamps internal changer;
 
@@ -59,16 +105,16 @@ contract MIP263701UseTimestampsForkTest is Test {
     vm.createSelectFork(rpcUrl, anchorBlockNumber);
 
     changer = new MIP263701UseTimestamps(
-      mocProxy,
-      mocStateProxy,
-      mocInrateProxy,
-      coinerProxy,
-      IUpgradeDelegator(mocUpgradeDelegator),
-      IUpgradeDelegator(flowUpgradeDelegator),
-      _deployArtifact("DeployableMoC"),
-      _deployArtifact("DeployableMoCState"),
-      _deployArtifact("DeployableMoCInrate"),
-      _deployArtifact("DeployableCoiner"),
+      [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
+      [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
+      [mocUpgradeDelegator, flowUpgradeDelegator],
+      [
+        _deployArtifact("DeployableMoC"),
+        _deployArtifact("DeployableMoCState"),
+        _deployArtifact("DeployableMoCInrate"),
+        _deployArtifact("DeployableCoiner")
+      ],
+      roundLockPeriod,
       anchorBlockNumber,
       anchorTimestamp
     );
@@ -78,6 +124,7 @@ contract MIP263701UseTimestampsForkTest is Test {
     uint256 expectedLastEmaCalculationTimestamp = changer.legacyLastEmaCalculationTimestamp();
     uint256 expectedLastInterestPaymentTimestamp = changer.legacyLastInterestPaymentTimestamp();
     uint256 expectedNextMintTimestamp = changer.nextMintDueTimestamp();
+    _captureUnaffectedState();
 
     _executeChanger();
 
@@ -100,9 +147,64 @@ contract MIP263701UseTimestampsForkTest is Test {
       ICoinerTimestampScheduleProbe(coinerProxy).getMintTimestampInterval(),
       30 days + 10 hours
     );
+    _assertAdditionalSchedulesAndPreservedState();
 
     assertGe(nextMintTimestamp, SEPTEMBER_2026_START, "Coiner round is before September");
     assertLt(nextMintTimestamp, OCTOBER_2026_START, "Coiner round drifted into October");
+  }
+
+  function _captureUnaffectedState() internal {
+    (
+      supportersEarningsBefore,
+      supportersDistributedBefore,
+      supportersNextBefore
+    ) = ISupportersScheduleProbe(supporters).getEarningsInfo();
+    btcRoundDeadlineBefore = _roundDeadline(btcUsdCoinPair);
+    rifRoundDeadlineBefore = _roundDeadline(rifUsdCoinPair);
+    tasksRoundDeadlineBefore = _roundDeadline(tasksRunner);
+
+    IRifOnChainTimeSpansProbe rif = IRifOnChainTimeSpansProbe(rifOnChain);
+    interestCollectorBefore = rif.tcInterestCollectorAddress();
+    interestRateBefore = rif.tcInterestRate();
+    maxAbsoluteProviderBefore = rif.maxAbsoluteOpProvider();
+    maxDiffProviderBefore = rif.maxOpDiffProvider();
+    nextInterestPaymentBefore = rif.nextTCInterestPayment();
+    nextSettlementBefore = rif.nextSettlementTime();
+    nextEmaCalculationBefore = rif.nextEmaCalculation();
+  }
+
+  function _assertAdditionalSchedulesAndPreservedState() internal view {
+    assertEq(ISupportersScheduleProbe(supporters).period(), 87_600);
+    assertEq(IRoundManagerScheduleProbe(btcUsdCoinPair).roundLockPeriodSecs(), roundLockPeriod);
+    assertEq(IRoundManagerScheduleProbe(rifUsdCoinPair).roundLockPeriodSecs(), roundLockPeriod);
+    assertEq(IRoundManagerScheduleProbe(tasksRunner).roundLockPeriodSecs(), roundLockPeriod);
+
+    IRifOnChainTimeSpansProbe rif = IRifOnChainTimeSpansProbe(rifOnChain);
+    assertEq(rif.tcInterestPaymentTimeSpan(), 7 days);
+    assertEq(rif.settlementTimeSpan(), 30 days + 10 hours);
+    assertEq(rif.decayTimeSpan(), 1 days);
+    assertEq(rif.emaCalculationTimeSpan(), 1 days);
+
+    (uint256 earningsAfter, uint256 distributedAfter, uint256 nextAfter) = ISupportersScheduleProbe(
+      supporters
+    ).getEarningsInfo();
+    assertEq(earningsAfter, supportersEarningsBefore);
+    assertEq(distributedAfter, supportersDistributedBefore);
+    assertEq(nextAfter, supportersNextBefore);
+    assertEq(_roundDeadline(btcUsdCoinPair), btcRoundDeadlineBefore);
+    assertEq(_roundDeadline(rifUsdCoinPair), rifRoundDeadlineBefore);
+    assertEq(_roundDeadline(tasksRunner), tasksRoundDeadlineBefore);
+    assertEq(rif.tcInterestCollectorAddress(), interestCollectorBefore);
+    assertEq(rif.tcInterestRate(), interestRateBefore);
+    assertEq(rif.maxAbsoluteOpProvider(), maxAbsoluteProviderBefore);
+    assertEq(rif.maxOpDiffProvider(), maxDiffProviderBefore);
+    assertEq(rif.nextTCInterestPayment(), nextInterestPaymentBefore);
+    assertEq(rif.nextSettlementTime(), nextSettlementBefore);
+    assertEq(rif.nextEmaCalculation(), nextEmaCalculationBefore);
+  }
+
+  function _roundDeadline(address target) internal view returns (uint256 deadline) {
+    (, , deadline, , , ) = IRoundManagerScheduleProbe(target).getRoundInfo();
   }
 
   function _executeChanger() internal {
@@ -127,8 +229,14 @@ contract MIP263701UseTimestampsForkTest is Test {
     mocStateProxy = vm.parseJsonAddress(json, _key(module, "mocStateProxy"));
     mocInrateProxy = vm.parseJsonAddress(json, _key(module, "mocInrateProxy"));
     coinerProxy = vm.parseJsonAddress(json, _key(module, "coinerProxy"));
+    supporters = vm.parseJsonAddress(json, _key(module, "supporters"));
+    rifOnChain = vm.parseJsonAddress(json, _key(module, "rifOnChain"));
+    btcUsdCoinPair = vm.parseJsonAddress(json, _key(module, "btcUsdCoinPair"));
+    rifUsdCoinPair = vm.parseJsonAddress(json, _key(module, "rifUsdCoinPair"));
+    tasksRunner = vm.parseJsonAddress(json, _key(module, "tasksRunner"));
     mocUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "mocUpgradeDelegator"));
     flowUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "flowUpgradeDelegator"));
+    roundLockPeriod = vm.parseJsonUint(json, _key(module, "roundLockPeriod"));
     anchorBlockNumber = vm.parseJsonUint(json, _key(module, "anchorBlockNumber"));
     anchorTimestamp = vm.parseJsonUint(json, _key(module, "anchorTimestamp"));
   }
