@@ -36,14 +36,20 @@ contract LegacyInrateMock {
 
 contract LegacyCoinerMock {
   uint256 internal immutable nextMintBlock;
+  uint256 internal immutable mintBlockInterval;
   uint256 public initializedAt;
 
-  constructor(uint256 _nextMintBlock) {
+  constructor(uint256 _nextMintBlock, uint256 _mintBlockInterval) {
     nextMintBlock = _nextMintBlock;
+    mintBlockInterval = _mintBlockInterval;
   }
 
   function getNextMintFromBlock() external view returns (uint256) {
     return nextMintBlock;
+  }
+
+  function getMintBlockInterval() external view returns (uint256) {
+    return mintBlockInterval;
   }
 
   function initializeMintSchedule(uint256 nextDueTimestamp) external {
@@ -66,7 +72,7 @@ contract MIP263701UseTimestampsTest is Test {
   function testExecuteConvertsLegacySchedulesBeforeUpgrading() public {
     LegacyStateMock state = new LegacyStateMock(999_900);
     LegacyInrateMock inrate = new LegacyInrateMock(1_000_100);
-    LegacyCoinerMock coiner = new LegacyCoinerMock(1_000_500);
+    LegacyCoinerMock coiner = new LegacyCoinerMock(1_000_500, 100);
     UpgradeDelegatorMock mocUpgrader = new UpgradeDelegatorMock();
     UpgradeDelegatorMock flowUpgrader = new UpgradeDelegatorMock();
 
@@ -87,9 +93,9 @@ contract MIP263701UseTimestampsTest is Test {
 
     changer.execute();
 
-    assertEq(state.initializedAt(), ANCHOR_TIMESTAMP - 100 * 24);
-    assertEq(inrate.initializedAt(), ANCHOR_TIMESTAMP + 100 * 24);
-    assertEq(coiner.initializedAt(), ANCHOR_TIMESTAMP + 500 * 24);
+    assertEq(state.initializedAt(), ANCHOR_TIMESTAMP - 100 * 29);
+    assertEq(inrate.initializedAt(), ANCHOR_TIMESTAMP + 100 * 29);
+    assertEq(coiner.initializedAt(), ANCHOR_TIMESTAMP + 400 * 29 + changer.COINER_MINT_TIME_SPAN());
     assertEq(mocUpgrader.upgrades(), 3);
     assertEq(flowUpgrader.upgrades(), 1);
   }
@@ -97,7 +103,7 @@ contract MIP263701UseTimestampsTest is Test {
   function testUninitializedLegacySchedulesAreImmediatelyDue() public {
     LegacyStateMock state = new LegacyStateMock(0);
     LegacyInrateMock inrate = new LegacyInrateMock(0);
-    LegacyCoinerMock coiner = new LegacyCoinerMock(0);
+    LegacyCoinerMock coiner = new LegacyCoinerMock(0, 100);
     UpgradeDelegatorMock upgrader = new UpgradeDelegatorMock();
     MIP263701UseTimestamps changer = new MIP263701UseTimestamps(
       address(0x1),

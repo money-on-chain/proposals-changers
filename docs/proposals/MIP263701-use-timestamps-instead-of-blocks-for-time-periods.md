@@ -4,110 +4,231 @@
 
 > :warning: **Status: DRAFT**
 
-## Overview
+## Rationale
 
-This proposal removes Rootstock block-number timing from the periodic schedules that produce protocol actions in Money on Chain and MOC Flow:
+Rootstock block production changes speed over time. A period expressed as a fixed number of
+blocks therefore does not represent a stable number of days: the same configured block span
+becomes shorter when blocks accelerate and longer when blocks slow down. This affects schedules
+whose intended meaning is a day, a week, or a month.
 
-- the legacy Money on Chain EMA calculation;
-- the legacy weekly BitPro/RiskPro interest payment; and
-- the MOC Flow Coiner mint round.
+Governance has already had to compensate for this behavior twice. In December 2024, after
+average block time fell below approximately 22 seconds, governance increased the Coiner interval
+to 119,536 blocks and changed the legacy daily and weekly spans to 3,927 and 27,489 blocks.
+[Proposal and executed changer](https://forum.moneyonchain.com/t/migration-to-oku-trade-and-adjustments-to-block-duration-parameters/404)
+In March 2025, after blocks slowed to more than approximately 24 seconds, governance reduced
+those values to 106,902, 3,512, and 24,585 blocks respectively.
+[Proposal and executed changer](https://forum.moneyonchain.com/t/adjustments-to-block-duration-parameters/418)
 
-The proposal upgrades those implementations and converts their existing schedule state to timestamps in the same governance execution transaction. Thereafter, EMA runs no more than once every 24 hours, the interest payment no more than once every seven days, and Coiner no more than once every 30 days and 10 hours.
+The effect was visible in MOC issuance. The rounds from 25 October to 17 November 2024 and from
+17 November to 11 December 2024 took approximately 23.35 and 23.55 days. Between 30 January 2024
+and 13 January 2025, thirteen mint events occurred in approximately 349 days. Calendar-year
+totals remained twelve, but a rolling twelve-month period could contain thirteen rounds.
 
-The purpose is to make these periods stable in elapsed time instead of changing when Rootstock's block-production rate changes.
+Changing the block spans again would correct only the current drift. A later change in block
+production would require another governance adjustment. MIP26-3701 instead makes the selected
+schedules use elapsed timestamps, correcting the current Coiner drift and removing their future
+dependence on Rootstock's average block time.
 
----
-
-## Background
-
-The affected schedules were originally expressed as a number of Rootstock blocks. That was a reasonable approximation while block times were stable, but it does not guarantee a calendar-day, week, or month when block production changes.
-
-This has required governance intervention twice:
-
-- In December 2024, after average block time fell below approximately 22 seconds, governance raised the month interval to 119,536 blocks. The same change set the legacy daily and weekly block spans to 3,927 and 27,489 blocks respectively. [Proposal and executed changer](https://forum.moneyonchain.com/t/migration-to-oku-trade-and-adjustments-to-block-duration-parameters/404)
-- In March 2025, after average block time rose above approximately 24 seconds, governance reduced the month interval to 106,902 blocks, with daily and weekly spans of 3,512 and 24,585 blocks. Its stated objective was to keep rounds as close to a month as possible. [Proposal and executed changer](https://forum.moneyonchain.com/t/adjustments-to-block-duration-parameters/418)
-
-The faster period also accelerated Coiner issuance temporarily. For example, rounds from 25 October to 17 November 2024 and from 17 November to 11 December 2024 took about 23.35 and 23.55 days. From 30 January 2024 through 13 January 2025, thirteen mint events occurred in roughly 349 days. The total number of events in each calendar year remained twelve, but a rolling twelve-month period did not consistently contain twelve rounds.
-
-Retuning a block span can correct the current observed average, but it cannot preserve a time period if that average changes again. This proposal replaces that recurring operational dependency with elapsed-time schedules.
-
----
-
-## Proposed Change
-
-### Dates-only implementations
-
-The proposal deploys and upgrades dates-only implementations for the three selected components. The post-upgrade code does not use the old block scheduling fields to decide when an action is due.
-
-| Component                            | Legacy state converted at execution                             | Schedule after upgrade                           |
-| ------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------ |
-| Legacy EMA (`MoCState`)              | `lastEmaCalculation` becomes `lastEmaCalculationTimestamp`      | `lastEmaCalculationTimestamp + 1 day`            |
-| Legacy weekly interest (`MoCInrate`) | `lastBitProInterestBlock` becomes `lastBitProInterestTimestamp` | `lastBitProInterestTimestamp + 7 days`           |
-| MOC Flow Coiner                      | `nextMintFromBlock` becomes `_nextMintAt`                       | `_mintTimestampInterval` of 30 days and 10 hours |
-
-Coiner exposes its 30-day 10-hour interval through `getMintTimestampInterval` and uses that stored interval when scheduling each subsequent mint. The value is a simple average month calculated as 365 days divided by twelve. This avoids the roughly five-day annual acceleration that a fixed 30-day interval would accumulate. The interest eligibility comparison remains strictly greater-than, while EMA retains its greater-than-or-equal comparison. Existing block fields remain in storage solely to preserve proxy layout; they are not used by the new scheduling logic. Obsolete block-span getters, setters, and the legacy MoC facade forwarding selector are removed.
-
-### Execution-safe migration
-
-The changer reads the old schedule values **before** upgrading a proxy. It converts them using a fixed, recent block/timestamp anchor and then upgrades and initializes all implementations atomically. It does not rely on the date on which the proposal is submitted, approved, or executed.
-
-For this one-time conversion only, the changer assumes **24 seconds per Rootstock block**. This is not a future block-time assumption: it is only the conversion factor needed to map the legacy block state into an initial timestamp. The current mainnet and testnet anchor pairs are held in the proposal deployment parameters and can be reviewed before deployment.
-
-The first deadline is the translated last-execution timestamp plus the new exact period. If that deadline is already in the past, the corresponding action is immediately eligible. If the legacy last-execution block is zero, the changer uses timestamp 1 so the action is also immediately eligible. This avoids a hard-coded deadline that could be wrong by the time a governance vote completes.
-
-Each initial last-execution timestamp is set exactly once by the approved changer. The scheduling functions revert until initialized, and the initializer is restricted to the governance authorized changer. A standalone implementation cannot establish an arbitrary schedule for the proxy.
-
-### Operational and ABI updates
-
-The proposal also upgrades the legacy MoC facade because it exposed the old weekly block-span getter. Monitoring and interface artifacts are updated to consume the new last-payment timestamp and seven-day time span rather than block-number fields.
+After this proposal, the legacy EMA schedule represents one day, the BitPro/RiskPro interest
+schedule represents one week, and the Coiner schedule represents a simple average month of
+30 days and 10 hours. These periods remain stable even if Rootstock blocks accelerate or slow
+down. The protocol will therefore no longer need to retune these three schedules when block
+production changes.
 
 ---
 
-## Scope Deliberately Excluded
+## Contracts Changed
 
-This proposal is intentionally narrow. The following were evaluated and are not changed:
+The changer receives the existing proxy addresses, both upgrade delegators, and the addresses of
+four newly deployed implementations. It reads all legacy scheduling state before any upgrade,
+upgrades the existing proxies, and initializes their new timestamp fields in the same governance
+transaction. The proxies, balances, ownership, and all unrelated protocol state remain in place.
 
-- **Queues and price providers:** their block-based behavior can remain; they are not periodic outbound-payment schedules in scope for this proposal.
-- **MoCSettlement and BProx settlement execution:** settlement is not included in this timestamp migration.
-- **Legacy daily interest collection:** it is not included because it is not an active, automatically collected outbound payment. This proposal addresses the weekly BitPro/RiskPro payment instead.
-- **RIF on Chain:** no RIF on Chain schedule is changed by this proposal. Its queues and price-provider timing remain deliberately out of scope.
+### Legacy MoC
 
-Future governance proposals can address any of these components separately if their operational behavior warrants it.
+The legacy MoC proxy is upgraded because its facade exposed
+`getBitProInterestBlockSpan()`, an API belonging to the removed block-based schedule. The new
+implementation removes that forwarding function. Payment calculation, the interest destination,
+the configured rate, bucket accounting, pausing, and all mint and redeem behavior are unchanged.
 
----
+### Legacy MoCState and EMA calculator
+
+The EMA schedule stops reading `lastEmaCalculation` and `emaCalculationBlockSpan`. Those
+historical storage slots remain in their original positions to preserve proxy storage layout, but
+the new implementation does not use them for eligibility.
+
+A new `lastEmaCalculationTimestamp` slot is appended in the reserved storage gap, and the exact
+period is exposed as `emaCalculationTimeSpan = 1 days`. EMA calculation is eligible when:
+
+`block.timestamp >= lastEmaCalculationTimestamp + 1 days`
+
+After a calculation, `lastEmaCalculationTimestamp` is set to the actual execution timestamp.
+The EMA formula, current EMA value, smoothing factor, price source, and the circumstances that
+trigger an attempted calculation are unchanged.
+
+The migration initializes the new field from the legacy last-calculation block using the
+proposal anchor. The initializer is restricted to an authorized governance changer, can run only
+once, rejects zero, and the scheduling code reverts while the field is uninitialized. There is no
+temporary mode in which the upgraded implementation can fall back to block scheduling.
+
+### Legacy MoCInrate weekly payment
+
+The weekly BitPro/RiskPro payment stops reading `lastBitProInterestBlock` and
+`bitProInterestBlockSpan`. Those values remain only as historical storage-layout slots.
+
+A new `lastBitProInterestTimestamp` slot is appended in the reserved storage gap, and the exact
+period is exposed as `bitProInterestTimeSpan = 7 days`. Payment is eligible when:
+
+`block.timestamp > lastBitProInterestTimestamp + 7 days`
+
+After payment, `lastBitProInterestTimestamp` is set to the actual execution timestamp. The
+interest rate, recipient, amount calculation, RBTC transfer, C0 bucket accounting, and permission
+model are unchanged.
+
+The migration initializes the new field from the legacy last-payment block using the proposal
+anchor. As with EMA, initialization is governance-only, nonzero, and one-time; the upgraded
+schedule cannot operate before initialization and never falls back to block arithmetic.
+
+### MOC Flow Coiner
+
+The Coiner stops using `_mintBlockInterval` and `_nextMintFromBlock` to determine whether a
+round can execute. These fields remain in place solely to preserve the deployed proxy's storage
+layout.
+
+The implementation appends `_mintTimestampInterval` and `_nextMintAt`.
+`_mintTimestampInterval` is initialized to 30 days and 10 hours, a simple 365-day Gregorian
+average divided into twelve equal periods. This avoids the five-day annual acceleration produced
+by a 30-day interval. `readyToMint()` uses `_nextMintAt`, and a successful mint sets the next
+deadline to the actual execution timestamp plus 30 days and 10 hours.
+
+The two-stage issuance formula, remaining supply, stage threshold, destination, token ownership
+requirement, minted amounts, and transfers are unchanged. Only the eligibility clock changes.
+
+The legacy Coiner stores the next eligible block rather than the previous execution block.
+Directly translating that block would preserve drift already embedded in the old block interval
+and, with the current mainnet state, would push the next round into October. The changer instead
+reconstructs the previous execution block by subtracting the deployed
+`getMintBlockInterval()` from `getNextMintFromBlock()`, translates that previous block through
+the anchor, and adds the new 30-day-10-hour period. At the current mainnet anchor this produces a
+first post-migration deadline in September.
+
+Coiner initialization is also governance-only, nonzero, and one-time. Both new timestamp fields
+must be initialized before minting can become eligible, and the new implementation contains no
+block-scheduling fallback.
+
+## Schedule Conversion at Execution
+
+The proposal cannot know its execution date in advance: deployment, voting, acceptance, and final
+execution can be separated by a week or more. Hard-coding the first dates could make them stale
+before governance executes the changer. MIP26-3701 therefore calculates the migrated schedule
+dynamically when `execute()` runs.
+
+Mainnet and testnet each provide a recent anchor block and its timestamp in the Ignition
+parameters. For this one-time historical conversion, the changer uses 29 seconds per block, the
+observed Rootstock average over the relevant interval. This value is not used for future
+scheduling. It is only used to estimate a timestamp for a legacy block:
+
+`anchor timestamp + (legacy block - anchor block) * 29 seconds`
+
+The calculation works in both directions around the anchor. EMA and weekly interest translate
+their last execution block and retain their prior semantics: each stores the estimated previous
+execution time, adds its exact period to determine eligibility, and records the actual timestamp
+when it next runs. Coiner reconstructs and translates its previous round as described above, then
+adds the new average-month period.
+
+If a translated deadline has already passed when the changer executes, that action is immediately
+eligible. It is not executed by the changer. The normal task runner or caller executes it, after
+which the implementation records the actual timestamp and begins a clean timestamp-based period.
+This prevents the changer from duplicating an action while also avoiding a stale hard-coded date.
+
+If an EMA or interest legacy last-execution value is zero, timestamp 1 is used so the action is
+immediately eligible. If Coiner has no legacy next block, its first timestamp deadline is the
+changer execution time.
+
+Fresh deployments also initialize these timestamp schedules from `block.timestamp` in their
+normal initializer. That fresh-deployment path is separate from this proxy migration; existing
+proxies receive their translated values exclusively through MIP26-3701.
+
+## Design Decisions and Deliberate Exclusions
+
+The review covered block-dependent components deployed across Money on Chain and RIF on Chain.
+The migration was deliberately narrowed to schedules that represent recurring elapsed-time
+protocol activity and where block-time drift can materially delay or accelerate an outbound
+action.
+
+Queues remain block-based. Their waiting and execution rules are transaction-ordering mechanisms,
+not calendar payment schedules, and changing them is unnecessary for this proposal.
+
+Price providers and oracle publication windows also remain block-based. Their block freshness and
+round rules are intentionally coupled to chain progress and do not create the monthly or weekly
+outbound-payment risk addressed here.
+
+`MoCSettlement` remains block-based. Settlement processes legacy queued settlement and BProx
+functionality; it is not the recurring Coiner or weekly interest payment. Its behavior and current
+operational use were evaluated, but changing it would broaden this migration without solving the
+payment drift that motivated the proposal.
+
+Legacy daily inrate collection is not migrated. It is not currently being collected as an active
+outbound payment, so migrating its dormant schedule would add contract and operational risk
+without a corresponding benefit.
+
+RIF on Chain receives no contract upgrade from MIP26-3701. Its reviewed block-dependent
+components are queues, providers, or otherwise outside the selected outbound schedules.
+
+EMA is included even though recalculating it is not an outbound payment. It is frequently reached
+through normal protocol operation, has a clear intended daily cadence, and is safe to make due
+immediately if its translated deadline has elapsed.
+
+The new implementations are timestamp-only rather than supporting a transition period with both
+block and timestamp behavior. A dual-mode implementation would increase complexity and leave two
+sources of scheduling truth. The changer instead performs the legacy read, upgrade, and one-time
+initialization atomically.
+
+New timestamp values use new storage slots rather than reinterpreting the legacy block slots.
+This preserves upgrade layout, gives monitoring an unambiguous timestamp field and period, and
+keeps the legacy values available for historical inspection at the storage level. Historical,
+single-use changer contracts were not rewritten; they remain as records of previously executed
+governance changes and are marked accordingly in their source.
+
+Operational monitoring is updated separately to read
+`lastBitProInterestTimestamp` and `bitProInterestTimeSpan`. Removed block-based getters and
+setters must not be used after the upgrade.
 
 ## Expected Outcome
 
-After execution:
+After execution, EMA eligibility follows elapsed days, the weekly payment follows elapsed weeks,
+and Coiner issuance follows twelve equal periods per simple 365-day year. Changes in Rootstock
+block production no longer shorten or extend these schedules.
 
-- EMA eligibility follows elapsed days rather than the number of blocks mined;
-- a weekly interest payment cannot become a substantially shorter or longer period just because Rootstock block time changes;
-- Coiner rounds occur at least 30 days and 10 hours apart, subject only to the normal requirement that someone submits the mint transaction; and
-- no further governance block-span retuning is needed for these three schedules.
+The first Coiner round corrects the drift accumulated under the current block interval and is
+expected during September 2026. Every later deadline is based on the timestamp of the actual
+previous execution. EMA and weekly interest similarly converge onto exact time periods after
+their first post-migration execution.
 
-The first post-upgrade due time is calculated from a best-effort translation of the legacy last-execution block plus the new exact period. Every later due time is based on the actual execution timestamp.
+## Verification
 
----
+The proposal includes unit tests for anchor conversion and one-time initialization, plus a
+Rootstock mainnet-fork test that:
+
+1. forks at the configured mainnet anchor;
+2. deploys the four new implementations and the changer;
+3. executes the changer through the deployed governor and both upgrade delegators;
+4. verifies the migrated timestamp slots and exact periods;
+5. prints the migrated EMA previous-calculation timestamp, weekly-interest previous-payment
+   timestamp, and Coiner next-round timestamp; and
+6. asserts that the first Coiner deadline is in September 2026 and not October.
 
 ## Governance Process
 
-As with all protocol-level changes, this proposal will be submitted to a governance vote. Before the vote, the community can review:
-
-1. the dates-only implementation source code;
-2. the MIP26-3701 changer and its verified-source deployment;
-3. the mainnet and testnet anchor parameters; and
-4. the generated implementation and changer addresses.
-
-The change takes effect only when the approved changer is executed. Because it derives the initial timestamp state at execution, a voting delay does not require redeploying or reconfiguring the changer.
-
----
+The change takes effect only when the approved changer is executed. Before voting, the community
+can review the timestamp-only implementation sources, MIP26-3701, both networks' anchor
+parameters, the fork-test output, and the deployed implementation addresses.
 
 ## Changer Contract
 
-The changer address and verified-source URL will be added before the governance vote.
+The changer address and verified-source link will be added here before the governance vote.
 
-| Changer address and verified source |
-| :---------------------------------- |
-| `TBD`                               |
+`TBD`
 
-Implementation and deployment details are maintained in [`ignition/modules/MIP26-3701`](../../ignition/modules/MIP26-3701).
+Implementation and deployment details are maintained in
+[`ignition/modules/MIP26-3701`](../../ignition/modules/MIP26-3701).

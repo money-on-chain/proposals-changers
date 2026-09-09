@@ -28,6 +28,7 @@ interface IMoCInrateTimestampSchedule {
 // Read only before the proxy is upgraded to its dates-only implementation.
 interface ILegacyCoinerSchedule {
   function getNextMintFromBlock() external view returns (uint256);
+  function getMintBlockInterval() external view returns (uint256);
 }
 
 interface ICoinerTimestampSchedule {
@@ -40,7 +41,8 @@ interface ICoinerTimestampSchedule {
  *         anchor, then atomically upgrades and initializes dates-only proxies.
  */
 contract MIP263701UseTimestamps is IChangeContract {
-  uint256 public constant BLOCK_TIME = 24 seconds;
+  uint256 public constant BLOCK_TIME = 29 seconds;
+  uint256 public constant COINER_MINT_TIME_SPAN = 30 days + 10 hours;
 
   address public immutable mocProxy;
   address public immutable mocStateProxy;
@@ -117,7 +119,14 @@ contract MIP263701UseTimestamps is IChangeContract {
   function nextMintDueTimestamp() public view returns (uint256) {
     uint256 nextMintBlock = ILegacyCoinerSchedule(coinerProxy).getNextMintFromBlock();
     if (nextMintBlock == 0) return block.timestamp;
-    return timestampAtBlock(nextMintBlock);
+
+    uint256 mintBlockInterval = ILegacyCoinerSchedule(coinerProxy).getMintBlockInterval();
+    if (mintBlockInterval == 0 || nextMintBlock < mintBlockInterval) {
+      return timestampAtBlock(nextMintBlock);
+    }
+
+    uint256 lastMintBlock = nextMintBlock - mintBlockInterval;
+    return timestampAtBlock(lastMintBlock) + COINER_MINT_TIME_SPAN;
   }
 
   function timestampAtBlock(uint256 targetBlock) public view returns (uint256) {
