@@ -1,0 +1,12 @@
+{
+  "MIP263701Module": {
+    "mocProxy": "0xf773B590aF754D597770937Fa8ea7AbDf2668370",
+    "mocStateProxy": "0xb9C42EFc8ec54490a37cA91c423F7285Fa01e257",
+    "mocInrateProxy": "0xc0f9B54c41E3d0587Ce0F7540738d8d649b0A3F3",
+    "coinerProxy": "0x661F7d510cdB40638f5Afd9f9dF8877398500593",
+    "mocUpgradeDelegator": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
+    "flowUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "anchorBlockNumber": "9220195",
+    "anchorTimestamp": "1788817028"
+  }
+}
