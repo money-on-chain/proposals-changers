@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@moc/flow':
-        specifier: git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.3
-        version: '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
+        specifier: git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.4-rc1
+        version: '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
       '@moc/lending':
         specifier: git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v1.0.1
         version: lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#ec08ee1fa04de5241a61a6ec3002901da823b6e4
@@ -30,11 +30,11 @@ importers:
         specifier: git+ssh://git@github.com/money-on-chain/price_oracle_interfaces.git#v0.1.0
         version: price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@moc/rbtc':
-        specifier: git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.5
-        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
+        specifier: git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.7-rc1
+        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
       '@moc/roc':
         specifier: git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.2.1
-        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(089fc51ab41e059ebe829f8698e58f41)
+        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(998d952211d404c43a461ced41e5a108)
       '@moc/voting':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#v3.0.4
         version: '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@5.9.3)(zod@3.25.76)'
@@ -510,9 +510,9 @@ packages:
     resolution: {integrity: sha512-i6b4qw5qnP8c5FEeBJg/uZQ4ddrkN6Ca8qISJh0pr7a5hfn3h3v5x60BEbOC7OYAGZNMs1LfFLwnW2CuK8F57Q==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
-  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436':
-    resolution: {commit: 83dc2d08235594c0f4002177f8b51994a7f27436, repo: git@github.com:money-on-chain/MoC-Flow.git, type: git}
-    version: 3.0.3
+  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80':
+    resolution: {commit: 179926f090f8b07f5f15ca752fb01659be70af80, repo: git@github.com:money-on-chain/MoC-Flow.git, type: git}
+    version: 3.0.4
     peerDependencies:
       '@moc/periphery': 3.0.5
 
@@ -3576,9 +3576,9 @@ packages:
   mock-fs@4.14.0:
     resolution: {integrity: sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==}
 
-  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b}
-    version: 0.1.14
+  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66}
+    version: 3.0.7
     engines: {node: '=8.17.0'}
 
   mout@0.11.1:
@@ -5687,7 +5687,7 @@ snapshots:
     dependencies:
       '@sinclair/typebox': 0.34.52
 
-  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)':
+  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)':
     dependencies:
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@openzeppelin/contracts-ethereum-package': 3.0.0
@@ -9240,7 +9240,7 @@ snapshots:
 
   mock-fs@4.14.0: {}
 
-  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/489e08b17ba743765c9f1c3b25c282f84f11d64b(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
+  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@thinkanddev/solidoc': 3.0.1
       eth-gas-reporter: 0.2.22
@@ -9914,9 +9914,9 @@ snapshots:
     dependencies:
       bn.js: 5.2.5
 
-  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(089fc51ab41e059ebe829f8698e58f41):
+  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(998d952211d404c43a461ced41e5a108):
     dependencies:
-      '@moc/flow': '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#83dc2d08235594c0f4002177f8b51994a7f27436(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
+      '@moc/flow': '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
       '@moc/oracles': '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)'
       '@moc/price-oracle-interfaces': price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)

@@ -25,6 +25,7 @@ export default {
       "@moc/roc/contracts/providers/FCMaxOpDifferenceProvider.sol",
       "@moc/roc/contracts/providers/DataProvider.sol",
       "@moc/flow/contracts/BufferCoinbase.sol",
+      "@moc/flow/contracts/Coiner.sol",
       "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
       "@moc/main/contracts/governance/InterimGovernor.sol",
       "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol",

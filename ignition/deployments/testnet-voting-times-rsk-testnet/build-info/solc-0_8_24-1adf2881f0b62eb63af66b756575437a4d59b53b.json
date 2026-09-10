@@ -1,0 +1,56 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-1adf2881f0b62eb63af66b756575437a4d59b53b",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/changers/testnet-only/TestnetVotingTimesChanger.sol": "project/contracts/changers/testnet-only/TestnetVotingTimesChanger.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "london",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200,
+        "details": {
+          "yulDetails": {
+            "optimizerSteps": "dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul"
+          }
+        }
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers",
+            "storageLayout"
+          ]
+        }
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "project/contracts/changers/testnet-only/TestnetVotingTimesChanger.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24;\n\nimport { IChangeContract } from \"../../interfaces/IChangeContract.sol\";\n\ninterface IRegistry {\n  function setUint(bytes32 key, uint248 value) external;\n}\n\n/**\n * @title TestnetVotingTimesChanger\n * @notice Sets short voting periods for testnet protocol maintenance.\n * @dev This changer is intended exclusively for testnet and must never be\n *      executed on mainnet.\n */\ncontract TestnetVotingTimesChanger is IChangeContract {\n  bytes32 public constant MOC_VOTING_MACHINE_PRE_VOTE_EXPIRATION_TIME_DELTA =\n    0x62f5dbf0c17b0df83487409f747ad2eeca5fd54c140ca59b32cf39d6f6eaf916;\n  bytes32 public constant MOC_VOTING_MACHINE_VOTING_TIME_DELTA =\n    0xb43ee0a5ee6dcc7115ce824e4e353526ad6e479afa4daeb78451070de942de36;\n\n  uint248 public constant PRE_VOTE_EXPIRATION_TIME_DELTA = 5 minutes;\n  uint248 public constant VOTING_TIME_DELTA = 20 minutes;\n\n  IRegistry public immutable registry;\n\n  event PreVoteExpirationTimeDeltaSet(uint248 value);\n  event VotingTimeDeltaSet(uint248 value);\n\n  constructor(IRegistry registry_) {\n    require(address(registry_) != address(0), \"Invalid registry\");\n    registry = registry_;\n  }\n\n  function execute() external override {\n    registry.setUint(\n      MOC_VOTING_MACHINE_PRE_VOTE_EXPIRATION_TIME_DELTA,\n      PRE_VOTE_EXPIRATION_TIME_DELTA\n    );\n    emit PreVoteExpirationTimeDeltaSet(PRE_VOTE_EXPIRATION_TIME_DELTA);\n\n    registry.setUint(MOC_VOTING_MACHINE_VOTING_TIME_DELTA, VOTING_TIME_DELTA);\n    emit VotingTimeDeltaSet(VOTING_TIME_DELTA);\n  }\n}\n"
+      },
+      "project/contracts/interfaces/IChangeContract.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\n/**\n  @title IChangeContract\n  @notice This interface is the one used by the governance system.\n  @dev If you plan to do some changes to a system governed by this project you should write a contract\n  that does those changes, like a recipe. This contract MUST not have ANY kind of public or external function\n  that modifies the state of this ChangeContract, otherwise you could run into front-running issues when the governance\n  system is fully in place.\n */\ninterface IChangeContract {\n  /**\n    @notice Override this function with a recipe of the changes to be done when this ChangeContract\n    is executed\n   */\n  function execute() external;\n}\n"
+      }
+    }
+  }
+}

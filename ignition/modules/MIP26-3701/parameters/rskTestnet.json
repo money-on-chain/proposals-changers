@@ -1,0 +1,19 @@
+{
+  "MIP263701Module": {
+    "mocProxy": "0x2820f6d4D199B8D8838A4B26F9917754B86a0c1F",
+    "mocStateProxy": "0x0adb40132cB0ffcEf6ED81c26A1881e214100555",
+    "mocInrateProxy": "0x76790f846FAAf44cf1B2D717d0A6c5f6f5152B60",
+    "coinerProxy": "0x5b7071270C3FD3d99BE411baCb145b2fb47F0D0F",
+    "supporters": "0x2Bb08e5DFb88477A88180Fbb7eF8196fbdea4Cd5",
+    "rifOnChain": "0xa416934264515bb381E3b746f10f22D5c6f9431a",
+    "btcUsdCoinPair": "0x39192498FcF1dBE11653040bB49308E09A1056AC",
+    "rifUsdCoinPair": "0x45Eda601198Db28413fa7653300C52d5E4Db9b8b",
+    "tasksRunner": "0x0E00baCDf5c6d6F51777998B4d7A660FD29e0fb6",
+    "mocUpgradeDelegator": "0xCDAbFbF334A5F6BCe900D2f73470D1e6722365d8",
+    "flowUpgradeDelegator": "0xa12a9A492eFEBf4E43B174A57886286dA5057B8D",
+    "emaCalculationTimeSpan": "86400",
+    "bitProInterestTimeSpan": "604800",
+    "coinerMintTimeSpan": "2628000",
+    "roundLockPeriod": "10800"
+  }
+}

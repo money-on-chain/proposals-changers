@@ -30,6 +30,8 @@ The changer will upgrade the Voting Machine and configure a limited accepted-ste
 
 When a proposal is accepted, the Voting Machine records the address that originally submitted it. During the configured priority window, only that address may execute the accepted step.
 
+The accepted-step priority window is configured as 86,400 seconds (24 hours).
+
 After the window expires, execution becomes permissionless again. Any address may execute the accepted proposal.
 
 This gives the proposer time to select an appropriate execution block without permanently restricting community access to accepted proposals.
