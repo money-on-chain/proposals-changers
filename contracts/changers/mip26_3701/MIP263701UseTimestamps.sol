@@ -13,7 +13,10 @@ interface ILegacyMoCStateSchedule {
 }
 
 interface IMoCStateTimestampSchedule {
-  function initializeEmaCalculation(uint256 lastCalculationTimestamp) external;
+  function initializeEmaCalculation(
+    uint256 lastCalculationTimestamp,
+    uint256 calculationTimeSpan
+  ) external;
 }
 
 // Read only before the proxy is upgraded to its dates-only implementation.
@@ -22,7 +25,10 @@ interface ILegacyMoCInrateSchedule {
 }
 
 interface IMoCInrateTimestampSchedule {
-  function initializeBitProInterestSchedule(uint256 lastPaymentTimestamp) external;
+  function initializeBitProInterestSchedule(
+    uint256 lastPaymentTimestamp,
+    uint256 interestTimeSpan
+  ) external;
 }
 
 // Read only before the proxy is upgraded to its dates-only implementation.
@@ -32,7 +38,7 @@ interface ILegacyCoinerSchedule {
 }
 
 interface ICoinerTimestampSchedule {
-  function initializeMintSchedule(uint256 nextMintAt) external;
+  function initializeMintSchedule(uint256 nextMintAt, uint256 mintTimestampInterval) external;
 }
 
 interface IGovernedDelegateCall {
@@ -45,7 +51,6 @@ interface IRifOnChainTimeSpans {
   function maxAbsoluteOpProvider() external view returns (address);
   function maxOpDiffProvider() external view returns (address);
   function setTCInterestParams(address collector, uint256 rate, uint256 timeSpan) external;
-  function setSettlementTimeSpan(uint256 timeSpan) external;
   function setFluxCapacitorParams(
     address maxAbsoluteProvider,
     address maxDiffProvider,
@@ -62,14 +67,10 @@ interface IRifOnChainTimeSpans {
 contract MIP263701UseTimestamps is IChangeContract {
   uint256 public constant BLOCK_TIME = 29 seconds;
   uint256 public constant GREGORIAN_AVERAGE_MONTH = 30 days + 10 hours;
-  uint256 public constant COINER_MINT_TIME_SPAN = GREGORIAN_AVERAGE_MONTH;
   uint256 public constant SUPPORTERS_ASSUMED_BLOCK_TIME = 30 seconds;
   uint256 public constant SUPPORTERS_PERIOD =
     GREGORIAN_AVERAGE_MONTH / SUPPORTERS_ASSUMED_BLOCK_TIME;
-  uint256 public constant RIF_INTEREST_PAYMENT_TIME_SPAN = 7 days;
-  uint256 public constant RIF_SETTLEMENT_TIME_SPAN = GREGORIAN_AVERAGE_MONTH;
   uint256 public constant RIF_DECAY_TIME_SPAN = 1 days;
-  uint256 public constant RIF_EMA_CALCULATION_TIME_SPAN = 1 days;
 
   // Compiler-verified against @moneyonchain/oracles 3.0.10. These are the
   // absolute proxy storage slots for SupportersData.period and
@@ -92,6 +93,9 @@ contract MIP263701UseTimestamps is IChangeContract {
   address public immutable newMocStateImplementation;
   address public immutable newMocInrateImplementation;
   address public immutable newCoinerImplementation;
+  uint256 public immutable emaCalculationTimeSpan;
+  uint256 public immutable bitProInterestTimeSpan;
+  uint256 public immutable coinerMintTimeSpan;
   uint256 public immutable roundLockPeriod;
   uint256 public immutable anchorBlockNumber;
   uint256 public immutable anchorTimestamp;
@@ -101,11 +105,15 @@ contract MIP263701UseTimestamps is IChangeContract {
     address[5] memory _additionalTargets,
     address[2] memory _upgradeDelegators,
     address[4] memory _newImplementations,
-    uint256 _roundLockPeriod,
-    uint256 _anchorBlockNumber,
-    uint256 _anchorTimestamp
+    uint256 _emaCalculationTimeSpan,
+    uint256 _bitProInterestTimeSpan,
+    uint256 _coinerMintTimeSpan,
+    uint256 _roundLockPeriod
   ) {
-    require(_anchorTimestamp > 0, "invalid anchor timestamp");
+    require(_emaCalculationTimeSpan > 0, "invalid EMA time span");
+    require(_bitProInterestTimeSpan > 0, "invalid interest time span");
+    require(_coinerMintTimeSpan > 0, "invalid Coiner time span");
+    require(_roundLockPeriod > 0, "invalid round time span");
 
     mocProxy = _legacyProxies[0];
     mocStateProxy = _legacyProxies[1];
@@ -122,9 +130,12 @@ contract MIP263701UseTimestamps is IChangeContract {
     newMocStateImplementation = _newImplementations[1];
     newMocInrateImplementation = _newImplementations[2];
     newCoinerImplementation = _newImplementations[3];
+    emaCalculationTimeSpan = _emaCalculationTimeSpan;
+    bitProInterestTimeSpan = _bitProInterestTimeSpan;
+    coinerMintTimeSpan = _coinerMintTimeSpan;
     roundLockPeriod = _roundLockPeriod;
-    anchorBlockNumber = _anchorBlockNumber;
-    anchorTimestamp = _anchorTimestamp;
+    anchorBlockNumber = block.number;
+    anchorTimestamp = block.timestamp;
   }
 
   function execute() external {
@@ -137,11 +148,18 @@ contract MIP263701UseTimestamps is IChangeContract {
     mocUpgradeDelegator.upgrade(mocInrateProxy, newMocInrateImplementation);
     flowUpgradeDelegator.upgrade(coinerProxy, newCoinerImplementation);
 
-    IMoCStateTimestampSchedule(mocStateProxy).initializeEmaCalculation(lastEmaTimestamp);
-    IMoCInrateTimestampSchedule(mocInrateProxy).initializeBitProInterestSchedule(
-      lastInterestPaymentTimestamp
+    IMoCStateTimestampSchedule(mocStateProxy).initializeEmaCalculation(
+      lastEmaTimestamp,
+      emaCalculationTimeSpan
     );
-    ICoinerTimestampSchedule(coinerProxy).initializeMintSchedule(nextMintTimestamp);
+    IMoCInrateTimestampSchedule(mocInrateProxy).initializeBitProInterestSchedule(
+      lastInterestPaymentTimestamp,
+      bitProInterestTimeSpan
+    );
+    ICoinerTimestampSchedule(coinerProxy).initializeMintSchedule(
+      nextMintTimestamp,
+      coinerMintTimeSpan
+    );
 
     _updateRifOnChainTimeSpans();
     IGovernedDelegateCall(supporters).delegateCallToChanger(abi.encode(SUPPORTERS_PERIOD));
@@ -181,15 +199,14 @@ contract MIP263701UseTimestamps is IChangeContract {
     rif.setTCInterestParams(
       rif.tcInterestCollectorAddress(),
       rif.tcInterestRate(),
-      RIF_INTEREST_PAYMENT_TIME_SPAN
+      bitProInterestTimeSpan
     );
-    rif.setSettlementTimeSpan(RIF_SETTLEMENT_TIME_SPAN);
     rif.setFluxCapacitorParams(
       rif.maxAbsoluteOpProvider(),
       rif.maxOpDiffProvider(),
       RIF_DECAY_TIME_SPAN
     );
-    rif.setEmaCalculationTimeSpan(RIF_EMA_CALCULATION_TIME_SPAN);
+    rif.setEmaCalculationTimeSpan(emaCalculationTimeSpan);
   }
 
   function legacyLastEmaCalculationTimestamp() public view returns (uint256) {
@@ -214,7 +231,7 @@ contract MIP263701UseTimestamps is IChangeContract {
     }
 
     uint256 lastMintBlock = nextMintBlock - mintBlockInterval;
-    return timestampAtBlock(lastMintBlock) + COINER_MINT_TIME_SPAN;
+    return timestampAtBlock(lastMintBlock) + coinerMintTimeSpan;
   }
 
   function timestampAtBlock(uint256 targetBlock) public view returns (uint256) {

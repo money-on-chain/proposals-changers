@@ -11,8 +11,9 @@
     "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
     "mocUpgradeDelegator": "0x5cE577f6Ec969CE9a282838D350206C52A6F338C",
     "flowUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
-    "roundLockPeriod": "2628000",
-    "anchorBlockNumber": "9220195",
-    "anchorTimestamp": "1788817028"
+    "emaCalculationTimeSpan": "86400",
+    "bitProInterestTimeSpan": "604800",
+    "coinerMintTimeSpan": "2628000",
+    "roundLockPeriod": "2628000"
   }
 }

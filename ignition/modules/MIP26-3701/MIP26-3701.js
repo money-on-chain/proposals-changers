@@ -13,9 +13,10 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
   const tasksRunner = m.getParameter("tasksRunner");
   const mocUpgradeDelegator = m.getParameter("mocUpgradeDelegator");
   const flowUpgradeDelegator = m.getParameter("flowUpgradeDelegator");
+  const emaCalculationTimeSpan = m.getParameter("emaCalculationTimeSpan");
+  const bitProInterestTimeSpan = m.getParameter("bitProInterestTimeSpan");
+  const coinerMintTimeSpan = m.getParameter("coinerMintTimeSpan");
   const roundLockPeriod = m.getParameter("roundLockPeriod");
-  const anchorBlockNumber = m.getParameter("anchorBlockNumber");
-  const anchorTimestamp = m.getParameter("anchorTimestamp");
 
   const mocImplementation = m.contract("DeployableMoC", [], {
     id: "MoCImplementation",
@@ -34,9 +35,10 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
     [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
     [mocUpgradeDelegator, flowUpgradeDelegator],
     [mocImplementation, mocStateImplementation, mocInrateImplementation, coinerImplementation],
+    emaCalculationTimeSpan,
+    bitProInterestTimeSpan,
+    coinerMintTimeSpan,
     roundLockPeriod,
-    anchorBlockNumber,
-    anchorTimestamp,
   ]);
 
   return {

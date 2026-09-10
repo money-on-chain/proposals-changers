@@ -47,8 +47,6 @@ interface IRifOnChainTimeSpansProbe {
   function tcInterestRate() external view returns (uint256);
   function tcInterestPaymentTimeSpan() external view returns (uint256);
   function nextTCInterestPayment() external view returns (uint256);
-  function settlementTimeSpan() external view returns (uint256);
-  function nextSettlementTime() external view returns (uint256);
   function maxAbsoluteOpProvider() external view returns (address);
   function maxOpDiffProvider() external view returns (address);
   function decayTimeSpan() external view returns (uint256);
@@ -58,11 +56,12 @@ interface IRifOnChainTimeSpansProbe {
 
 /**
  * @notice Applies MIP26-3701 to the deployed Rootstock mainnet state at the
- *         proposal anchor and reports the timestamps produced by the migration.
+ *         changer deployment block and reports the timestamps produced by the migration.
  */
 contract MIP263701UseTimestampsForkTest is Test {
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/MIP26-3701/parameters/rskMainnet.json";
+  uint256 internal constant MAINNET_FORK_BLOCK = 9_220_195;
 
   uint256 internal constant SEPTEMBER_2026_START = 1_788_220_800;
   uint256 internal constant OCTOBER_2026_START = 1_790_812_800;
@@ -78,8 +77,9 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal tasksRunner;
   address internal mocUpgradeDelegator;
   address internal flowUpgradeDelegator;
-  uint256 internal anchorBlockNumber;
-  uint256 internal anchorTimestamp;
+  uint256 internal emaCalculationTimeSpan;
+  uint256 internal bitProInterestTimeSpan;
+  uint256 internal coinerMintTimeSpan;
   uint256 internal roundLockPeriod;
   uint256 internal supportersEarningsBefore;
   uint256 internal supportersDistributedBefore;
@@ -92,7 +92,6 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal maxAbsoluteProviderBefore;
   address internal maxDiffProviderBefore;
   uint256 internal nextInterestPaymentBefore;
-  uint256 internal nextSettlementBefore;
   uint256 internal nextEmaCalculationBefore;
 
   MIP263701UseTimestamps internal changer;
@@ -102,7 +101,7 @@ contract MIP263701UseTimestampsForkTest is Test {
 
     string memory defaultRpcUrl = "https://public-node.rsk.co";
     string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", defaultRpcUrl);
-    vm.createSelectFork(rpcUrl, anchorBlockNumber);
+    vm.createSelectFork(rpcUrl, MAINNET_FORK_BLOCK);
 
     changer = new MIP263701UseTimestamps(
       [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
@@ -114,9 +113,10 @@ contract MIP263701UseTimestampsForkTest is Test {
         _deployArtifact("DeployableMoCInrate"),
         _deployArtifact("DeployableCoiner")
       ],
-      roundLockPeriod,
-      anchorBlockNumber,
-      anchorTimestamp
+      emaCalculationTimeSpan,
+      bitProInterestTimeSpan,
+      coinerMintTimeSpan,
+      roundLockPeriod
     );
   }
 
@@ -141,11 +141,17 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(lastEmaCalculationTimestamp, expectedLastEmaCalculationTimestamp);
     assertEq(lastInterestPaymentTimestamp, expectedLastInterestPaymentTimestamp);
     assertEq(nextMintTimestamp, expectedNextMintTimestamp);
-    assertEq(IMoCStateTimestampScheduleProbe(mocStateProxy).emaCalculationTimeSpan(), 1 days);
-    assertEq(IMoCInrateTimestampScheduleProbe(mocInrateProxy).bitProInterestTimeSpan(), 7 days);
+    assertEq(
+      IMoCStateTimestampScheduleProbe(mocStateProxy).emaCalculationTimeSpan(),
+      emaCalculationTimeSpan
+    );
+    assertEq(
+      IMoCInrateTimestampScheduleProbe(mocInrateProxy).bitProInterestTimeSpan(),
+      bitProInterestTimeSpan
+    );
     assertEq(
       ICoinerTimestampScheduleProbe(coinerProxy).getMintTimestampInterval(),
-      30 days + 10 hours
+      coinerMintTimeSpan
     );
     _assertAdditionalSchedulesAndPreservedState();
 
@@ -169,7 +175,6 @@ contract MIP263701UseTimestampsForkTest is Test {
     maxAbsoluteProviderBefore = rif.maxAbsoluteOpProvider();
     maxDiffProviderBefore = rif.maxOpDiffProvider();
     nextInterestPaymentBefore = rif.nextTCInterestPayment();
-    nextSettlementBefore = rif.nextSettlementTime();
     nextEmaCalculationBefore = rif.nextEmaCalculation();
   }
 
@@ -180,10 +185,9 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(IRoundManagerScheduleProbe(tasksRunner).roundLockPeriodSecs(), roundLockPeriod);
 
     IRifOnChainTimeSpansProbe rif = IRifOnChainTimeSpansProbe(rifOnChain);
-    assertEq(rif.tcInterestPaymentTimeSpan(), 7 days);
-    assertEq(rif.settlementTimeSpan(), 30 days + 10 hours);
+    assertEq(rif.tcInterestPaymentTimeSpan(), bitProInterestTimeSpan);
     assertEq(rif.decayTimeSpan(), 1 days);
-    assertEq(rif.emaCalculationTimeSpan(), 1 days);
+    assertEq(rif.emaCalculationTimeSpan(), emaCalculationTimeSpan);
 
     (uint256 earningsAfter, uint256 distributedAfter, uint256 nextAfter) = ISupportersScheduleProbe(
       supporters
@@ -199,7 +203,6 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(rif.maxAbsoluteOpProvider(), maxAbsoluteProviderBefore);
     assertEq(rif.maxOpDiffProvider(), maxDiffProviderBefore);
     assertEq(rif.nextTCInterestPayment(), nextInterestPaymentBefore);
-    assertEq(rif.nextSettlementTime(), nextSettlementBefore);
     assertEq(rif.nextEmaCalculation(), nextEmaCalculationBefore);
   }
 
@@ -236,9 +239,10 @@ contract MIP263701UseTimestampsForkTest is Test {
     tasksRunner = vm.parseJsonAddress(json, _key(module, "tasksRunner"));
     mocUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "mocUpgradeDelegator"));
     flowUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "flowUpgradeDelegator"));
+    emaCalculationTimeSpan = vm.parseJsonUint(json, _key(module, "emaCalculationTimeSpan"));
+    bitProInterestTimeSpan = vm.parseJsonUint(json, _key(module, "bitProInterestTimeSpan"));
+    coinerMintTimeSpan = vm.parseJsonUint(json, _key(module, "coinerMintTimeSpan"));
     roundLockPeriod = vm.parseJsonUint(json, _key(module, "roundLockPeriod"));
-    anchorBlockNumber = vm.parseJsonUint(json, _key(module, "anchorBlockNumber"));
-    anchorTimestamp = vm.parseJsonUint(json, _key(module, "anchorTimestamp"));
   }
 
   function _key(string memory module, string memory field) internal pure returns (string memory) {
