@@ -89,8 +89,10 @@ minted amounts, and transfers are unchanged.
 Supporters continues to stream rewards over blocks. Its `period` is recalibrated from 106,902 to
 87,600 blocks, representing 30 days and 10 hours at an assumed 30-second block time.
 
-The active `endEarnings` value is preserved, so rewards already being streamed are unaffected.
-The new period applies to the next distribution.
+The proxy is upgraded to an implementation that adds the governance-gated `setPeriod()` function.
+This is the only behavioral addition in that implementation; its storage layout and reward logic
+are unchanged. The active `endEarnings` value is preserved, so rewards already being streamed are
+unaffected. The new period applies to the next distribution.
 
 ### [RIF on Chain](https://rootstock.blockscout.com/address/0xA27024Ed70035E46dba712609fc2Afa1c97aA36A)
 
@@ -113,8 +115,11 @@ and [TasksRunner](https://rootstock.blockscout.com/address/0xd99a43ba443068Ea539
 already use timestamp deadlines. Their mainnet `roundLockPeriodSecs` changes from 2,592,000
 seconds, exactly 30 days, to the 2,628,000-second average Gregorian month used by Coiner.
 
-Current round deadlines are preserved, and the new duration applies when each next round begins.
-Testnet retains its intentionally accelerated 10,800-second round period.
+These three proxies are upgraded to implementations that add the governance-gated
+`setRoundLockPeriodSecs()` function inherited from `RoundManager`. This is the only behavioral
+addition; storage, pricing, task execution, and round logic are unchanged. Current round
+deadlines are preserved, and the new duration applies when each next round begins. Testnet retains
+its intentionally accelerated 10,800-second round period.
 
 ## Migration
 
@@ -153,8 +158,10 @@ boundaries. Its active stream must preserve the exact already-vested fraction. T
 recalibrates the period used by future distributions; Supporters is expected to become
 economically less significant than Coiner issuance and the active interest schedules.
 
-RIF on Chain and the oracle round managers are not upgraded because they already use timestamp
-deadlines. Only their configured durations are corrected.
+RIF on Chain already uses timestamp deadlines and is not upgraded; only its configured durations
+are corrected. The oracle and TasksRunner proxies are upgraded solely to expose the
+governance-gated period setter needed to correct their configured duration while preserving their
+active deadlines.
 
 ## Expected Outcome
 

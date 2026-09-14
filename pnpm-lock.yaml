@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@moc/flow':
-        specifier: git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.4-rc1
-        version: '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
+        specifier: git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.4-rc2
+        version: '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#bd13e97acf463a29ba7094cf3b32c21f5c2581cc(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
       '@moc/lending':
         specifier: git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v1.0.1
         version: lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#ec08ee1fa04de5241a61a6ec3002901da823b6e4
@@ -21,8 +21,8 @@ importers:
         specifier: git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9
         version: main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
       '@moc/oracles':
-        specifier: git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.10
-        version: '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)'
+        specifier: git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.12-rc1
+        version: '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/6132c657322ecee3a6c80f593fca82c53b3c82e9(df4a42fcff5708e2f8a6af25e62e6801)'
       '@moc/periphery':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.7
         version: '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
@@ -30,11 +30,11 @@ importers:
         specifier: git+ssh://git@github.com/money-on-chain/price_oracle_interfaces.git#v0.1.0
         version: price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@moc/rbtc':
-        specifier: git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.7-rc1
-        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
+        specifier: git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.7-rc2
+        version: money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/c1ff255d3dfaa2a6c42a161dbb77cefc3bd4b5ee(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76)
       '@moc/roc':
         specifier: git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#v3.2.1
-        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(998d952211d404c43a461ced41e5a108)
+        version: roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(1299ac738854e222199730e27b728317)
       '@moc/voting':
         specifier: git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#v3.0.4
         version: '@moneyonchain/voting@git+ssh://git@github.com/money-on-chain/MoC-Gobernanza.git#ecfe8fbe0922d1f6315877054090cb113d852f13(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)(typescript@5.9.3)(zod@3.25.76)'
@@ -510,15 +510,15 @@ packages:
     resolution: {integrity: sha512-i6b4qw5qnP8c5FEeBJg/uZQ4ddrkN6Ca8qISJh0pr7a5hfn3h3v5x60BEbOC7OYAGZNMs1LfFLwnW2CuK8F57Q==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
-  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80':
-    resolution: {commit: 179926f090f8b07f5f15ca752fb01659be70af80, repo: git@github.com:money-on-chain/MoC-Flow.git, type: git}
+  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#bd13e97acf463a29ba7094cf3b32c21f5c2581cc':
+    resolution: {commit: bd13e97acf463a29ba7094cf3b32c21f5c2581cc, repo: git@github.com:money-on-chain/MoC-Flow.git, type: git}
     version: 3.0.4
     peerDependencies:
       '@moc/periphery': 3.0.5
 
-  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6}
-    version: 3.0.10
+  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/6132c657322ecee3a6c80f593fca82c53b3c82e9':
+    resolution: {gitHosted: true, integrity: sha512-fw7jGrmpTtzy8DYQ0k9ZtmQ1NvN92a1iLDVBNwVr+mua6e0LLjEHvy2s6CkSbYrRZIA+upa0NAKw/03gZTqicQ==, tarball: https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/6132c657322ecee3a6c80f593fca82c53b3c82e9}
+    version: 3.0.12
     peerDependencies:
       '@moc/moc-main': 3.0.9
       '@moc/periphery': 3.0.5
@@ -2508,10 +2508,6 @@ packages:
     resolution: {integrity: sha512-1lLKB2Mu3aGP1Q/2eCOx0fNbRMe7XdwktwOruhfqqd0rIJWwN4Dh+E3hrPSlDCXnSR7UtZ1N38rVXm+6+MEhJQ==}
     engines: {node: '>= 0.12'}
 
-  form-data@2.5.6:
-    resolution: {integrity: sha512-Ogz/E85h9tlfJzpI6TuFpGcHZFhLrb9Gw8wq9v40CxSCPnv7ahKr6Xgtkn0KYCDQJ8DNn5VoMO8EXr9V5PadyA==}
-    engines: {node: '>= 0.12'}
-
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
@@ -3576,8 +3572,8 @@ packages:
   mock-fs@4.14.0:
     resolution: {integrity: sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==}
 
-  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66}
+  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/c1ff255d3dfaa2a6c42a161dbb77cefc3bd4b5ee:
+    resolution: {gitHosted: true, integrity: sha512-kQdWA/lnqip5N/JyuSqPB68HU6GZKSKx0beQBrHD8FK/NPU7D/I/LjzVODhJRRPHa/ifJi0BTA8YTUKO82VcVA==, tarball: https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/c1ff255d3dfaa2a6c42a161dbb77cefc3bd4b5ee}
     version: 3.0.7
     engines: {node: '=8.17.0'}
 
@@ -5687,12 +5683,12 @@ snapshots:
     dependencies:
       '@sinclair/typebox': 0.34.52
 
-  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)':
+  '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#bd13e97acf463a29ba7094cf3b32c21f5c2581cc(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)':
     dependencies:
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
       '@openzeppelin/contracts-ethereum-package': 3.0.0
 
-  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)':
+  '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/6132c657322ecee3a6c80f593fca82c53b3c82e9(df4a42fcff5708e2f8a6af25e62e6801)':
     dependencies:
       '@moc/moc-main': main-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#808fae8dba59c793d490b0b3668fbeb23c773c9b(hardhat@3.9.0)
       '@moc/periphery': '@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14'
@@ -8123,15 +8119,6 @@ snapshots:
       combined-stream: 1.0.8
       mime-types: 2.1.35
 
-  form-data@2.5.6:
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      es-set-tostringtag: 2.1.0
-      hasown: 2.0.4
-      mime-types: 2.1.35
-      safe-buffer: 5.2.1
-
   forwarded@0.2.0: {}
 
   fresh@0.5.2: {}
@@ -9240,7 +9227,7 @@ snapshots:
 
   mock-fs@4.14.0: {}
 
-  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/836d507f3a1e73ce33fc0232d024a97a22c31a66(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
+  money-on-chain@https://codeload.github.com/money-on-chain/main-RBTC-contract/tar.gz/c1ff255d3dfaa2a6c42a161dbb77cefc3bd4b5ee(supports-color@8.1.1)(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@thinkanddev/solidoc': 3.0.1
       eth-gas-reporter: 0.2.22
@@ -9914,10 +9901,10 @@ snapshots:
     dependencies:
       bn.js: 5.2.5
 
-  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(998d952211d404c43a461ced41e5a108):
+  roc-sc-protocol-v2@git+ssh://git@github.com/money-on-chain/roc-sc-protocol-v2.git#661d3395cda27521357eab2d457b92cc9c334af9(1299ac738854e222199730e27b728317):
     dependencies:
-      '@moc/flow': '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#179926f090f8b07f5f15ca752fb01659be70af80(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
-      '@moc/oracles': '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/98e4c681112378f67a701359eb7a6136ba6252c6(df4a42fcff5708e2f8a6af25e62e6801)'
+      '@moc/flow': '@moneyonchain/flow@git+ssh://git@github.com/money-on-chain/MoC-Flow.git#bd13e97acf463a29ba7094cf3b32c21f5c2581cc(@moneyonchain/periphery@https://codeload.github.com/money-on-chain/MoC-Periphery/tar.gz/b035865cebae53c3835572eda84f9e98028b7a14)'
+      '@moc/oracles': '@moneyonchain/oracles@https://codeload.github.com/money-on-chain/OMoC-Decentralized-Oracle/tar.gz/6132c657322ecee3a6c80f593fca82c53b3c82e9(df4a42fcff5708e2f8a6af25e62e6801)'
       '@moc/price-oracle-interfaces': price-oracle-interfaces@https://codeload.github.com/money-on-chain/price_oracle_interfaces/tar.gz/1d40834055f9d12ac3b3ce98bce82199336eb7d9
       '@nomicfoundation/hardhat-ignition': 3.1.8(@nomicfoundation/hardhat-verify@3.1.0(hardhat@3.9.0))(hardhat@3.9.0)
       '@nomicfoundation/hardhat-verify': 3.1.0(hardhat@3.9.0)
@@ -10459,7 +10446,7 @@ snapshots:
       '@types/qs': 6.15.1
       caseless: 0.12.0
       concat-stream: 1.6.2
-      form-data: 2.5.6
+      form-data: 2.3.3
       http-basic: 8.1.3
       http-response-object: 3.0.2
       promise: 8.3.0
