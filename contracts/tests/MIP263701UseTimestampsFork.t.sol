@@ -77,9 +77,6 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal tasksRunner;
   address internal mocUpgradeDelegator;
   address internal flowUpgradeDelegator;
-  uint256 internal emaCalculationTimeSpan;
-  uint256 internal bitProInterestTimeSpan;
-  uint256 internal coinerMintTimeSpan;
   uint256 internal roundLockPeriod;
   uint256 internal supportersEarningsBefore;
   uint256 internal supportersDistributedBefore;
@@ -116,9 +113,6 @@ contract MIP263701UseTimestampsForkTest is Test {
         _deployArtifact("@moc/oracles/contracts/CoinPairPrice.sol:CoinPairPrice"),
         _deployArtifact("@moc/oracles/contracts/TasksRunner.sol:TasksRunner")
       ],
-      emaCalculationTimeSpan,
-      bitProInterestTimeSpan,
-      coinerMintTimeSpan,
       roundLockPeriod
     );
   }
@@ -146,15 +140,15 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(nextMintTimestamp, expectedNextMintTimestamp);
     assertEq(
       IMoCStateTimestampScheduleProbe(mocStateProxy).emaCalculationTimeSpan(),
-      emaCalculationTimeSpan
+      changer.EMA_CALCULATION_TIME_SPAN()
     );
     assertEq(
       IMoCInrateTimestampScheduleProbe(mocInrateProxy).bitProInterestTimeSpan(),
-      bitProInterestTimeSpan
+      changer.BITPRO_INTEREST_TIME_SPAN()
     );
     assertEq(
       ICoinerTimestampScheduleProbe(coinerProxy).getMintTimestampInterval(),
-      coinerMintTimeSpan
+      changer.COINER_MINT_TIME_SPAN()
     );
     _assertAdditionalSchedulesAndPreservedState();
 
@@ -188,9 +182,9 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(IRoundManagerScheduleProbe(tasksRunner).roundLockPeriodSecs(), roundLockPeriod);
 
     IRifOnChainTimeSpansProbe rif = IRifOnChainTimeSpansProbe(rifOnChain);
-    assertEq(rif.tcInterestPaymentTimeSpan(), bitProInterestTimeSpan);
+    assertEq(rif.tcInterestPaymentTimeSpan(), changer.BITPRO_INTEREST_TIME_SPAN());
     assertEq(rif.decayTimeSpan(), 1 days);
-    assertEq(rif.emaCalculationTimeSpan(), emaCalculationTimeSpan);
+    assertEq(rif.emaCalculationTimeSpan(), changer.EMA_CALCULATION_TIME_SPAN());
 
     (uint256 earningsAfter, uint256 distributedAfter, uint256 nextAfter) = ISupportersScheduleProbe(
       supporters
@@ -242,9 +236,6 @@ contract MIP263701UseTimestampsForkTest is Test {
     tasksRunner = vm.parseJsonAddress(json, _key(module, "tasksRunner"));
     mocUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "mocUpgradeDelegator"));
     flowUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "flowUpgradeDelegator"));
-    emaCalculationTimeSpan = vm.parseJsonUint(json, _key(module, "emaCalculationTimeSpan"));
-    bitProInterestTimeSpan = vm.parseJsonUint(json, _key(module, "bitProInterestTimeSpan"));
-    coinerMintTimeSpan = vm.parseJsonUint(json, _key(module, "coinerMintTimeSpan"));
     roundLockPeriod = vm.parseJsonUint(json, _key(module, "roundLockPeriod"));
   }
 

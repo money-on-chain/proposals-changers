@@ -2,7 +2,9 @@
 
 The changer records its deployment block and timestamp as the anchor and assumes 29 seconds per
 block for the one-time conversion of legacy block values. The parameter files configure the stored
-EMA, weekly-interest, and Coiner spans passed to the upgraded implementations.
+round-lock period because it intentionally differs between mainnet and testnet. The changer fixes
+the EMA period at one day, weekly-interest period at seven days, and Coiner period at the average
+Gregorian month of 30 days and 10 hours.
 
 - Interest converts `lastBitProInterestBlock` to `lastBitProInterestTimestamp`;
   eligibility remains strictly greater than that timestamp plus seven days.

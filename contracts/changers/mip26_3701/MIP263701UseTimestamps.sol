@@ -71,6 +71,9 @@ interface IRifOnChainTimeSpans {
 contract MIP263701UseTimestamps is IChangeContract {
   uint256 public constant BLOCK_TIME = 29 seconds;
   uint256 public constant GREGORIAN_AVERAGE_MONTH = 30 days + 10 hours;
+  uint256 public constant EMA_CALCULATION_TIME_SPAN = 1 days;
+  uint256 public constant BITPRO_INTEREST_TIME_SPAN = 7 days;
+  uint256 public constant COINER_MINT_TIME_SPAN = GREGORIAN_AVERAGE_MONTH;
   uint256 public constant SUPPORTERS_ASSUMED_BLOCK_TIME = 30 seconds;
   uint256 public constant SUPPORTERS_PERIOD =
     GREGORIAN_AVERAGE_MONTH / SUPPORTERS_ASSUMED_BLOCK_TIME;
@@ -101,26 +104,25 @@ contract MIP263701UseTimestamps is IChangeContract {
   address public immutable newSupportersImplementation;
   address public immutable newCoinPairPriceImplementation;
   address public immutable newTasksRunnerImplementation;
-  uint256 public immutable emaCalculationTimeSpan;
-  uint256 public immutable bitProInterestTimeSpan;
-  uint256 public immutable coinerMintTimeSpan;
+
+  // This is the only configurable time span because oracle rounds intentionally
+  // use the average Gregorian month on mainnet and an accelerated period on testnet.
   uint256 public immutable roundLockPeriod;
   uint256 public immutable anchorBlockNumber;
   uint256 public immutable anchorTimestamp;
 
+  /**
+   * @param _roundLockPeriod Duration of future CoinPairPrice and TasksRunner rounds.
+   * Mainnet uses 30 days and 10 hours; testnet uses 3 hours so governance and
+   * task execution can be exercised without waiting for a production-length round.
+   */
   constructor(
     address[4] memory _legacyProxies,
     address[5] memory _additionalTargets,
     address[2] memory _upgradeDelegators,
     address[7] memory _newImplementations,
-    uint256 _emaCalculationTimeSpan,
-    uint256 _bitProInterestTimeSpan,
-    uint256 _coinerMintTimeSpan,
     uint256 _roundLockPeriod
   ) {
-    require(_emaCalculationTimeSpan > 0, "invalid EMA time span");
-    require(_bitProInterestTimeSpan > 0, "invalid interest time span");
-    require(_coinerMintTimeSpan > 0, "invalid Coiner time span");
     require(_roundLockPeriod > 0, "invalid round time span");
 
     mocProxy = _legacyProxies[0];
@@ -141,9 +143,6 @@ contract MIP263701UseTimestamps is IChangeContract {
     newSupportersImplementation = _newImplementations[4];
     newCoinPairPriceImplementation = _newImplementations[5];
     newTasksRunnerImplementation = _newImplementations[6];
-    emaCalculationTimeSpan = _emaCalculationTimeSpan;
-    bitProInterestTimeSpan = _bitProInterestTimeSpan;
-    coinerMintTimeSpan = _coinerMintTimeSpan;
     roundLockPeriod = _roundLockPeriod;
     anchorBlockNumber = block.number;
     anchorTimestamp = block.timestamp;
@@ -165,15 +164,15 @@ contract MIP263701UseTimestamps is IChangeContract {
 
     IMoCStateTimestampSchedule(mocStateProxy).initializeEmaCalculation(
       lastEmaTimestamp,
-      emaCalculationTimeSpan
+      EMA_CALCULATION_TIME_SPAN
     );
     IMoCInrateTimestampSchedule(mocInrateProxy).initializeBitProInterestSchedule(
       lastInterestPaymentTimestamp,
-      bitProInterestTimeSpan
+      BITPRO_INTEREST_TIME_SPAN
     );
     ICoinerTimestampSchedule(coinerProxy).initializeMintSchedule(
       nextMintTimestamp,
-      coinerMintTimeSpan
+      COINER_MINT_TIME_SPAN
     );
 
     _updateRifOnChainTimeSpans();
@@ -188,14 +187,14 @@ contract MIP263701UseTimestamps is IChangeContract {
     rif.setTCInterestParams(
       rif.tcInterestCollectorAddress(),
       rif.tcInterestRate(),
-      bitProInterestTimeSpan
+      BITPRO_INTEREST_TIME_SPAN
     );
     rif.setFluxCapacitorParams(
       rif.maxAbsoluteOpProvider(),
       rif.maxOpDiffProvider(),
       RIF_DECAY_TIME_SPAN
     );
-    rif.setEmaCalculationTimeSpan(emaCalculationTimeSpan);
+    rif.setEmaCalculationTimeSpan(EMA_CALCULATION_TIME_SPAN);
   }
 
   function legacyLastEmaCalculationTimestamp() public view returns (uint256) {
@@ -220,7 +219,7 @@ contract MIP263701UseTimestamps is IChangeContract {
     }
 
     uint256 lastMintBlock = nextMintBlock - mintBlockInterval;
-    return timestampAtBlock(lastMintBlock) + coinerMintTimeSpan;
+    return timestampAtBlock(lastMintBlock) + COINER_MINT_TIME_SPAN;
   }
 
   function timestampAtBlock(uint256 targetBlock) public view returns (uint256) {

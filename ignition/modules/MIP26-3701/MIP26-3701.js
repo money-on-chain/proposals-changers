@@ -13,9 +13,6 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
   const tasksRunner = m.getParameter("tasksRunner");
   const mocUpgradeDelegator = m.getParameter("mocUpgradeDelegator");
   const flowUpgradeDelegator = m.getParameter("flowUpgradeDelegator");
-  const emaCalculationTimeSpan = m.getParameter("emaCalculationTimeSpan");
-  const bitProInterestTimeSpan = m.getParameter("bitProInterestTimeSpan");
-  const coinerMintTimeSpan = m.getParameter("coinerMintTimeSpan");
   const roundLockPeriod = m.getParameter("roundLockPeriod");
 
   const mocImplementation = m.contract("@moc/rbtc/contracts/MoC.sol:MoC", [], {
@@ -64,9 +61,6 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
       coinPairPriceImplementation,
       tasksRunnerImplementation,
     ],
-    emaCalculationTimeSpan,
-    bitProInterestTimeSpan,
-    coinerMintTimeSpan,
     roundLockPeriod,
   ]);
 

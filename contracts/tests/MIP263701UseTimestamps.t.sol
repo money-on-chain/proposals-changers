@@ -156,9 +156,6 @@ contract MIP263701UseTimestampsTest is Test {
         address(0x7),
         address(0x8)
       ],
-      1 days,
-      7 days,
-      30 days + 10 hours,
       30 days + 10 hours
     );
 
@@ -166,7 +163,7 @@ contract MIP263701UseTimestampsTest is Test {
 
     assertEq(state.initializedAt(), ANCHOR_TIMESTAMP - 100 * 29);
     assertEq(inrate.initializedAt(), ANCHOR_TIMESTAMP + 100 * 29);
-    assertEq(coiner.initializedAt(), ANCHOR_TIMESTAMP + 400 * 29 + changer.coinerMintTimeSpan());
+    assertEq(coiner.initializedAt(), ANCHOR_TIMESTAMP + 400 * 29 + changer.COINER_MINT_TIME_SPAN());
     assertEq(state.initializedTimeSpan(), 1 days);
     assertEq(inrate.initializedTimeSpan(), 7 days);
     assertEq(coiner.initializedTimeSpan(), 30 days + 10 hours);
@@ -213,9 +210,6 @@ contract MIP263701UseTimestampsTest is Test {
         address(0x7),
         address(0x8)
       ],
-      1 days,
-      7 days,
-      30 days + 10 hours,
       30 days + 10 hours
     );
 
