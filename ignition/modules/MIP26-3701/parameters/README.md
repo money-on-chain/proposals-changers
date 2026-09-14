@@ -13,9 +13,11 @@ EMA, weekly-interest, and Coiner spans passed to the upgraded implementations.
   that timestamp plus 24 hours.
 - The proposal also upgrades the legacy MoC facade to remove its block-span forwarding
   selector. Dashboards must read the new last-payment timestamp and time-span fields, not block spans.
-- Supporters is recalibrated to 87,600 blocks, representing the 30-day-10-hour average month
-  under a 30-second block assumption. Its active earning deadline is not changed.
+- Supporters is upgraded to the implementation containing the governed `setPeriod()` setter and
+  recalibrated to 87,600 blocks, representing the 30-day-10-hour average month under a 30-second
+  block assumption. Its active earning deadline is not changed.
 - RIF on Chain keeps its current implementation and active deadlines, but its TC-interest, decay,
   and EMA periods are normalized to 7 days, 1 day, and 1 day respectively.
-- BTC/USD, RIF/USD, and TasksRunner keep their current implementations and active round deadlines.
-  Mainnet next-round periods become 30 days 10 hours; testnet retains its intentional three-hour period.
+- BTC/USD, RIF/USD, and TasksRunner are upgraded to implementations containing the governed
+  `setRoundLockPeriodSecs()` setter. Their active round deadlines are preserved. Mainnet next-round
+  periods become 30 days 10 hours; testnet retains its intentional three-hour period.

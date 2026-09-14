@@ -108,10 +108,13 @@ contract MIP263701UseTimestampsForkTest is Test {
       [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
       [mocUpgradeDelegator, flowUpgradeDelegator],
       [
-        _deployArtifact("DeployableMoC"),
-        _deployArtifact("DeployableMoCState"),
-        _deployArtifact("DeployableMoCInrate"),
-        _deployArtifact("DeployableCoiner")
+        _deployArtifact("@moc/rbtc/contracts/MoC.sol:MoC"),
+        _deployArtifact("@moc/rbtc/contracts/MoCState.sol:MoCState"),
+        _deployArtifact("@moc/rbtc/contracts/MoCInrate.sol:MoCInrate"),
+        _deployArtifact("@moc/flow/contracts/Coiner.sol:Coiner"),
+        _deployArtifact("@moc/oracles/contracts/Supporters.sol:Supporters"),
+        _deployArtifact("@moc/oracles/contracts/CoinPairPrice.sol:CoinPairPrice"),
+        _deployArtifact("@moc/oracles/contracts/TasksRunner.sol:TasksRunner")
       ],
       emaCalculationTimeSpan,
       bitProInterestTimeSpan,

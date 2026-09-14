@@ -80,9 +80,12 @@ contract UpgradeDelegatorMock is IUpgradeDelegator {
 contract GovernedPeriodMock {
   uint256 public period;
 
-  function delegateCallToChanger(bytes calldata data) external returns (bytes memory) {
-    period = abi.decode(data, (uint256));
-    return "";
+  function setPeriod(uint256 newPeriod) external {
+    period = newPeriod;
+  }
+
+  function setRoundLockPeriodSecs(uint256 newPeriod) external {
+    period = newPeriod;
   }
 }
 
@@ -144,7 +147,15 @@ contract MIP263701UseTimestampsTest is Test {
         address(tasksRunner)
       ],
       [address(mocUpgrader), address(flowUpgrader)],
-      [address(0x2), address(0x3), address(0x4), address(0x5)],
+      [
+        address(0x2),
+        address(0x3),
+        address(0x4),
+        address(0x5),
+        address(0x6),
+        address(0x7),
+        address(0x8)
+      ],
       1 days,
       7 days,
       30 days + 10 hours,
@@ -160,7 +171,7 @@ contract MIP263701UseTimestampsTest is Test {
     assertEq(inrate.initializedTimeSpan(), 7 days);
     assertEq(coiner.initializedTimeSpan(), 30 days + 10 hours);
     assertEq(mocUpgrader.upgrades(), 3);
-    assertEq(flowUpgrader.upgrades(), 1);
+    assertEq(flowUpgrader.upgrades(), 5);
     assertEq(supporters.period(), 87_600);
     assertEq(btcUsdCoinPair.period(), 30 days + 10 hours);
     assertEq(rifUsdCoinPair.period(), 30 days + 10 hours);
@@ -193,7 +204,15 @@ contract MIP263701UseTimestampsTest is Test {
         address(periodTarget)
       ],
       [address(upgrader), address(upgrader)],
-      [address(0x2), address(0x3), address(0x4), address(0x5)],
+      [
+        address(0x2),
+        address(0x3),
+        address(0x4),
+        address(0x5),
+        address(0x6),
+        address(0x7),
+        address(0x8)
+      ],
       1 days,
       7 days,
       30 days + 10 hours,

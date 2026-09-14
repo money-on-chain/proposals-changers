@@ -41,8 +41,12 @@ interface ICoinerTimestampSchedule {
   function initializeMintSchedule(uint256 nextMintAt, uint256 mintTimestampInterval) external;
 }
 
-interface IGovernedDelegateCall {
-  function delegateCallToChanger(bytes calldata data) external returns (bytes memory);
+interface ISupportersSchedule {
+  function setPeriod(uint256 period) external;
+}
+
+interface IRoundManagerSchedule {
+  function setRoundLockPeriodSecs(uint256 roundLockPeriodSecs) external;
 }
 
 interface IRifOnChainTimeSpans {
@@ -61,7 +65,7 @@ interface IRifOnChainTimeSpans {
 
 /**
  * @title MIP263701UseTimestamps
- * @notice Converts legacy block schedules through a fixed block/timestamp
+ * @notice Converts legacy block schedules through a deployment block/timestamp
  *         anchor, then atomically upgrades and initializes dates-only proxies.
  */
 contract MIP263701UseTimestamps is IChangeContract {
@@ -72,27 +76,31 @@ contract MIP263701UseTimestamps is IChangeContract {
     GREGORIAN_AVERAGE_MONTH / SUPPORTERS_ASSUMED_BLOCK_TIME;
   uint256 public constant RIF_DECAY_TIME_SPAN = 1 days;
 
-  // Compiler-verified against @moneyonchain/oracles 3.0.10. These are the
-  // absolute proxy storage slots for SupportersData.period and
-  // RoundInfo.roundLockPeriodSecs, respectively.
-  uint256 private constant SUPPORTERS_PERIOD_STORAGE_SLOT = 111;
-  uint256 private constant ROUND_LOCK_PERIOD_STORAGE_SLOT = 108;
+  // ===========================================================================
+  // Addresses of contracts that need to be changed
+  // ===========================================================================
+  address public immutable mocProxy; // Updated to remove the obsolete block-span forwarding API.
+  address public immutable mocStateProxy; // Updated to schedule legacy EMA calculations by timestamp.
+  address public immutable mocInrateProxy; // Updated to schedule weekly interest payments by timestamp.
+  address public immutable coinerProxy; // Updated to schedule MOC issuance rounds by timestamp.
+  address public immutable supporters; // Updated to add and use a governed Supporters-period setter.
+  address public immutable rifOnChain; // Updated to correct its existing second-based schedule periods.
+  address public immutable btcUsdCoinPair; // Updated to add and use a governed round-period setter.
+  address public immutable rifUsdCoinPair; // Updated to add and use a governed round-period setter.
+  address public immutable tasksRunner; // Updated to add and use a governed round-period setter.
 
-  address public immutable mocProxy;
-  address public immutable mocStateProxy;
-  address public immutable mocInrateProxy;
-  address public immutable coinerProxy;
-  address public immutable supporters;
-  address public immutable rifOnChain;
-  address public immutable btcUsdCoinPair;
-  address public immutable rifUsdCoinPair;
-  address public immutable tasksRunner;
+  // Governance infrastructure authorized to upgrade the contracts listed above.
   IUpgradeDelegator public immutable mocUpgradeDelegator;
   IUpgradeDelegator public immutable flowUpgradeDelegator;
+
+  // New implementations installed in the contracts listed above.
   address public immutable newMocImplementation;
   address public immutable newMocStateImplementation;
   address public immutable newMocInrateImplementation;
   address public immutable newCoinerImplementation;
+  address public immutable newSupportersImplementation;
+  address public immutable newCoinPairPriceImplementation;
+  address public immutable newTasksRunnerImplementation;
   uint256 public immutable emaCalculationTimeSpan;
   uint256 public immutable bitProInterestTimeSpan;
   uint256 public immutable coinerMintTimeSpan;
@@ -104,7 +112,7 @@ contract MIP263701UseTimestamps is IChangeContract {
     address[4] memory _legacyProxies,
     address[5] memory _additionalTargets,
     address[2] memory _upgradeDelegators,
-    address[4] memory _newImplementations,
+    address[7] memory _newImplementations,
     uint256 _emaCalculationTimeSpan,
     uint256 _bitProInterestTimeSpan,
     uint256 _coinerMintTimeSpan,
@@ -130,6 +138,9 @@ contract MIP263701UseTimestamps is IChangeContract {
     newMocStateImplementation = _newImplementations[1];
     newMocInrateImplementation = _newImplementations[2];
     newCoinerImplementation = _newImplementations[3];
+    newSupportersImplementation = _newImplementations[4];
+    newCoinPairPriceImplementation = _newImplementations[5];
+    newTasksRunnerImplementation = _newImplementations[6];
     emaCalculationTimeSpan = _emaCalculationTimeSpan;
     bitProInterestTimeSpan = _bitProInterestTimeSpan;
     coinerMintTimeSpan = _coinerMintTimeSpan;
@@ -147,6 +158,10 @@ contract MIP263701UseTimestamps is IChangeContract {
     mocUpgradeDelegator.upgrade(mocStateProxy, newMocStateImplementation);
     mocUpgradeDelegator.upgrade(mocInrateProxy, newMocInrateImplementation);
     flowUpgradeDelegator.upgrade(coinerProxy, newCoinerImplementation);
+    flowUpgradeDelegator.upgrade(supporters, newSupportersImplementation);
+    flowUpgradeDelegator.upgrade(btcUsdCoinPair, newCoinPairPriceImplementation);
+    flowUpgradeDelegator.upgrade(rifUsdCoinPair, newCoinPairPriceImplementation);
+    flowUpgradeDelegator.upgrade(tasksRunner, newTasksRunnerImplementation);
 
     IMoCStateTimestampSchedule(mocStateProxy).initializeEmaCalculation(
       lastEmaTimestamp,
@@ -162,36 +177,10 @@ contract MIP263701UseTimestamps is IChangeContract {
     );
 
     _updateRifOnChainTimeSpans();
-    IGovernedDelegateCall(supporters).delegateCallToChanger(abi.encode(SUPPORTERS_PERIOD));
-    IGovernedDelegateCall(btcUsdCoinPair).delegateCallToChanger(abi.encode(roundLockPeriod));
-    IGovernedDelegateCall(rifUsdCoinPair).delegateCallToChanger(abi.encode(roundLockPeriod));
-    IGovernedDelegateCall(tasksRunner).delegateCallToChanger(abi.encode(roundLockPeriod));
-  }
-
-  /**
-   * @dev Called through Governed.delegateCallToChanger in the target's storage
-   *      context. The slots below are verified against the exact storage layout
-   *      of the moneyonchain/oracles 3.0.10 package used by the deployed targets.
-   */
-  function impersonate(bytes calldata data) external {
-    uint256 period = abi.decode(data, (uint256));
-    address target = address(this);
-
-    if (target == supporters) {
-      require(period == SUPPORTERS_PERIOD, "invalid supporters period");
-      assembly {
-        sstore(SUPPORTERS_PERIOD_STORAGE_SLOT, period)
-      }
-    } else {
-      require(
-        target == btcUsdCoinPair || target == rifUsdCoinPair || target == tasksRunner,
-        "invalid delegate target"
-      );
-      require(period == roundLockPeriod, "invalid round period");
-      assembly {
-        sstore(ROUND_LOCK_PERIOD_STORAGE_SLOT, period)
-      }
-    }
+    ISupportersSchedule(supporters).setPeriod(SUPPORTERS_PERIOD);
+    IRoundManagerSchedule(btcUsdCoinPair).setRoundLockPeriodSecs(roundLockPeriod);
+    IRoundManagerSchedule(rifUsdCoinPair).setRoundLockPeriodSecs(roundLockPeriod);
+    IRoundManagerSchedule(tasksRunner).setRoundLockPeriodSecs(roundLockPeriod);
   }
 
   function _updateRifOnChainTimeSpans() internal {

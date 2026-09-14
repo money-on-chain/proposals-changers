@@ -18,23 +18,52 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
   const coinerMintTimeSpan = m.getParameter("coinerMintTimeSpan");
   const roundLockPeriod = m.getParameter("roundLockPeriod");
 
-  const mocImplementation = m.contract("DeployableMoC", [], {
+  const mocImplementation = m.contract("@moc/rbtc/contracts/MoC.sol:MoC", [], {
     id: "MoCImplementation",
   });
-  const mocStateImplementation = m.contract("DeployableMoCState", [], {
+  const mocStateImplementation = m.contract("@moc/rbtc/contracts/MoCState.sol:MoCState", [], {
     id: "MoCStateImplementation",
   });
-  const mocInrateImplementation = m.contract("DeployableMoCInrate", [], {
+  const mocInrateImplementation = m.contract("@moc/rbtc/contracts/MoCInrate.sol:MoCInrate", [], {
     id: "MoCInrateImplementation",
   });
-  const coinerImplementation = m.contract("DeployableCoiner", [], {
+  const coinerImplementation = m.contract("@moc/flow/contracts/Coiner.sol:Coiner", [], {
     id: "CoinerImplementation",
   });
+  const supportersImplementation = m.contract(
+    "@moc/oracles/contracts/Supporters.sol:Supporters",
+    [],
+    {
+      id: "SupportersImplementation",
+    },
+  );
+  const coinPairPriceImplementation = m.contract(
+    "@moc/oracles/contracts/CoinPairPrice.sol:CoinPairPrice",
+    [],
+    {
+      id: "CoinPairPriceImplementation",
+    },
+  );
+  const tasksRunnerImplementation = m.contract(
+    "@moc/oracles/contracts/TasksRunner.sol:TasksRunner",
+    [],
+    {
+      id: "TasksRunnerImplementation",
+    },
+  );
   const changer = m.contract("MIP263701UseTimestamps", [
     [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
     [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
     [mocUpgradeDelegator, flowUpgradeDelegator],
-    [mocImplementation, mocStateImplementation, mocInrateImplementation, coinerImplementation],
+    [
+      mocImplementation,
+      mocStateImplementation,
+      mocInrateImplementation,
+      coinerImplementation,
+      supportersImplementation,
+      coinPairPriceImplementation,
+      tasksRunnerImplementation,
+    ],
     emaCalculationTimeSpan,
     bitProInterestTimeSpan,
     coinerMintTimeSpan,
@@ -46,6 +75,9 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
     mocStateImplementation,
     mocInrateImplementation,
     coinerImplementation,
+    supportersImplementation,
+    coinPairPriceImplementation,
+    tasksRunnerImplementation,
     changer,
   };
 });
