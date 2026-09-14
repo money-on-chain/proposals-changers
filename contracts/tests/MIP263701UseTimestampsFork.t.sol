@@ -17,6 +17,8 @@ interface IOwnableGovernor {
 interface IMoCStateTimestampScheduleProbe {
   function lastEmaCalculationTimestamp() external view returns (uint256);
   function emaCalculationTimeSpan() external view returns (uint256);
+  function getBitcoinMovingAverage() external view returns (uint256);
+  function getSmoothingFactor() external view returns (uint256);
 }
 
 interface IMoCInrateTimestampScheduleProbe {
@@ -52,6 +54,10 @@ interface IRifOnChainTimeSpansProbe {
   function decayTimeSpan() external view returns (uint256);
   function emaCalculationTimeSpan() external view returns (uint256);
   function nextEmaCalculation() external view returns (uint256);
+  function absoluteAccumulator() external view returns (uint256);
+  function differentialAccumulator() external view returns (int256);
+  function lastOperationTimeStamp() external view returns (uint256);
+  function tpEma(uint256 index) external view returns (uint256 ema, uint256 sf);
 }
 
 /**
@@ -90,6 +96,13 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal maxDiffProviderBefore;
   uint256 internal nextInterestPaymentBefore;
   uint256 internal nextEmaCalculationBefore;
+  uint256 internal absoluteAccumulatorBefore;
+  int256 internal differentialAccumulatorBefore;
+  uint256 internal lastOperationTimestampBefore;
+  uint256 internal rifEmaBefore;
+  uint256 internal rifSmoothingFactorBefore;
+  uint256 internal legacyBitcoinMovingAverageBefore;
+  uint256 internal legacySmoothingFactorBefore;
 
   MIP263701UseTimestamps internal changer;
 
@@ -105,13 +118,13 @@ contract MIP263701UseTimestampsForkTest is Test {
       [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
       [mocUpgradeDelegator, flowUpgradeDelegator],
       [
-        _deployArtifact("@moc/rbtc/contracts/MoC.sol:MoC"),
-        _deployArtifact("@moc/rbtc/contracts/MoCState.sol:MoCState"),
-        _deployArtifact("@moc/rbtc/contracts/MoCInrate.sol:MoCInrate"),
-        _deployArtifact("@moc/flow/contracts/Coiner.sol:Coiner"),
-        _deployArtifact("@moc/oracles/contracts/Supporters.sol:Supporters"),
-        _deployArtifact("@moc/oracles/contracts/CoinPairPrice.sol:CoinPairPrice"),
-        _deployArtifact("@moc/oracles/contracts/TasksRunner.sol:TasksRunner")
+        _deployArtifact("MoC"),
+        _deployArtifact("MoCState"),
+        _deployArtifact("MoCInrate"),
+        _deployArtifact("Coiner"),
+        _deployArtifact("Supporters"),
+        _deployArtifact("CoinPairPrice"),
+        _deployArtifact("TasksRunner")
       ],
       roundLockPeriod
     );
@@ -173,6 +186,14 @@ contract MIP263701UseTimestampsForkTest is Test {
     maxDiffProviderBefore = rif.maxOpDiffProvider();
     nextInterestPaymentBefore = rif.nextTCInterestPayment();
     nextEmaCalculationBefore = rif.nextEmaCalculation();
+    absoluteAccumulatorBefore = rif.absoluteAccumulator();
+    differentialAccumulatorBefore = rif.differentialAccumulator();
+    lastOperationTimestampBefore = rif.lastOperationTimeStamp();
+    (rifEmaBefore, rifSmoothingFactorBefore) = rif.tpEma(0);
+
+    IMoCStateTimestampScheduleProbe legacyState = IMoCStateTimestampScheduleProbe(mocStateProxy);
+    legacyBitcoinMovingAverageBefore = legacyState.getBitcoinMovingAverage();
+    legacySmoothingFactorBefore = legacyState.getSmoothingFactor();
   }
 
   function _assertAdditionalSchedulesAndPreservedState() internal view {
@@ -201,6 +222,16 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(rif.maxOpDiffProvider(), maxDiffProviderBefore);
     assertEq(rif.nextTCInterestPayment(), nextInterestPaymentBefore);
     assertEq(rif.nextEmaCalculation(), nextEmaCalculationBefore);
+    assertEq(rif.absoluteAccumulator(), absoluteAccumulatorBefore);
+    assertEq(rif.differentialAccumulator(), differentialAccumulatorBefore);
+    assertEq(rif.lastOperationTimeStamp(), lastOperationTimestampBefore);
+    (uint256 rifEmaAfter, uint256 rifSmoothingFactorAfter) = rif.tpEma(0);
+    assertEq(rifEmaAfter, rifEmaBefore);
+    assertEq(rifSmoothingFactorAfter, rifSmoothingFactorBefore);
+
+    IMoCStateTimestampScheduleProbe legacyState = IMoCStateTimestampScheduleProbe(mocStateProxy);
+    assertEq(legacyState.getBitcoinMovingAverage(), legacyBitcoinMovingAverageBefore);
+    assertEq(legacyState.getSmoothingFactor(), legacySmoothingFactorBefore);
   }
 
   function _roundDeadline(address target) internal view returns (uint256 deadline) {
