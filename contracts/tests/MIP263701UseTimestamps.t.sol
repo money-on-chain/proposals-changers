@@ -79,6 +79,8 @@ contract UpgradeDelegatorMock is IUpgradeDelegator {
 
 contract GovernedPeriodMock {
   uint256 public period;
+  uint256 public maxOperWaitingBlk;
+  uint256 public orderThreshold;
 
   function setPeriod(uint256 newPeriod) external {
     period = newPeriod;
@@ -86,6 +88,14 @@ contract GovernedPeriodMock {
 
   function setRoundLockPeriodSecs(uint256 newPeriod) external {
     period = newPeriod;
+  }
+
+  function setMaxOperWaitingBlk(uint256 newMaxOperWaitingBlk) external {
+    maxOperWaitingBlk = newMaxOperWaitingBlk;
+  }
+
+  function setOrderThreshold(uint256 newOrderThreshold) external {
+    orderThreshold = newOrderThreshold;
   }
 }
 
@@ -133,6 +143,9 @@ contract MIP263701UseTimestampsTest is Test {
     GovernedPeriodMock btcUsdCoinPair = new GovernedPeriodMock();
     GovernedPeriodMock rifUsdCoinPair = new GovernedPeriodMock();
     GovernedPeriodMock tasksRunner = new GovernedPeriodMock();
+    GovernedPeriodMock rifQueue = new GovernedPeriodMock();
+    GovernedPeriodMock docQueue = new GovernedPeriodMock();
+    GovernedPeriodMock docToMocReverseAuction = new GovernedPeriodMock();
     RifOnChainTimeSpansMock rifOnChain = new RifOnChainTimeSpansMock();
     UpgradeDelegatorMock mocUpgrader = new UpgradeDelegatorMock();
     UpgradeDelegatorMock flowUpgrader = new UpgradeDelegatorMock();
@@ -144,7 +157,10 @@ contract MIP263701UseTimestampsTest is Test {
         address(rifOnChain),
         address(btcUsdCoinPair),
         address(rifUsdCoinPair),
-        address(tasksRunner)
+        address(tasksRunner),
+        address(rifQueue),
+        address(docQueue),
+        address(docToMocReverseAuction)
       ],
       [address(mocUpgrader), address(flowUpgrader)],
       [
@@ -173,6 +189,9 @@ contract MIP263701UseTimestampsTest is Test {
     assertEq(btcUsdCoinPair.period(), 30 days + 10 hours);
     assertEq(rifUsdCoinPair.period(), 30 days + 10 hours);
     assertEq(tasksRunner.period(), 30 days + 10 hours);
+    assertEq(rifQueue.maxOperWaitingBlk(), 6);
+    assertEq(docQueue.maxOperWaitingBlk(), 6);
+    assertEq(docToMocReverseAuction.orderThreshold(), 300 ether);
     assertEq(rifOnChain.tcInterestCollectorAddress(), address(0x11));
     assertEq(rifOnChain.tcInterestRate(), 42);
     assertEq(rifOnChain.maxAbsoluteOpProvider(), address(0x12));
@@ -196,6 +215,9 @@ contract MIP263701UseTimestampsTest is Test {
       [
         address(periodTarget),
         address(rifOnChain),
+        address(periodTarget),
+        address(periodTarget),
+        address(periodTarget),
         address(periodTarget),
         address(periodTarget),
         address(periodTarget)

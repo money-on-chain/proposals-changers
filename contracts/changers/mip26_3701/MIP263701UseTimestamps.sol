@@ -49,6 +49,14 @@ interface IRoundManagerSchedule {
   function setRoundLockPeriodSecs(uint256 roundLockPeriodSecs) external;
 }
 
+interface IMocQueueSchedule {
+  function setMaxOperWaitingBlk(uint256 maxOperWaitingBlk) external;
+}
+
+interface IMocReverseAuctionThreshold {
+  function setOrderThreshold(uint256 orderThreshold) external;
+}
+
 interface IRifOnChainTimeSpans {
   function tcInterestCollectorAddress() external view returns (address);
   function tcInterestRate() external view returns (uint256);
@@ -78,6 +86,8 @@ contract MIP263701UseTimestamps is IChangeContract {
   uint256 public constant SUPPORTERS_PERIOD =
     GREGORIAN_AVERAGE_MONTH / SUPPORTERS_ASSUMED_BLOCK_TIME;
   uint256 public constant RIF_DECAY_TIME_SPAN = 1 days;
+  uint256 public constant ROC_QUEUE_MAX_OPER_WAITING_BLOCKS = 6;
+  uint256 public constant DOC_TO_MOC_ORDER_THRESHOLD = 300 ether;
 
   // ===========================================================================
   // Addresses of contracts that need to be changed
@@ -91,6 +101,9 @@ contract MIP263701UseTimestamps is IChangeContract {
   address public immutable btcUsdCoinPair; // Updated to add and use a governed round-period setter.
   address public immutable rifUsdCoinPair; // Updated to add and use a governed round-period setter.
   address public immutable tasksRunner; // Updated to add and use a governed round-period setter.
+  address public immutable rifQueue; // Updated to delay stale-price fallback execution from three blocks to six.
+  address public immutable docQueue; // Updated to delay stale-price fallback execution from three blocks to six.
+  address public immutable docToMocReverseAuction; // Updated to avoid triggering uneconomic one-DOC swaps.
 
   // Governance infrastructure authorized to upgrade the contracts listed above.
   IUpgradeDelegator public immutable mocUpgradeDelegator;
@@ -118,7 +131,7 @@ contract MIP263701UseTimestamps is IChangeContract {
    */
   constructor(
     address[4] memory _legacyProxies,
-    address[5] memory _additionalTargets,
+    address[8] memory _additionalTargets,
     address[2] memory _upgradeDelegators,
     address[7] memory _newImplementations,
     uint256 _roundLockPeriod
@@ -134,6 +147,9 @@ contract MIP263701UseTimestamps is IChangeContract {
     btcUsdCoinPair = _additionalTargets[2];
     rifUsdCoinPair = _additionalTargets[3];
     tasksRunner = _additionalTargets[4];
+    rifQueue = _additionalTargets[5];
+    docQueue = _additionalTargets[6];
+    docToMocReverseAuction = _additionalTargets[7];
     mocUpgradeDelegator = IUpgradeDelegator(_upgradeDelegators[0]);
     flowUpgradeDelegator = IUpgradeDelegator(_upgradeDelegators[1]);
     newMocImplementation = _newImplementations[0];
@@ -180,6 +196,13 @@ contract MIP263701UseTimestamps is IChangeContract {
     IRoundManagerSchedule(btcUsdCoinPair).setRoundLockPeriodSecs(roundLockPeriod);
     IRoundManagerSchedule(rifUsdCoinPair).setRoundLockPeriodSecs(roundLockPeriod);
     IRoundManagerSchedule(tasksRunner).setRoundLockPeriodSecs(roundLockPeriod);
+
+    // Annex: operational adjustments independent from the timestamp migration.
+    IMocQueueSchedule(rifQueue).setMaxOperWaitingBlk(ROC_QUEUE_MAX_OPER_WAITING_BLOCKS);
+    IMocQueueSchedule(docQueue).setMaxOperWaitingBlk(ROC_QUEUE_MAX_OPER_WAITING_BLOCKS);
+    IMocReverseAuctionThreshold(docToMocReverseAuction).setOrderThreshold(
+      DOC_TO_MOC_ORDER_THRESHOLD
+    );
   }
 
   function _updateRifOnChainTimeSpans() internal {

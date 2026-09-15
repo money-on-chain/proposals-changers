@@ -60,6 +60,15 @@ interface IRifOnChainTimeSpansProbe {
   function tpEma(uint256 index) external view returns (uint256 ema, uint256 sf);
 }
 
+interface IMocQueueScheduleProbe {
+  function minOperWaitingBlk() external view returns (uint256);
+  function maxOperWaitingBlk() external view returns (uint256);
+}
+
+interface IMocReverseAuctionThresholdProbe {
+  function orderThreshold() external view returns (uint256);
+}
+
 /**
  * @notice Applies MIP26-3701 to the deployed Rootstock mainnet state at the
  *         changer deployment block and reports the timestamps produced by the migration.
@@ -81,6 +90,9 @@ contract MIP263701UseTimestampsForkTest is Test {
   address internal btcUsdCoinPair;
   address internal rifUsdCoinPair;
   address internal tasksRunner;
+  address internal rifQueue;
+  address internal docQueue;
+  address internal docToMocReverseAuction;
   address internal mocUpgradeDelegator;
   address internal flowUpgradeDelegator;
   uint256 internal roundLockPeriod;
@@ -115,7 +127,16 @@ contract MIP263701UseTimestampsForkTest is Test {
 
     changer = new MIP263701UseTimestamps(
       [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
-      [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
+      [
+        supporters,
+        rifOnChain,
+        btcUsdCoinPair,
+        rifUsdCoinPair,
+        tasksRunner,
+        rifQueue,
+        docQueue,
+        docToMocReverseAuction
+      ],
       [mocUpgradeDelegator, flowUpgradeDelegator],
       [
         _deployArtifact("MoC"),
@@ -201,6 +222,14 @@ contract MIP263701UseTimestampsForkTest is Test {
     assertEq(IRoundManagerScheduleProbe(btcUsdCoinPair).roundLockPeriodSecs(), roundLockPeriod);
     assertEq(IRoundManagerScheduleProbe(rifUsdCoinPair).roundLockPeriodSecs(), roundLockPeriod);
     assertEq(IRoundManagerScheduleProbe(tasksRunner).roundLockPeriodSecs(), roundLockPeriod);
+    assertEq(IMocQueueScheduleProbe(rifQueue).minOperWaitingBlk(), 1);
+    assertEq(IMocQueueScheduleProbe(rifQueue).maxOperWaitingBlk(), 6);
+    assertEq(IMocQueueScheduleProbe(docQueue).minOperWaitingBlk(), 1);
+    assertEq(IMocQueueScheduleProbe(docQueue).maxOperWaitingBlk(), 6);
+    assertEq(
+      IMocReverseAuctionThresholdProbe(docToMocReverseAuction).orderThreshold(),
+      300 ether
+    );
 
     IRifOnChainTimeSpansProbe rif = IRifOnChainTimeSpansProbe(rifOnChain);
     assertEq(rif.tcInterestPaymentTimeSpan(), changer.BITPRO_INTEREST_TIME_SPAN());
@@ -265,6 +294,12 @@ contract MIP263701UseTimestampsForkTest is Test {
     btcUsdCoinPair = vm.parseJsonAddress(json, _key(module, "btcUsdCoinPair"));
     rifUsdCoinPair = vm.parseJsonAddress(json, _key(module, "rifUsdCoinPair"));
     tasksRunner = vm.parseJsonAddress(json, _key(module, "tasksRunner"));
+    rifQueue = vm.parseJsonAddress(json, _key(module, "rifQueue"));
+    docQueue = vm.parseJsonAddress(json, _key(module, "docQueue"));
+    docToMocReverseAuction = vm.parseJsonAddress(
+      json,
+      _key(module, "docToMocReverseAuction")
+    );
     mocUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "mocUpgradeDelegator"));
     flowUpgradeDelegator = vm.parseJsonAddress(json, _key(module, "flowUpgradeDelegator"));
     roundLockPeriod = vm.parseJsonUint(json, _key(module, "roundLockPeriod"));

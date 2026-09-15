@@ -11,6 +11,9 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
   const btcUsdCoinPair = m.getParameter("btcUsdCoinPair");
   const rifUsdCoinPair = m.getParameter("rifUsdCoinPair");
   const tasksRunner = m.getParameter("tasksRunner");
+  const rifQueue = m.getParameter("rifQueue");
+  const docQueue = m.getParameter("docQueue");
+  const docToMocReverseAuction = m.getParameter("docToMocReverseAuction");
   const mocUpgradeDelegator = m.getParameter("mocUpgradeDelegator");
   const flowUpgradeDelegator = m.getParameter("flowUpgradeDelegator");
   const roundLockPeriod = m.getParameter("roundLockPeriod");
@@ -50,7 +53,16 @@ const MIP263701Module = buildModule("MIP263701Module", (m) => {
   );
   const changer = m.contract("MIP263701UseTimestamps", [
     [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
-    [supporters, rifOnChain, btcUsdCoinPair, rifUsdCoinPair, tasksRunner],
+    [
+      supporters,
+      rifOnChain,
+      btcUsdCoinPair,
+      rifUsdCoinPair,
+      tasksRunner,
+      rifQueue,
+      docQueue,
+      docToMocReverseAuction,
+    ],
     [mocUpgradeDelegator, flowUpgradeDelegator],
     [
       mocImplementation,

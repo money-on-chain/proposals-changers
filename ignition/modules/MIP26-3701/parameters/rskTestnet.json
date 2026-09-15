@@ -9,6 +9,9 @@
     "btcUsdCoinPair": "0x39192498FcF1dBE11653040bB49308E09A1056AC",
     "rifUsdCoinPair": "0x45Eda601198Db28413fa7653300C52d5E4Db9b8b",
     "tasksRunner": "0x0E00baCDf5c6d6F51777998B4d7A660FD29e0fb6",
+    "rifQueue": "0x57672a34e92cA751148BcB303E5FE02E2E5F00Ed",
+    "docQueue": "0x313E40047eb61Db80BE00135dd25F04eD7b2203b",
+    "docToMocReverseAuction": "0xBe950B0B03Fbc4205dc1E596c479F2Ef03cCA64f",
     "mocUpgradeDelegator": "0xCDAbFbF334A5F6BCe900D2f73470D1e6722365d8",
     "flowUpgradeDelegator": "0xa12a9A492eFEBf4E43B174A57886286dA5057B8D",
     "roundLockPeriod": "10800"
