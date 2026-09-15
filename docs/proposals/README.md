@@ -8,6 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
+- `MIP#263701` — [Use Timestamps Instead of Blocks for Time Periods](MIP263701-use-timestamps-instead-of-blocks-for-time-periods.md) — **DRAFT**
 - `MIP#263502` — [Split the RIF on Chain Panic Button and Migrate RIFPRO](MIP263502-split-rif-on-chain-panic-button-and-migrate-rifpro.md) — **DRAFT**
 - `MIP#263501` — [Grant Proposal Submitters a Temporary Accepted-Step Priority](MIP263501-voting-machine-accepted-step-priority.md) — **DRAFT**
 - `MIP#263102` — [Use OMOC's TasksRunner and RIF/USD in RoC and MoC](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md)

@@ -1,0 +1,56 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-da90b0b6d562bfb290de0c9fbd84bda9681d0707",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "contracts/changers/testnet-only/TestnetLegacyUpgradeDelegatorGovernorChanger.sol": "project/contracts/changers/testnet-only/TestnetLegacyUpgradeDelegatorGovernorChanger.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "london",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200,
+        "details": {
+          "yulDetails": {
+            "optimizerSteps": "dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul"
+          }
+        }
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers",
+            "storageLayout"
+          ]
+        }
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "project/contracts/changers/testnet-only/TestnetLegacyUpgradeDelegatorGovernorChanger.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24;\n\nimport { IChangeContract } from \"../../interfaces/IChangeContract.sol\";\n\ninterface IGoverned {\n  function changeIGovernor(address newIGovernor) external;\n}\n\n/**\n * @title TestnetLegacyUpgradeDelegatorGovernorChanger\n * @notice Aligns the legacy VotingMachine UpgradeDelegator with the\n *         VotingMachine's controlled Governor on Rootstock testnet.\n * @dev This changer is intended exclusively for testnet and must never be\n *      executed on mainnet.\n */\ncontract TestnetLegacyUpgradeDelegatorGovernorChanger is IChangeContract {\n  address public constant LEGACY_UPGRADE_DELEGATOR = 0x546AFdf647d0B5c73323366B090Ebe6C0C4D9b2C;\n  address public constant VOTING_MACHINE_CONTROLLED_GOVERNOR =\n    0x7b716178771057195bB511f0B1F7198EEE62Bc22;\n\n  event UpgradeDelegatorGovernorChanged(address indexed newGovernor);\n\n  function execute() external override {\n    IGoverned(LEGACY_UPGRADE_DELEGATOR).changeIGovernor(VOTING_MACHINE_CONTROLLED_GOVERNOR);\n    emit UpgradeDelegatorGovernorChanged(VOTING_MACHINE_CONTROLLED_GOVERNOR);\n  }\n}\n"
+      },
+      "project/contracts/interfaces/IChangeContract.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\n/**\n  @title IChangeContract\n  @notice This interface is the one used by the governance system.\n  @dev If you plan to do some changes to a system governed by this project you should write a contract\n  that does those changes, like a recipe. This contract MUST not have ANY kind of public or external function\n  that modifies the state of this ChangeContract, otherwise you could run into front-running issues when the governance\n  system is fully in place.\n */\ninterface IChangeContract {\n  /**\n    @notice Override this function with a recipe of the changes to be done when this ChangeContract\n    is executed\n   */\n  function execute() external;\n}\n"
+      }
+    }
+  }
+}
