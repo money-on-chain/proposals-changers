@@ -41,6 +41,31 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   // ─── LendingManager parameters ──────────────────────────────────────────────
   const maxSlippage = m.getParameter("maxSlippage", "30000000000000000"); // 3%
 
+  // ─── LiquidationEngine parameters ──────────────────────────
+  const liquidationEngineProxyAdmin = m.getParameter("liquidationEngineProxyAdmin");
+  const liquidationEngineName = m.getParameter(
+    "liquidationEngineName",
+    "0x4c454e44494e4700000000000000000000000000000000000000000000000000", // LENDING
+  );
+  const mocToken = m.getParameter("mocToken");
+  const oracleManager = m.getParameter("oracleManager");
+  const oracleRegistry = m.getParameter("oracleRegistry");
+  const tokenToCoinbasePriceProvider = m.getParameter("tokenToCoinbasePriceProvider");
+  const baseFeeProvider = m.getParameter("baseFeeProvider");
+  const maxOraclesPerRound = m.getParameter("liquidationMaxOraclesPerRound", 5);
+  const maxSubscribedOraclesPerRound = m.getParameter(
+    "liquidationMaxSubscribedOraclesPerRound",
+    10,
+  );
+  const roundLockPeriod = m.getParameter("liquidationRoundLockPeriod", 60);
+  const maxMissedSigRounds = m.getParameter("liquidationMaxMissedSigRounds", 0);
+  const minOraclesPerRound = m.getParameter("liquidationMinOraclesPerRound", 1);
+  const sharesCapMultiplier = m.getParameter(
+    "liquidationSharesCapMultiplier",
+    "1500000000000000000", // 1.5
+  );
+  const maxLiquidationsPerBatch = m.getParameter("maxLiquidationsPerBatch", 10);
+
   // Queue is disabled for this deployment
   const useQueue = m.getParameter("useQueue", false);
   const minOperWaitingBlk = m.getParameter("minOperWaitingBlk", 1);
@@ -191,6 +216,50 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
     { id: "InitializeDocPool" },
   );
 
+  // ─── 6b. Deploy and initialize the LiquidationEngine ───────────────
+  const liquidationEngineImpl = m.contract(
+    "@moc/oracles/contracts/LiquidationEngine.sol:LiquidationEngine",
+    [],
+    { id: "LiquidationEngineImplementation" },
+  );
+
+  const liquidationRoundConfig = [
+    maxOraclesPerRound,
+    maxSubscribedOraclesPerRound,
+    roundLockPeriod,
+    maxMissedSigRounds,
+  ];
+  const liquidationEngineParams = [
+    tokenToCoinbasePriceProvider,
+    baseFeeProvider,
+    sharesCapMultiplier,
+    maxLiquidationsPerBatch,
+  ];
+  const liquidationEngineInitData = m.encodeFunctionCall(liquidationEngineImpl, "initialize", [
+    governor,
+    liquidationEngineName,
+    lendingManagerProxy,
+    [[docToken, mocV1]],
+    mocToken,
+    liquidationRoundConfig,
+    oracleManager,
+    oracleRegistry,
+    minOraclesPerRound,
+    liquidationEngineParams,
+  ]);
+
+  const liquidationEngineProxy = m.contract(
+    "TransparentUpgradeableProxy",
+    [liquidationEngineImpl, liquidationEngineProxyAdmin, liquidationEngineInitData],
+    { id: "LiquidationEngineProxy", after: [initializeDocPool] },
+  );
+
+  const liquidationEngine = m.contractAt(
+    "@moc/oracles/contracts/LiquidationEngine.sol:LiquidationEngine",
+    liquidationEngineProxy,
+    { id: "LiquidationEngineProxyInstance" },
+  );
+
   // ─── 7. Configure swapper core (MoC V1 bucket, DOC token) ───────────────────
   // Must run after initializePool so the pool mapping entry exists.
   const setMocSwapperCore = m.call(
@@ -308,6 +377,8 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
   //      to the newly deployed BufferCoinbase proxy on MoCInrate V1.
   //   b) Configures the WRBTC→USDT→DOC (and reverse) swap paths on
   //      mocSwapperExchange (a MocSwapperV3MultiHop).
+  //   c) Registers the LiquidationEngine proxy in OracleManager under its
+  //      bytes32 service name so oracle operators can subscribe to it.
   const changer = m.contract(
     "MocV1LendingAndBorrowing",
     [
@@ -315,6 +386,7 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
       newBitProRate,
       bufferCoinbaseProxy,
       [tasksRunner, bufferFlushTask, bufferLiquidateTask],
+      [oracleManager, liquidationEngineName, liquidationEngineProxy],
       mocSwapperExchange,
       wrbtcToken,
       usdtToken,
@@ -335,6 +407,9 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
     lendingManagerProxy,
     lendingManager,
     lendingReader,
+    liquidationEngineImpl,
+    liquidationEngineProxy,
+    liquidationEngine,
     tpInjectorImpl,
     tpInjectorProxy,
     tpInjector,

@@ -25,6 +25,10 @@ interface ITasksRunner {
   function getTasks() external view returns (address[] memory);
 }
 
+interface IOracleManager {
+  function registerCoinPair(bytes32 coinPair, address addr) external;
+}
+
 interface ICommissionSplitterTask {
   function commissionSplitter() external view returns (address);
 }
@@ -39,6 +43,12 @@ struct TasksRunnerMigration {
   address bufferLiquidateTask;
 }
 
+struct LiquidationEngineRegistration {
+  IOracleManager oracleManager;
+  bytes32 name;
+  address engine;
+}
+
 /**
  * @title MocV1LendingAndBorrowing
  * @notice ChangeContract used to:
@@ -46,6 +56,8 @@ struct TasksRunnerMigration {
  *            on MoCInrate V1 (pointing to the newly deployed BufferCoinbase).
  *         2. Configure the WRBTC→USDT→DOC (and reverse DOC→USDT→WRBTC) swap
  *            paths on the mocSwapperExchange (a MocSwapperV3MultiHop instance).
+ *         3. Register the LiquidationEngine proxy in OracleManager so oracle
+ *            operators can subscribe to it using its bytes32 service name.
  */
 contract MocV1LendingAndBorrowing is IChangeContract {
   IMoCInrate public immutable mocInrateV1;
@@ -55,6 +67,10 @@ contract MocV1LendingAndBorrowing is IChangeContract {
   ITasksRunner public immutable tasksRunner;
   address public immutable bufferFlushTask;
   address public immutable bufferLiquidateTask;
+
+  IOracleManager public immutable oracleManager;
+  bytes32 public immutable liquidationEngineName;
+  address public immutable liquidationEngine;
 
   // Swapper exchange (MocSwapperV3MultiHop)
   IMocSwapperMultihopV3 public immutable mocSwapperExchange;
@@ -79,6 +95,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     uint256 _newBitProRate,
     address payable _newBitProInterestAddress,
     TasksRunnerMigration memory _tasksRunnerMigration,
+    LiquidationEngineRegistration memory _liquidationEngineRegistration,
     IMocSwapperMultihopV3 _mocSwapperExchange,
     address _wrbtcToken,
     address _usdtToken,
@@ -94,6 +111,9 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     tasksRunner = _tasksRunnerMigration.tasksRunner;
     bufferFlushTask = _tasksRunnerMigration.bufferFlushTask;
     bufferLiquidateTask = _tasksRunnerMigration.bufferLiquidateTask;
+    oracleManager = _liquidationEngineRegistration.oracleManager;
+    liquidationEngineName = _liquidationEngineRegistration.name;
+    liquidationEngine = _liquidationEngineRegistration.engine;
     mocSwapperExchange = _mocSwapperExchange;
     wrbtcToken = _wrbtcToken;
     usdtToken = _usdtToken;
@@ -144,6 +164,9 @@ contract MocV1LendingAndBorrowing is IChangeContract {
       feesDocToWrbtc,
       docToWrbtcProvider
     );
+
+    // ── 4. Make the LiquidationEngine discoverable by oracle operators ────
+    oracleManager.registerCoinPair(liquidationEngineName, liquidationEngine);
   }
 
   function _removeSplitterTasks(address deprecatedSplitter) internal {

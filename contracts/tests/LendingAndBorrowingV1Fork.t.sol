@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, TasksRunnerMigration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
+import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, IOracleManager, TasksRunnerMigration, LiquidationEngineRegistration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { MocReverseAuction } from "@moc/main/contracts/auxiliary/MocReverseAuction.sol";
@@ -59,6 +59,10 @@ interface IMocSwapperV3MultiHopProbe {
     address tokenIn,
     address tokenOut
   ) external view returns (address);
+}
+
+interface IOracleManagerProbe {
+  function getContractAddress(bytes32 coinPair) external view returns (address);
 }
 
 contract TasksRunnerMock is ITasksRunner {
@@ -126,6 +130,8 @@ contract LendingAndBorrowingV1ForkTest is Test {
   address internal mocStateV1;
   address internal mocInrateV1;
   address internal docToken;
+  address internal oracleManager;
+  bytes32 internal liquidationEngineName;
 
   // BufferCoinbase params
   address internal bufferProxyAdmin;
@@ -170,6 +176,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
   address internal deprecatedSplitterTask;
   address internal bufferFlushTask;
   address internal bufferLiquidateTask;
+  address internal liquidationEngine;
 
   receive() external payable {}
 
@@ -301,6 +308,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
     );
     bufferFlushTask = address(new TaskMock());
     bufferLiquidateTask = address(new TaskMock());
+    liquidationEngine = address(new TaskMock());
     tasksRunner.addTask(deprecatedSplitterTask);
 
     changer = new MocV1LendingAndBorrowing(
@@ -311,6 +319,11 @@ contract LendingAndBorrowingV1ForkTest is Test {
         tasksRunner: tasksRunner,
         bufferFlushTask: bufferFlushTask,
         bufferLiquidateTask: bufferLiquidateTask
+      }),
+      LiquidationEngineRegistration({
+        oracleManager: IOracleManager(oracleManager),
+        name: liquidationEngineName,
+        engine: liquidationEngine
       }),
       IMocSwapperMultihopV3(mocSwapperExchange),
       wrbtcToken,
@@ -363,6 +376,16 @@ contract LendingAndBorrowingV1ForkTest is Test {
     );
     assertTrue(tasksRunner.containsTask(bufferFlushTask), "New buffer flush task missing");
     assertTrue(tasksRunner.containsTask(bufferLiquidateTask), "New buffer liquidate task missing");
+  }
+
+  function testFork_ChangerRegistersLiquidationEngine() public {
+    _executeChanger();
+
+    assertEq(
+      IOracleManagerProbe(oracleManager).getContractAddress(liquidationEngineName),
+      liquidationEngine,
+      "OracleManager should resolve LENDING to the LiquidationEngine proxy"
+    );
   }
 
   function testFork_ChangerDrainsDeprecatedInterestSplitter() public {
@@ -566,6 +589,8 @@ contract LendingAndBorrowingV1ForkTest is Test {
     mocStateV1 = vm.parseJsonAddress(json, _key(module, "mocStateV1"));
     mocInrateV1 = vm.parseJsonAddress(json, _key(module, "mocInrateV1"));
     docToken = vm.parseJsonAddress(json, _key(module, "docToken"));
+    oracleManager = vm.parseJsonAddress(json, _key(module, "oracleManager"));
+    liquidationEngineName = vm.parseJsonBytes32(json, _key(module, "liquidationEngineName"));
 
     bufferProxyAdmin = vm.parseJsonAddress(json, _key(module, "bufferProxyAdmin"));
     bufferThreshold = vm.parseJsonUint(json, _key(module, "bufferThreshold"));
@@ -597,6 +622,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
 
     require(governor != address(0), "governor is zero");
     require(mocInrateV1 != address(0), "mocInrateV1 is zero");
+    require(oracleManager != address(0), "oracleManager is zero");
     require(bufferProxyAdmin != address(0), "bufferProxyAdmin is zero");
     require(wrbtcToken != address(0), "wrbtcToken is zero");
     require(usdtToken != address(0), "usdtToken is zero");
