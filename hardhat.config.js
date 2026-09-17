@@ -29,6 +29,7 @@ export default {
       "@moc/flow/contracts/Coiner.sol",
       "@moc/oracles/contracts/Supporters.sol",
       "@moc/oracles/contracts/CoinPairPrice.sol",
+      "@moc/oracles/contracts/LiquidationEngine.sol",
       "@moc/oracles/contracts/TasksRunner.sol",
       "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
       "@moc/main/contracts/governance/InterimGovernor.sol",
