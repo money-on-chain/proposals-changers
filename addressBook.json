@@ -1,0 +1,7 @@
+{
+  "mainnet": {
+    "votingMachine": "0x65a5681bE95d212F0c90eAd40170D8277de81169",
+    "votingUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "coiner": "0x661F7d510cdB40638f5Afd9f9dF8877398500593"
+  }
+}

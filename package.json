@@ -112,6 +112,7 @@
     "ts-test-helpers": "0.1.2"
   },
   "exports": {
+    "./addressBook.json": "./addressBook.json",
     "./contracts": "./contracts",
     "./contracts/*": "./contracts/*",
     "./ignition": "./ignition",
@@ -131,5 +132,5 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
+  "files": ["addressBook.json", "config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
 }
