@@ -1,6 +1,6 @@
 {
   "name": "@moneyonchain/proposals-changers",
-  "version": "0.1.3",
+  "version": "3.0.21",
   "private": true,
   "description": "Money on Chain governance proposals and changers",
   "license": "UNLICENSED",
@@ -120,6 +120,7 @@
     "ts-test-helpers": "0.1.2"
   },
   "exports": {
+    "./addressBook.json": "./addressBook.json",
     "./contracts": "./contracts",
     "./contracts/*": "./contracts/*",
     "./ignition": "./ignition",
@@ -140,6 +141,7 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "addressBook.json",
     "config/solidity.js",
     "config/solidity.d.ts",
     "contracts",

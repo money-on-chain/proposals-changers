@@ -1,0 +1,12 @@
+{
+  "mainnet": {
+    "votingMachine": "0x65a5681bE95d212F0c90eAd40170D8277de81169",
+    "votingUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "coiner": "0x661F7d510cdB40638f5Afd9f9dF8877398500593"
+  },
+  "testnet": {
+    "votingMachine": "0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3",
+    "votingUpgradeDelegator": "0x546afdf647d0b5c73323366b090ebe6c0c4d9b2c",
+    "coiner": "0x5b7071270C3FD3d99BE411baCb145b2fb47F0D0F"
+  }
+}
