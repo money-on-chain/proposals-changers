@@ -10,8 +10,12 @@ export const npmFilesToBuild = [
   "@moc/roc/contracts/providers/DataProvider.sol",
   "@moc/price-oracle-interfaces/contracts/PriceProviderInverse.sol",
   "@moc/flow/contracts/BufferCoinbase.sol",
+  "@moc/flow/contracts/BufferToken.sol",
+  "@moc/oracles/contracts/LiquidationEngine.sol",
   "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
   "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol",
+  "@moc/oracles/contracts/tasks/lending/TaskTPInjection.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol",
 ];

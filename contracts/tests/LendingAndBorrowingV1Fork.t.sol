@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import { Test } from "forge-std/Test.sol";
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, IOracleManager, TasksRunnerMigration, LiquidationEngineRegistration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
+import { MocV1LendingAndBorrowing, IMoCInrate, IMocSwapperMultihopV3, IDataProvider, ITasksRunner, IOracleManager, ICommissionSplitterTask, TasksRunnerMigration, LiquidationEngineRegistration } from "../changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { MocReverseAuction } from "@moc/main/contracts/auxiliary/MocReverseAuction.sol";
@@ -30,6 +30,7 @@ interface IBufferCoinbaseLike {
   function isLiquidable() external view returns (bool);
   function isFlushable(uint256 i) external view returns (bool);
   function getOutput(uint256 idx) external view returns (address, uint256, uint256, uint256);
+  function getToken() external view returns (address);
   function liquidate() external;
   function flush(uint256 i) external;
 }
@@ -47,11 +48,6 @@ interface IERC20Minimal {
   function balanceOf(address account) external view returns (uint256);
 }
 
-/// @notice Minimal interface to call peek() on a price oracle
-interface IPeekable {
-  function peek() external view returns (bytes32, bool);
-}
-
 /// @notice Minimal interface to inspect MocSwapperV3MultiHop paths
 interface IMocSwapperV3MultiHopProbe {
   function encodedPaths(address tokenIn, address tokenOut) external view returns (bytes memory);
@@ -61,45 +57,15 @@ interface IMocSwapperV3MultiHopProbe {
   ) external view returns (address);
 }
 
+interface IMocSwapperProbe {
+  function getSafeMaxAmountToSwap(
+    address tokenIn,
+    address tokenOut
+  ) external view returns (uint256);
+}
+
 interface IOracleManagerProbe {
   function getContractAddress(bytes32 coinPair) external view returns (address);
-}
-
-contract TasksRunnerMock is ITasksRunner {
-  address[] internal tasks;
-
-  function addTask(address task) external {
-    tasks.push(task);
-  }
-
-  function removeTask(address task) external {
-    for (uint256 i = 0; i < tasks.length; i++) {
-      if (tasks[i] == task) {
-        tasks[i] = tasks[tasks.length - 1];
-        tasks.pop();
-        return;
-      }
-    }
-  }
-
-  function getTasks() external view returns (address[] memory) {
-    return tasks;
-  }
-
-  function containsTask(address task) external view returns (bool) {
-    for (uint256 i = 0; i < tasks.length; i++) {
-      if (tasks[i] == task) return true;
-    }
-    return false;
-  }
-}
-
-contract CommissionSplitterTaskMock {
-  address public immutable commissionSplitter;
-
-  constructor(address commissionSplitter_) {
-    commissionSplitter = commissionSplitter_;
-  }
 }
 
 contract TaskMock {}
@@ -112,8 +78,7 @@ contract TaskMock {}
  * @dev Parameters are read from the rskMainnet.json parameter file.
  *
  *      Steps replicated from the ignition module:
- *        Step 10  - Deploy MocReverseAuction
- *        Step 11  - Deploy BufferCoinbase (impl + TransparentUpgradeableProxy)
+ *        Step 10  - Deploy BufferCoinbase (impl + TransparentUpgradeableProxy)
  *        Step 12a - Deploy WrbtcToDoc DataProvider
  *        Step 12b - Deploy DocToWrbtc DataProvider
  *        Step 13  - Deploy MocV1LendingAndBorrowing changer
@@ -130,8 +95,12 @@ contract LendingAndBorrowingV1ForkTest is Test {
   address internal mocStateV1;
   address internal mocInrateV1;
   address internal docToken;
+  address internal mocToken;
+  address internal tasksRunnerAddress;
   address internal oracleManager;
   bytes32 internal liquidationEngineName;
+  address internal tokenToCoinbasePriceProvider;
+  uint256 internal liquidationPaymentAC;
 
   // BufferCoinbase params
   address internal bufferProxyAdmin;
@@ -145,18 +114,37 @@ contract LendingAndBorrowingV1ForkTest is Test {
   uint256 internal bufferOutputThreshold1;
   uint256 internal bufferOutputThreshold2;
 
+  // Lending fee-flow params
+  address internal mocFeeFlowProxyAdmin;
+  uint256 internal mocFeeFlowThreshold;
+  address internal mocFeeFlowMimLabs;
+  address internal docToMocReverseAuction;
+  uint256 internal mocFeeFlowSplitDocToRbtc;
+  uint256 internal mocFeeFlowSplitMimLabs;
+  uint256 internal mocFeeFlowSplitDocToMoc;
+  uint256 internal mocFeeFlowSplitDocToMocLiquidation;
+  uint256 internal mocFeeFlowOutputThresholdDocToRbtc;
+  uint256 internal mocFeeFlowOutputThresholdMimLabs;
+  uint256 internal mocFeeFlowOutputThresholdDocToMoc;
+  uint256 internal mocFeeFlowOutputThresholdDocToMocLiquidation;
+  uint256 internal docToRbtcReverseAuctionOrderThreshold;
+  uint256 internal docToRbtcReverseAuctionSlippage;
+  address internal docToMocLiquidationPriceProvider;
+  uint256 internal docToMocLiquidationReverseAuctionOrderThreshold;
+  uint256 internal docToMocLiquidationReverseAuctionSlippage;
+  uint256 internal rbtcToMocLiquidationReverseAuctionOrderThreshold;
+  uint256 internal rbtcToMocLiquidationReverseAuctionSlippage;
+
   // ReverseAuction params
-  uint256 internal reverseAuctionOrderThreshold;
-  // docToRbtcPriceProvider: already deployed DOC/RBTC price provider on mainnet.
-  // Wrapped by PriceProviderInverse at setUp to yield the RBTC/DOC price for the auction.
+  // Already deployed DOC/RBTC price provider on mainnet.
   address internal docToRbtcPriceProvider;
-  uint256 internal reverseAuctionSlippage;
 
   // Changer param
   uint256 internal newBitProRate;
 
   // Swap path params
   address internal mocSwapperExchange;
+  address internal mocSwapperExchangeMultiHop;
   address internal wrbtcToken;
   address internal usdtToken;
   uint256 internal wrbtcToDocMaxAmount;
@@ -166,16 +154,25 @@ contract LendingAndBorrowingV1ForkTest is Test {
 
   // ─── Deployed contracts ───────────────────────────────────────────────────
   address internal mocSwapperCoreV1;
-  MocReverseAuction internal reverseAuction;
+  address internal tpInjector;
   address internal bufferCoinbaseProxy;
+  MocReverseAuction internal docToRbtcReverseAuction;
+  MocReverseAuction internal docToMocLiquidationReverseAuction;
+  MocReverseAuction internal rbtcToMocLiquidationReverseAuction;
+  address internal mocFeeFlowProxy;
   // DataProvider instances deployed via vm.deployCode (avoids moc-main-latest alias issue)
   address internal wrbtcToDocProvider;
   address internal docToWrbtcProvider;
   MocV1LendingAndBorrowing internal changer;
-  TasksRunnerMock internal tasksRunner;
-  address internal deprecatedSplitterTask;
+  ITasksRunner internal tasksRunner;
   address internal bufferFlushTask;
   address internal bufferLiquidateTask;
+  address internal tpInjectionTask;
+  address internal feeFlowBufferFlushTask;
+  address internal feeFlowBufferLiquidateTask;
+  address internal docToRbtcTask;
+  address internal docToMocLiquidationTask;
+  address internal rbtcToMocLiquidationTask;
   address internal liquidationEngine;
 
   receive() external payable {}
@@ -184,11 +181,12 @@ contract LendingAndBorrowingV1ForkTest is Test {
 
   function setUp() public {
     string memory defaultRpcUrl = "https://public-node.rsk.co";
-    uint256 forkBlock = 9080600;
+    uint256 forkBlock = 9265000;
     string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", defaultRpcUrl);
     vm.createSelectFork(rpcUrl, forkBlock);
 
     _readParamsFromJson();
+    tpInjector = address(this);
 
     // ── Step 1: Deploy MocSwapperCoreV1 ────────────────────────────────
     // MocSwapperCoreV1(address governor_, address mocV1_, address mocStateV1_,
@@ -197,37 +195,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
       new MocSwapperCoreV1(governor, mocV1, mocStateV1, mocInrateV1, docToken)
     );
 
-    // ── Step 10a: Deploy PriceProviderInverse ──────────────────────────
-    // Wraps the DOC/RBTC price provider to yield the RBTC/DOC price needed by the auction.
-    // PriceProviderInverse has pragma >=0.7.6 <0.8.0, deployed via getCode+assembly
-    // to avoid cross-version compilation issues in Hardhat.
-    address priceProviderInverse;
-    {
-      bytes memory code = abi.encodePacked(
-        vm.getCode("PriceProviderInverse"),
-        abi.encode(docToRbtcPriceProvider)
-      );
-      assembly {
-        priceProviderInverse := create(0, add(code, 0x20), mload(code))
-      }
-    }
-
-    // ── Step 10b: Deploy MocReverseAuction ─────────────────────────────
-    // tokenIn  = COINBASE (address(0))
-    // tokenOut = DOC
-    // outputAccount = bufferOutput1 is used as placeholder for tpInjectorProxy
-    reverseAuction = new MocReverseAuction(
-      governor,
-      mocSwapperCoreV1, // real MocSwapperCoreV1
-      address(0), // tokenIn = COINBASE
-      docToken, // tokenOut = DOC
-      bufferOutput1, // outputAccount placeholder (will be tpInjectorProxy in prod)
-      reverseAuctionOrderThreshold,
-      priceProviderInverse, // RBTC/DOC = inverse of DOC/RBTC
-      reverseAuctionSlippage
-    );
-
-    // ── Step 11: Deploy BufferCoinbase impl + TransparentUpgradeableProxy ─
+    // ── Step 10: Deploy BufferCoinbase impl + TransparentUpgradeableProxy ─
     // BufferCoinbase is =0.6.12, deployed via vm.getCode+assembly to avoid
     // cross-version import errors
     address bufferImpl;
@@ -240,7 +208,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
     }
 
     address[] memory outputs = new address[](3);
-    outputs[0] = address(reverseAuction);
+    outputs[0] = tpInjector;
     outputs[1] = bufferOutput1;
     outputs[2] = bufferOutput2;
 
@@ -269,6 +237,94 @@ contract LendingAndBorrowingV1ForkTest is Test {
       initData
     );
     bufferCoinbaseProxy = address(proxy);
+
+    // The full module deploys the LiquidationEngine before these auctions.
+    // A receiver mock is sufficient here to validate their routing.
+    liquidationEngine = address(new TaskMock());
+
+    // ── Step 11b: Deploy liquidation-funding reverse auctions ──────────
+    docToRbtcReverseAuction = new MocReverseAuction(
+      governor,
+      mocSwapperCoreV1,
+      docToken,
+      address(0),
+      mocV1,
+      docToRbtcReverseAuctionOrderThreshold,
+      docToRbtcPriceProvider,
+      docToRbtcReverseAuctionSlippage
+    );
+
+    address rbtcToMocPriceProvider;
+    {
+      bytes memory code = abi.encodePacked(
+        vm.getCode("PriceProviderInverse"),
+        abi.encode(tokenToCoinbasePriceProvider)
+      );
+      assembly {
+        rbtcToMocPriceProvider := create(0, add(code, 0x20), mload(code))
+      }
+    }
+
+    rbtcToMocLiquidationReverseAuction = new MocReverseAuction(
+      governor,
+      mocSwapperExchange,
+      address(0),
+      mocToken,
+      liquidationEngine,
+      rbtcToMocLiquidationReverseAuctionOrderThreshold,
+      rbtcToMocPriceProvider,
+      rbtcToMocLiquidationReverseAuctionSlippage
+    );
+
+    docToMocLiquidationReverseAuction = new MocReverseAuction(
+      governor,
+      mocSwapperExchangeMultiHop,
+      docToken,
+      mocToken,
+      liquidationEngine,
+      docToMocLiquidationReverseAuctionOrderThreshold,
+      docToMocLiquidationPriceProvider,
+      docToMocLiquidationReverseAuctionSlippage
+    );
+
+    address mocFeeFlowImpl;
+    {
+      bytes memory feeFlowCode = vm.getCode("BufferToken");
+      assembly {
+        mocFeeFlowImpl := create(0, add(feeFlowCode, 0x20), mload(feeFlowCode))
+      }
+    }
+
+    address[] memory feeFlowOutputs = new address[](4);
+    feeFlowOutputs[0] = address(docToRbtcReverseAuction);
+    feeFlowOutputs[1] = mocFeeFlowMimLabs;
+    feeFlowOutputs[2] = docToMocReverseAuction;
+    feeFlowOutputs[3] = address(docToMocLiquidationReverseAuction);
+
+    uint256[] memory feeFlowSplits = new uint256[](4);
+    feeFlowSplits[0] = mocFeeFlowSplitDocToRbtc;
+    feeFlowSplits[1] = mocFeeFlowSplitMimLabs;
+    feeFlowSplits[2] = mocFeeFlowSplitDocToMoc;
+    feeFlowSplits[3] = mocFeeFlowSplitDocToMocLiquidation;
+
+    uint256[] memory feeFlowOutputThresholds = new uint256[](4);
+    feeFlowOutputThresholds[0] = mocFeeFlowOutputThresholdDocToRbtc;
+    feeFlowOutputThresholds[1] = mocFeeFlowOutputThresholdMimLabs;
+    feeFlowOutputThresholds[2] = mocFeeFlowOutputThresholdDocToMoc;
+    feeFlowOutputThresholds[3] = mocFeeFlowOutputThresholdDocToMocLiquidation;
+
+    bytes memory feeFlowInitData = abi.encodeWithSignature(
+      "initialize(address,address,uint256,address[],uint256[],uint256[])",
+      governor,
+      docToken,
+      mocFeeFlowThreshold,
+      feeFlowOutputs,
+      feeFlowSplits,
+      feeFlowOutputThresholds
+    );
+    mocFeeFlowProxy = address(
+      new TransparentUpgradeableProxy(mocFeeFlowImpl, mocFeeFlowProxyAdmin, feeFlowInitData)
+    );
 
     // ── Step 12a: Deploy WrbtcToDoc DataProvider ───────────────────────
     // DataProvider(address owner_, uint256 initialData_)
@@ -302,15 +358,15 @@ contract LendingAndBorrowingV1ForkTest is Test {
     }
 
     // ── Step 13: Deploy MocV1LendingAndBorrowing changer ───────────────
-    tasksRunner = new TasksRunnerMock();
-    deprecatedSplitterTask = address(
-      new CommissionSplitterTaskMock(IMoCInrateProbe(mocInrateV1).getBitProInterestAddress())
-    );
+    tasksRunner = ITasksRunner(tasksRunnerAddress);
     bufferFlushTask = address(new TaskMock());
     bufferLiquidateTask = address(new TaskMock());
-    liquidationEngine = address(new TaskMock());
-    tasksRunner.addTask(deprecatedSplitterTask);
-
+    tpInjectionTask = address(new TaskMock());
+    feeFlowBufferFlushTask = address(new TaskMock());
+    feeFlowBufferLiquidateTask = address(new TaskMock());
+    docToRbtcTask = address(new TaskMock());
+    docToMocLiquidationTask = address(new TaskMock());
+    rbtcToMocLiquidationTask = address(new TaskMock());
     changer = new MocV1LendingAndBorrowing(
       IMoCInrate(mocInrateV1),
       newBitProRate,
@@ -318,14 +374,20 @@ contract LendingAndBorrowingV1ForkTest is Test {
       TasksRunnerMigration({
         tasksRunner: tasksRunner,
         bufferFlushTask: bufferFlushTask,
-        bufferLiquidateTask: bufferLiquidateTask
+        bufferLiquidateTask: bufferLiquidateTask,
+        tpInjectionTask: tpInjectionTask,
+        feeFlowBufferFlushTask: feeFlowBufferFlushTask,
+        feeFlowBufferLiquidateTask: feeFlowBufferLiquidateTask,
+        docToRbtcTask: docToRbtcTask,
+        docToMocLiquidationTask: docToMocLiquidationTask,
+        rbtcToMocLiquidationTask: rbtcToMocLiquidationTask
       }),
       LiquidationEngineRegistration({
         oracleManager: IOracleManager(oracleManager),
         name: liquidationEngineName,
         engine: liquidationEngine
       }),
-      IMocSwapperMultihopV3(mocSwapperExchange),
+      IMocSwapperMultihopV3(mocSwapperExchangeMultiHop),
       wrbtcToken,
       usdtToken,
       docToken,
@@ -367,15 +429,29 @@ contract LendingAndBorrowingV1ForkTest is Test {
     );
   }
 
-  function testFork_TasksRunnerMigratesBitProInterestTasks() public {
+  function testFork_TasksRunnerRegistersNewTasks() public {
+    address deprecatedSplitter = IMoCInrateProbe(mocInrateV1).getBitProInterestAddress();
+    assertGt(
+      _countSplitterTasks(deprecatedSplitter),
+      0,
+      "Expected deprecated BitPro interest tasks before migration"
+    );
+
     _executeChanger();
 
-    assertFalse(
-      tasksRunner.containsTask(deprecatedSplitterTask),
-      "Deprecated BitPro interest splitter task should be removed"
+    assertEq(
+      _countSplitterTasks(deprecatedSplitter),
+      0,
+      "Deprecated BitPro interest splitter tasks should be removed"
     );
-    assertTrue(tasksRunner.containsTask(bufferFlushTask), "New buffer flush task missing");
-    assertTrue(tasksRunner.containsTask(bufferLiquidateTask), "New buffer liquidate task missing");
+    assertTrue(_containsTask(bufferFlushTask), "New buffer flush task missing");
+    assertTrue(_containsTask(bufferLiquidateTask), "New buffer liquidate task missing");
+    assertTrue(_containsTask(tpInjectionTask), "New TP injection task missing");
+    assertTrue(_containsTask(feeFlowBufferFlushTask), "Fee flow flush task missing");
+    assertTrue(_containsTask(feeFlowBufferLiquidateTask), "Fee flow liquidate task missing");
+    assertTrue(_containsTask(docToRbtcTask), "DOC to RBTC task missing");
+    assertTrue(_containsTask(docToMocLiquidationTask), "DOC to MOC liquidation task missing");
+    assertTrue(_containsTask(rbtcToMocLiquidationTask), "RBTC to MOC liquidation task missing");
   }
 
   function testFork_ChangerRegistersLiquidationEngine() public {
@@ -398,37 +474,173 @@ contract LendingAndBorrowingV1ForkTest is Test {
   }
 
   /**
-   * @notice Verifies that the ReverseAuction was configured correctly.
-   */
-  function testFork_ReverseAuction_ConfiguredCorrectly() public view {
-    assertEq(reverseAuction.tokenIn(), address(0), "tokenIn should be COINBASE (address(0))");
-    assertEq(reverseAuction.tokenOut(), docToken, "tokenOut should be DOC token");
-    assertEq(
-      address(reverseAuction.governor()),
-      governor,
-      "reverseAuction.governor() should match governor"
-    );
-  }
-
-  /**
-   * @notice Verifies that BufferCoinbase output[0] is the reverseAuction,
+   * @notice Verifies that BufferCoinbase output[0] is the TPInjector,
    *         output[1] is bufferOutput1 and output[2] is bufferOutput2.
    */
   function testFork_BufferCoinbase_OutputsConfiguredCorrectly() public view {
     IBufferCoinbaseLike buffer = IBufferCoinbaseLike(bufferCoinbaseProxy);
 
     (address out0, , , ) = buffer.getOutput(0);
-    assertEq(
-      out0,
-      address(reverseAuction),
-      "BufferCoinbase outputs[0] should be the ReverseAuction"
-    );
+    assertEq(out0, tpInjector, "BufferCoinbase outputs[0] should be the TPInjector");
 
     (address out1, , , ) = buffer.getOutput(1);
     assertEq(out1, bufferOutput1, "BufferCoinbase outputs[1] should be bufferOutput1");
 
     (address out2, , , ) = buffer.getOutput(2);
     assertEq(out2, bufferOutput2, "BufferCoinbase outputs[2] should be bufferOutput2");
+  }
+
+  function testFork_MocFeeFlow_ConfiguredCorrectly() public view {
+    IBufferCoinbaseLike feeFlow = IBufferCoinbaseLike(mocFeeFlowProxy);
+
+    assertEq(feeFlow.getToken(), docToken, "Fee flow token should be DOC");
+
+    (address output0, uint256 split0, , uint256 threshold0) = feeFlow.getOutput(0);
+    assertEq(output0, address(docToRbtcReverseAuction), "Fee flow output[0] should swap to RBTC");
+    assertEq(split0, mocFeeFlowSplitDocToRbtc, "Fee flow output[0] split mismatch");
+    assertEq(
+      threshold0,
+      mocFeeFlowOutputThresholdDocToRbtc,
+      "Fee flow output[0] threshold mismatch"
+    );
+
+    (address output1, uint256 split1, , uint256 threshold1) = feeFlow.getOutput(1);
+    assertEq(output1, mocFeeFlowMimLabs, "Fee flow output[1] should be MIM Labs");
+    assertEq(split1, mocFeeFlowSplitMimLabs, "Fee flow output[1] split mismatch");
+    assertEq(threshold1, mocFeeFlowOutputThresholdMimLabs, "Fee flow output[1] threshold mismatch");
+
+    (address output2, uint256 split2, , uint256 threshold2) = feeFlow.getOutput(2);
+    assertEq(output2, docToMocReverseAuction, "Fee flow output[2] should swap to MOC");
+    assertEq(split2, mocFeeFlowSplitDocToMoc, "Fee flow output[2] split mismatch");
+    assertEq(
+      threshold2,
+      mocFeeFlowOutputThresholdDocToMoc,
+      "Fee flow output[2] threshold mismatch"
+    );
+
+    (address output3, uint256 split3, , uint256 threshold3) = feeFlow.getOutput(3);
+    assertEq(
+      output3,
+      address(docToMocLiquidationReverseAuction),
+      "Fee flow output[3] should fund LiquidationEngine"
+    );
+    assertEq(split3, mocFeeFlowSplitDocToMocLiquidation, "Fee flow output[3] split mismatch");
+    assertEq(
+      threshold3,
+      mocFeeFlowOutputThresholdDocToMocLiquidation,
+      "Fee flow output[3] threshold mismatch"
+    );
+
+    assertEq(
+      split0 + split1 + split2 + split3,
+      1e18,
+      "Fee flow output splits should add up to 100%"
+    );
+  }
+
+  function testFork_DocToRbtcReverseAuction_ConfiguredCorrectly() public view {
+    assertEq(
+      address(docToRbtcReverseAuction.mocSwapper()),
+      mocSwapperCoreV1,
+      "Wrong auction swapper"
+    );
+    assertEq(docToRbtcReverseAuction.tokenIn(), docToken, "Auction tokenIn should be DOC");
+    assertEq(docToRbtcReverseAuction.tokenOut(), address(0), "Auction tokenOut should be RBTC");
+    assertEq(docToRbtcReverseAuction.outputAccount(), mocV1, "Auction output should be MoC V1");
+    assertEq(
+      docToRbtcReverseAuction.orderThreshold(),
+      docToRbtcReverseAuctionOrderThreshold,
+      "Auction order threshold mismatch"
+    );
+    assertEq(
+      docToRbtcReverseAuction.slippage(),
+      docToRbtcReverseAuctionSlippage,
+      "Auction slippage mismatch"
+    );
+  }
+
+  function testFork_DocToRbtcReverseAuction_ExecutesThroughMocSwapperCoreV1() public {
+    MocSwapperCoreV1 swapper = MocSwapperCoreV1(payable(mocSwapperCoreV1));
+    uint256 maxDocAmount = swapper.getSafeMaxAmountToSwap(docToken, address(0));
+    uint256 docAmount = maxDocAmount < 100 ether ? maxDocAmount : 100 ether;
+    assertGt(docAmount, 0, "MoC V1 should have redeemable DOC");
+
+    deal(docToken, address(docToRbtcReverseAuction), docAmount);
+    docToRbtcReverseAuction.triggerOrders();
+
+    assertEq(
+      IERC20Minimal(docToken).balanceOf(address(docToRbtcReverseAuction)),
+      0,
+      "Reverse auction should redeem its DOC balance"
+    );
+    assertEq(address(swapper).balance, 0, "MocSwapperCoreV1 should not retain RBTC");
+  }
+
+  function testFork_LiquidationFundingReverseAuctions_ConfiguredCorrectly() public view {
+    assertEq(
+      address(rbtcToMocLiquidationReverseAuction.mocSwapper()),
+      mocSwapperExchange,
+      "RBTC to MOC auction should use exchange swapper"
+    );
+    assertEq(rbtcToMocLiquidationReverseAuction.tokenIn(), address(0), "Wrong RBTC tokenIn");
+    assertEq(rbtcToMocLiquidationReverseAuction.tokenOut(), mocToken, "Wrong MOC tokenOut");
+    assertEq(
+      rbtcToMocLiquidationReverseAuction.outputAccount(),
+      liquidationEngine,
+      "RBTC auction should fund LiquidationEngine"
+    );
+    assertEq(
+      rbtcToMocLiquidationReverseAuction.orderThreshold(),
+      rbtcToMocLiquidationReverseAuctionOrderThreshold,
+      "RBTC auction threshold mismatch"
+    );
+    assertEq(
+      rbtcToMocLiquidationReverseAuction.slippage(),
+      rbtcToMocLiquidationReverseAuctionSlippage,
+      "RBTC auction slippage mismatch"
+    );
+
+    assertEq(
+      address(docToMocLiquidationReverseAuction.mocSwapper()),
+      mocSwapperExchangeMultiHop,
+      "DOC to MOC auction should use exchange swapper"
+    );
+    assertEq(docToMocLiquidationReverseAuction.tokenIn(), docToken, "Wrong DOC tokenIn");
+    assertEq(docToMocLiquidationReverseAuction.tokenOut(), mocToken, "Wrong MOC tokenOut");
+    assertEq(
+      docToMocLiquidationReverseAuction.outputAccount(),
+      liquidationEngine,
+      "DOC auction should fund LiquidationEngine"
+    );
+    assertEq(
+      address(docToMocLiquidationReverseAuction.priceProvider()),
+      docToMocLiquidationPriceProvider,
+      "DOC auction price provider mismatch"
+    );
+  }
+
+  function testFork_RbtcToMocExchangeIsAvailable() public view {
+    assertGt(
+      IMocSwapperProbe(mocSwapperExchange).getSafeMaxAmountToSwap(address(0), mocToken),
+      0,
+      "RBTC to MOC direct swap is unavailable"
+    );
+  }
+
+  function testFork_DocToMocMultiHopPathExists() public {
+    // TODO: Enable when the upcoming changer configures DOC -> MOC on the new multihop swapper.
+    vm.skip(true);
+
+    IMocSwapperV3MultiHopProbe swapper = IMocSwapperV3MultiHopProbe(mocSwapperExchangeMultiHop);
+    assertGt(
+      swapper.encodedPaths(docToken, mocToken).length,
+      0,
+      "DOC to MOC exchange path is missing"
+    );
+    assertTrue(
+      swapper.maxAmountToSwapProviders(docToken, mocToken) != address(0),
+      "DOC to MOC max amount provider is missing"
+    );
   }
 
   /**
@@ -441,7 +653,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
   function testFork_SwapperExchange_PathSet() public {
     _executeChanger();
 
-    IMocSwapperV3MultiHopProbe swapper = IMocSwapperV3MultiHopProbe(mocSwapperExchange);
+    IMocSwapperV3MultiHopProbe swapper = IMocSwapperV3MultiHopProbe(mocSwapperExchangeMultiHop);
 
     // ── WRBTC→DOC path ────────────────────────────────────────────────
     bytes memory wrbtcToDocPath = swapper.encodedPaths(wrbtcToken, docToken);
@@ -479,8 +691,7 @@ contract LendingAndBorrowingV1ForkTest is Test {
    *   2. Advance blocks until BitPro interest is enabled
    *   3. payBitProHoldersInterestPayment() → RBTC land in bufferCoinbaseProxy
    *   4. BufferCoinbase.liquidate() → distributes RBTC to output internal balances
-   *   5. BufferCoinbase.flush(0) → sends RBTC to reverseAuction
-   *   6. triggerOrders() → mocked swapper swaps RBTC for DOC, outputAccount receives DOC
+   *   5. BufferCoinbase.flush(0) → sends RBTC directly to TPInjector
    */
   function testFork_EndToEnd_BitProInterestFlow() public {
     _executeChanger();
@@ -514,14 +725,14 @@ contract LendingAndBorrowingV1ForkTest is Test {
     assertTrue(buffer.isLiquidable(), "Buffer should be liquidable after receiving RBTC");
     buffer.liquidate();
 
-    // output[0] = reverseAuction, output[1] = bufferOutput1
+    // output[0] = TPInjector, output[1] = bufferOutput1
     (, , uint256 output0Balance, ) = buffer.getOutput(0);
     (, , uint256 output1Balance, ) = buffer.getOutput(1);
     (, , uint256 output2Balance, ) = buffer.getOutput(2);
     assertGt(
       output0Balance,
       0,
-      "output[0] (reverseAuction) internal balance should be > 0 after liquidate"
+      "output[0] (TPInjector) internal balance should be > 0 after liquidate"
     );
     assertGt(
       output1Balance,
@@ -535,42 +746,36 @@ contract LendingAndBorrowingV1ForkTest is Test {
       "Sum of output balances should approximately equal RBTC received (dust tolerance)"
     );
 
-    // ── 5. BufferCoinbase.flush(0) → RBTC physically sent to reverseAuction
-    uint256 reverseAuctionBalanceBefore = address(reverseAuction).balance;
+    // ── 5. BufferCoinbase.flush(0) → RBTC physically sent to TPInjector
+    uint256 tpInjectorBalanceBefore = tpInjector.balance;
     assertTrue(buffer.isFlushable(0), "output[0] should be flushable");
     buffer.flush(0);
-    uint256 reverseAuctionBalanceAfter = address(reverseAuction).balance;
+    uint256 tpInjectorBalanceAfter = tpInjector.balance;
     assertEq(
-      reverseAuctionBalanceAfter - reverseAuctionBalanceBefore,
+      tpInjectorBalanceAfter - tpInjectorBalanceBefore,
       output0Balance,
-      "reverseAuction should have received exactly output0Balance RBTC"
-    );
-
-    // ── 6. triggerOrders() ────────────────────────
-    // The priceProvider used by reverseAuction may return isValid=false at the fork block
-    // (stale oracle). We read the current price and mock it as valid so triggerOrders() proceeds.
-    address priceOracle = 0xe2927A0620b82A66D67F678FC9b826B0E01B1bFD;
-    (bytes32 currentPrice, ) = IPeekable(priceOracle).peek();
-    vm.mockCall(priceOracle, abi.encodeWithSignature("peek()"), abi.encode(currentPrice, true));
-
-    address outputAccount = reverseAuction.outputAccount();
-    uint256 docBefore = IERC20Minimal(docToken).balanceOf(outputAccount);
-    reverseAuction.triggerOrders();
-    uint256 docAfter = IERC20Minimal(docToken).balanceOf(outputAccount);
-
-    uint256 slippage = reverseAuction.slippage();
-    uint256 price = uint256(currentPrice); // DOC/RBTC
-    uint256 expectedDocMin = (output0Balance * price) / 1e18;
-    expectedDocMin = (expectedDocMin * (1e18 - slippage)) / 1e18;
-
-    assertGe(
-      docAfter - docBefore,
-      expectedDocMin,
-      "DOC received should be >= amountOutMin (price x amountIn x (1 - slippage))"
+      "TPInjector should have received exactly output0Balance RBTC"
     );
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  function _containsTask(address task_) internal view returns (bool) {
+    address[] memory tasks = tasksRunner.getTasks();
+    for (uint256 i = 0; i < tasks.length; i++) {
+      if (tasks[i] == task_) return true;
+    }
+    return false;
+  }
+
+  function _countSplitterTasks(address splitter_) internal view returns (uint256 count) {
+    address[] memory tasks = tasksRunner.getTasks();
+    for (uint256 i = 0; i < tasks.length; i++) {
+      try ICommissionSplitterTask(tasks[i]).commissionSplitter() returns (address splitter) {
+        if (splitter == splitter_) count++;
+      } catch {}
+    }
+  }
 
   function _executeChanger() internal {
     address governorAddr = IGoverned(mocInrateV1).governor();
@@ -589,8 +794,15 @@ contract LendingAndBorrowingV1ForkTest is Test {
     mocStateV1 = vm.parseJsonAddress(json, _key(module, "mocStateV1"));
     mocInrateV1 = vm.parseJsonAddress(json, _key(module, "mocInrateV1"));
     docToken = vm.parseJsonAddress(json, _key(module, "docToken"));
+    mocToken = vm.parseJsonAddress(json, _key(module, "mocToken"));
+    tasksRunnerAddress = vm.parseJsonAddress(json, _key(module, "tasksRunner"));
     oracleManager = vm.parseJsonAddress(json, _key(module, "oracleManager"));
     liquidationEngineName = vm.parseJsonBytes32(json, _key(module, "liquidationEngineName"));
+    tokenToCoinbasePriceProvider = vm.parseJsonAddress(
+      json,
+      _key(module, "tokenToCoinbasePriceProvider")
+    );
+    liquidationPaymentAC = vm.parseJsonUint(json, _key(module, "liquidationPaymentAC"));
 
     bufferProxyAdmin = vm.parseJsonAddress(json, _key(module, "bufferProxyAdmin"));
     bufferThreshold = vm.parseJsonUint(json, _key(module, "bufferThreshold"));
@@ -603,16 +815,71 @@ contract LendingAndBorrowingV1ForkTest is Test {
     bufferOutputThreshold1 = vm.parseJsonUint(json, _key(module, "bufferOutputThreshold1"));
     bufferOutputThreshold2 = vm.parseJsonUint(json, _key(module, "bufferOutputThreshold2"));
 
-    reverseAuctionOrderThreshold = vm.parseJsonUint(
+    mocFeeFlowProxyAdmin = vm.parseJsonAddress(json, _key(module, "mocFeeFlowProxyAdmin"));
+    mocFeeFlowThreshold = vm.parseJsonUint(json, _key(module, "mocFeeFlowThreshold"));
+    mocFeeFlowMimLabs = vm.parseJsonAddress(json, _key(module, "mocFeeFlowMimLabs"));
+    docToMocReverseAuction = vm.parseJsonAddress(json, _key(module, "docToMocReverseAuction"));
+    mocFeeFlowSplitDocToRbtc = vm.parseJsonUint(json, _key(module, "mocFeeFlowSplitDocToRbtc"));
+    mocFeeFlowSplitMimLabs = vm.parseJsonUint(json, _key(module, "mocFeeFlowSplitMimLabs"));
+    mocFeeFlowSplitDocToMoc = vm.parseJsonUint(json, _key(module, "mocFeeFlowSplitDocToMoc"));
+    mocFeeFlowSplitDocToMocLiquidation = vm.parseJsonUint(
       json,
-      _key(module, "reverseAuctionOrderThreshold")
+      _key(module, "mocFeeFlowSplitDocToMocLiquidation")
     );
+    mocFeeFlowOutputThresholdDocToRbtc = vm.parseJsonUint(
+      json,
+      _key(module, "mocFeeFlowOutputThresholdDocToRbtc")
+    );
+    mocFeeFlowOutputThresholdMimLabs = vm.parseJsonUint(
+      json,
+      _key(module, "mocFeeFlowOutputThresholdMimLabs")
+    );
+    mocFeeFlowOutputThresholdDocToMoc = vm.parseJsonUint(
+      json,
+      _key(module, "mocFeeFlowOutputThresholdDocToMoc")
+    );
+    mocFeeFlowOutputThresholdDocToMocLiquidation = vm.parseJsonUint(
+      json,
+      _key(module, "mocFeeFlowOutputThresholdDocToMocLiquidation")
+    );
+    docToRbtcReverseAuctionOrderThreshold = vm.parseJsonUint(
+      json,
+      _key(module, "docToRbtcReverseAuctionOrderThreshold")
+    );
+    docToRbtcReverseAuctionSlippage = vm.parseJsonUint(
+      json,
+      _key(module, "docToRbtcReverseAuctionSlippage")
+    );
+    docToMocLiquidationPriceProvider = vm.parseJsonAddress(
+      json,
+      _key(module, "docToMocLiquidationPriceProvider")
+    );
+    docToMocLiquidationReverseAuctionOrderThreshold = vm.parseJsonUint(
+      json,
+      _key(module, "docToMocLiquidationReverseAuctionOrderThreshold")
+    );
+    docToMocLiquidationReverseAuctionSlippage = vm.parseJsonUint(
+      json,
+      _key(module, "docToMocLiquidationReverseAuctionSlippage")
+    );
+    rbtcToMocLiquidationReverseAuctionOrderThreshold = vm.parseJsonUint(
+      json,
+      _key(module, "rbtcToMocLiquidationReverseAuctionOrderThreshold")
+    );
+    rbtcToMocLiquidationReverseAuctionSlippage = vm.parseJsonUint(
+      json,
+      _key(module, "rbtcToMocLiquidationReverseAuctionSlippage")
+    );
+
     docToRbtcPriceProvider = vm.parseJsonAddress(json, _key(module, "docToRbtcPriceProvider"));
-    reverseAuctionSlippage = vm.parseJsonUint(json, _key(module, "reverseAuctionSlippage"));
 
     newBitProRate = vm.parseJsonUint(json, _key(module, "newBitProRate"));
 
     mocSwapperExchange = vm.parseJsonAddress(json, _key(module, "mocSwapperExchange"));
+    mocSwapperExchangeMultiHop = vm.parseJsonAddress(
+      json,
+      _key(module, "mocSwapperExchangeMultiHop")
+    );
     wrbtcToken = vm.parseJsonAddress(json, _key(module, "wrbtcToken"));
     usdtToken = vm.parseJsonAddress(json, _key(module, "usdtToken"));
     wrbtcToDocMaxAmount = vm.parseJsonUint(json, _key(module, "wrbtcToDocMaxAmount"));
@@ -622,11 +889,19 @@ contract LendingAndBorrowingV1ForkTest is Test {
 
     require(governor != address(0), "governor is zero");
     require(mocInrateV1 != address(0), "mocInrateV1 is zero");
+    require(tasksRunnerAddress != address(0), "tasksRunner is zero");
     require(oracleManager != address(0), "oracleManager is zero");
     require(bufferProxyAdmin != address(0), "bufferProxyAdmin is zero");
+    require(mocFeeFlowProxyAdmin != address(0), "mocFeeFlowProxyAdmin is zero");
+    require(mocFeeFlowMimLabs != address(0), "mocFeeFlowMimLabs is zero");
+    require(docToMocReverseAuction != address(0), "docToMocReverseAuction is zero");
+    require(mocToken != address(0), "mocToken is zero");
+    require(tokenToCoinbasePriceProvider != address(0), "tokenToCoinbasePriceProvider is zero");
+    require(docToMocLiquidationPriceProvider != address(0), "docToMoc price provider is zero");
     require(wrbtcToken != address(0), "wrbtcToken is zero");
     require(usdtToken != address(0), "usdtToken is zero");
     require(mocSwapperExchange != address(0), "mocSwapperExchange is zero");
+    require(mocSwapperExchangeMultiHop != address(0), "mocSwapperExchangeMultiHop is zero");
   }
 
   function _key(string memory module, string memory field) internal pure returns (string memory) {

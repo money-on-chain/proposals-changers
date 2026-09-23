@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@moc/flow": "git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.4",
-    "@moc/lending": "git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v1.0.1",
+    "@moc/lending": "git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v3.0.20",
     "@moc/main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
     "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
     "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.20",
@@ -106,10 +106,10 @@
   "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065",
   "peerDependencies": {
     "@moc/flow": "3.0.4",
-    "@moc/lending": "1.0.1",
+    "@moc/lending": "3.0.20",
     "@moc/main": "3.0.9",
     "@moc/moc-main": "3.0.9",
-    "@moc/oracles": "3.0.13",
+    "@moc/oracles": "3.0.20",
     "@moc/periphery": "3.0.7",
     "@moc/price-oracle-interfaces": "0.1.0",
     "@moc/rbtc": "3.0.7",
