@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263701`
 
-> :warning: **Status: `In voting`**
+> :warning: **Status: `Implemented`**
 
 ## Rationale
 
@@ -153,3 +153,15 @@ The change takes effect only when the approved changer is executed.
 | `MIP263701UseTimestamps` | [`0x7ADd3451F0a0c7E4a12Aa86f70aB4102A06a9Cb5`](https://rootstock.blockscout.com/address/0x7ADd3451F0a0c7E4a12Aa86f70aB4102A06a9Cb5?tab=contract) |
 
 > :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x7ADd3451F0a0c7E4a12Aa86f70aB4102A06a9Cb5?tab=contract) linked above.
+
+---
+
+## Status
+
+📣 The voting process is over:
+* `20.1%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0x30983b6767dc7807f87d9f31f6a4b6f9c68c74c192e38a6b9794690cc00bf495`](https://rootstock.blockscout.com/tx/0x30983b6767dc7807f87d9f31f6a4b6f9c68c74c192e38a6b9794690cc00bf495)
