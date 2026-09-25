@@ -1,0 +1,10 @@
+{
+  "MIP264001Module": {
+    "multiCollateralGuard": "0x0237Ad1f0831b479a344E56646BC48B0885cF46F",
+    "mocSwapperV3Multihop": "0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73",
+    "docToMocAuction": "0x883e3433c236Abd3c301FFc9B59EA478C0C21c9a",
+    "mocToDocAuction": "0x3EB689a01c4e8ccaC7c72097104FF37Ccf907bBE",
+    "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
+    "taskOwner": "0x4905F643Db489d9561617638d31875b6bfF79077"
+  }
+}
