@@ -89,9 +89,17 @@
     "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,cjs,mjs}": ["eslint --fix --max-warnings=0", "prettier --write"],
-    "contracts/**/*.sol": ["prettier --write", "solhint --max-warnings=0"],
-    "*.{json,md,yml,yaml}": ["prettier --write"]
+    "*.{ts,tsx,js,cjs,mjs}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "contracts/**/*.sol": [
+      "prettier --write",
+      "solhint --max-warnings=0"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "overrides": {},
   "type": "module",
@@ -131,5 +139,11 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
+  "files": [
+    "config/solidity.js",
+    "config/solidity.d.ts",
+    "contracts",
+    "ignition",
+    "scripts"
+  ]
 }
