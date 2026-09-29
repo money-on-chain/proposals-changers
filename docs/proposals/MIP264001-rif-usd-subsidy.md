@@ -48,12 +48,14 @@ The task becomes eligible when the reverse auction has accumulated at least its 
 
 The proposal configures [`MocSwapperV3Multihop`](https://rootstock.blockscout.com/address/0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73?tab=contract) at `0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73` with these paths:
 
-| Conversion | Path                     | Fees            |
-| :--------- | :----------------------- | :-------------- |
-| DOC → MOC  | DOC → USD₮ → WRBTC → MOC | 500, 3000, 3000 |
-| MOC → DOC  | MOC → WRBTC → USD₮ → DOC | 3000, 3000, 500 |
-| DOC → RIF  | DOC → USD0 → RIF         | 3000, 3000      |
-| RIF → DOC  | RIF → USD0 → DOC         | 3000, 3000      |
+| Conversion | Path                     | Fees             |
+| :--------- | :----------------------- | :--------------- |
+| DOC → MOC  | DOC → USD0 → WRBTC → MOC | 3000, 3000, 3000 |
+| MOC → DOC  | MOC → WRBTC → USD0 → DOC | 3000, 3000, 3000 |
+| DOC → RIF  | DOC → USD0 → RIF         | 3000, 3000       |
+| RIF → DOC  | RIF → USD0 → DOC         | 3000, 3000       |
+
+All routes configured by this proposal use USD0 where a USD-denominated intermediate asset is needed. They no longer use pools with USD₮, including the DOC-to-MOC and MOC-to-DOC routes.
 
 The changer reads the RIF and DOC token addresses, the MOC fee token, and the existing maximum-swap providers from the deployed guard, buckets, and deprecated swapper. It preserves those providers when it configures the shared swapper.
 

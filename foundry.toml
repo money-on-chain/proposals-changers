@@ -23,5 +23,6 @@ evm_version = "london"
 fs_permissions = [
   { access = "read", path = "./ignition/modules/BufferPctAndCleanMocV1/parameters" },
   { access = "read", path = "./ignition/modules/LendingAndBorrowingV1/parameters" },
+  { access = "read", path = "./ignition/modules/MIP26-4001/parameters" },
   { access = "read", path = "./ignition/modules/upgrade_votingMachine/parameters" },
 ]

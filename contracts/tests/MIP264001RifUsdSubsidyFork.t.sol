@@ -24,6 +24,7 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
   string internal constant PARAMS_KEY = ".MIP264001Module.";
   uint256 internal constant FORK_BLOCK = 9_220_195;
   address internal constant USD0 = 0x779Ded0c9e1022225f8E0630b35a9b54bE713736;
+  address internal constant WRBTC = 0x542fDA317318eBF1d3DEAf76E0b632741A7e677d;
 
   IMIP264001Guard internal guard;
   IMIP264001Swapper internal deprecatedMocswapperV3Multihop;
@@ -137,8 +138,24 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
     address doc = docBucket.acToken();
     address rif = rifBucket.acToken();
     address moc = rifBucket.feeToken();
-    bytes memory docToMocPath = deprecatedMocswapperV3Multihop.encodedPaths(doc, moc);
-    bytes memory mocToDocPath = deprecatedMocswapperV3Multihop.encodedPaths(moc, doc);
+    bytes memory docToMocPath = abi.encodePacked(
+      doc,
+      uint24(3000),
+      USD0,
+      uint24(3000),
+      WRBTC,
+      uint24(3000),
+      moc
+    );
+    bytes memory mocToDocPath = abi.encodePacked(
+      moc,
+      uint24(3000),
+      WRBTC,
+      uint24(3000),
+      USD0,
+      uint24(3000),
+      doc
+    );
     bytes memory docToRifPath = abi.encodePacked(doc, uint24(3000), USD0, uint24(3000), rif);
     bytes memory rifToDocPath = abi.encodePacked(rif, uint24(3000), USD0, uint24(3000), doc);
     assertGt(docToMocPath.length, 0);

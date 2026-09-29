@@ -43,7 +43,6 @@ interface IMIP264001TasksRunner {
 
 /** @notice Configures the RIF/USD subsidy and retires the dedicated RIF/DOC swapper. */
 contract MIP264001RifUsdSubsidy is IChangeContract {
-  address private constant USDT = 0xAf368c91793CB22739386DFCbBb2F1A9e4bCBeBf;
   address private constant USD0 = 0x779Ded0c9e1022225f8E0630b35a9b54bE713736;
   address private constant WRBTC = 0x542fDA317318eBF1d3DEAf76E0b632741A7e677d;
 
@@ -117,12 +116,12 @@ contract MIP264001RifUsdSubsidy is IChangeContract {
   }
 
   function execute() external {
-    // DOC -> USDT -> WRBTC -> MOC
+    // DOC -> USD0 -> WRBTC -> MOC
     address[] memory docToMocIntermediates = new address[](2);
-    docToMocIntermediates[0] = USDT;
+    docToMocIntermediates[0] = USD0;
     docToMocIntermediates[1] = WRBTC;
     uint24[] memory docToMocFees = new uint24[](3);
-    docToMocFees[0] = 500;
+    docToMocFees[0] = 3000;
     docToMocFees[1] = 3000;
     docToMocFees[2] = 3000;
     mocSwapperV3Multihop.setPath(
@@ -133,14 +132,14 @@ contract MIP264001RifUsdSubsidy is IChangeContract {
       docToMocProvider
     );
 
-    // MOC -> WRBTC -> USDT -> DOC
+    // MOC -> WRBTC -> USD0 -> DOC
     address[] memory mocToDocIntermediates = new address[](2);
     mocToDocIntermediates[0] = WRBTC;
-    mocToDocIntermediates[1] = USDT;
+    mocToDocIntermediates[1] = USD0;
     uint24[] memory mocToDocFees = new uint24[](3);
     mocToDocFees[0] = 3000;
     mocToDocFees[1] = 3000;
-    mocToDocFees[2] = 500;
+    mocToDocFees[2] = 3000;
     mocSwapperV3Multihop.setPath(
       mocToken,
       docToken,

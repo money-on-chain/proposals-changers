@@ -1,5 +1,6 @@
 export const npmFilesToBuild = [
   "@moneyonchain/proposals-changers/contracts/changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol",
+  "@moneyonchain/proposals-changers/contracts/changers/mip26_4001/MIP264001RifUsdSubsidy.sol",
   "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
   "@moc/main/contracts/governance/InterimGovernor.sol",
   "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
@@ -14,4 +15,5 @@ export const npmFilesToBuild = [
   "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskFlush.sol",
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol",
 ];
