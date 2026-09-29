@@ -6,19 +6,13 @@
 
 ## Overview
 
-This proposal completes the operational funding path for the `RIF/USD` oracle service introduced in [MIP#263101](MIP263101-add-rif-usd-and-tasks-runner-to-omoc.md) and used by RoC and MoC in [MIP#263102](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md).
+When the `RIF/USD` CoinPair was incorporated into RoC, its revenue sources were configured so that RoC users pay only for the price publications needed by the protocol, principally during mint and redeem operations and when liquidations occur. This demand-driven model compensates the OMoC oracle operators without charging RoC users for publications that RoC itself does not need.
 
-It deploys an `RBTC → MOC` reverse auction whose MOC output goes directly to the `RIF/USD` CoinPair. The proposal registers a `TaskTriggerOrder` for this auction in OMOC's `TasksRunner`, allowing participating operators to execute it when its RBTC balance reaches the configured threshold.
+Rootstock Labs considers the `RIF/USD` price valuable beyond the RoC protocol and wants the OMoC oracles to publish it continuously. It therefore intends to subsidize those additional publications instead of assigning their cost to RoC users.
 
-The proposal also retires the dedicated RIF/DOC multi-hop swapper from active use. It configures the shared `MocSwapperV3Multihop` with the paths needed by the RIF and DOC buckets, switches the two existing DOC/MOC reverse auctions to that swapper, and makes it the guard's swapper for both bucket directions.
+The main goal of this proposal is to provide the mechanism for that subsidy. It deploys an `RBTC → MOC` reverse auction to which Rootstock Labs can send RBTC. The auction converts the RBTC through the established swapper and sends the resulting MOC to the `RIF/USD` CoinPair, where it is added to the other revenue sources that compensate its oracle operators. The proposal also registers a `TaskTriggerOrder` for the auction in OMoC's `TasksRunner`, allowing participating operators to execute it when its RBTC balance reaches the configured threshold.
 
----
-
-## Motivation
-
-The `RIF/USD` CoinPair needs MOC to compensate its oracle operators. The protocol already uses reverse auctions to convert accumulated assets into MOC for equivalent operational destinations. This proposal gives the `RIF/USD` CoinPair the same mechanism: it accumulates RBTC, converts it to MOC through the established `RBTC → MOC` swapper, and sends the output to the CoinPair.
-
-The RIF and DOC buckets currently depend on a dedicated `MocSwapperV3Multihop` for their cross-bucket conversions. The shared swapper is already deployed and used by the protocol. Configuring the required paths there consolidates swap execution in that component while retaining the existing maximum-swap providers.
+The proposal also consolidates swap execution for the RIF and DOC buckets. It configures the shared `MocSwapperV3Multihop` with the required paths while retaining the existing maximum-swap providers, switches the two DOC/MOC reverse auctions to that swapper, and makes it the guard's swapper for both bucket directions. This retires the dedicated RIF/DOC multi-hop swapper from active use.
 
 ---
 
@@ -26,7 +20,7 @@ The RIF and DOC buckets currently depend on a dedicated `MocSwapperV3Multihop` f
 
 ### 1. Create the RIF/USD subsidy reverse auction
 
-The proposal deploys a `MocReverseAuction` with:
+The proposal deploys a `MocReverseAuction` that Rootstock Labs can fund by sending it RBTC. The auction is configured with:
 
 | Parameter                                     | Value                                                                         |
 | :-------------------------------------------- | :---------------------------------------------------------------------------- |
@@ -48,12 +42,12 @@ The task becomes eligible when the reverse auction has accumulated at least its 
 
 The proposal configures [`MocSwapperV3Multihop`](https://rootstock.blockscout.com/address/0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73?tab=contract) at `0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73` with these paths:
 
-| Conversion | Path                     | Fees             |
-| :--------- | :----------------------- | :--------------- |
-| DOC → MOC  | DOC → USD0 → WRBTC → MOC | 3000, 3000, 3000 |
-| MOC → DOC  | MOC → WRBTC → USD0 → DOC | 3000, 3000, 3000 |
-| DOC → RIF  | DOC → USD0 → RIF         | 3000, 3000       |
-| RIF → DOC  | RIF → USD0 → DOC         | 3000, 3000       |
+| Conversion | Path                     |
+| :--------- | :----------------------- |
+| DOC → MOC  | DOC → USD0 → WRBTC → MOC |
+| MOC → DOC  | MOC → WRBTC → USD0 → DOC |
+| DOC → RIF  | DOC → USD0 → RIF         |
+| RIF → DOC  | RIF → USD0 → DOC         |
 
 All routes configured by this proposal use USD0 where a USD-denominated intermediate asset is needed. They no longer use pools with USD₮, including the DOC-to-MOC and MOC-to-DOC routes.
 
@@ -78,7 +72,7 @@ This removes the dedicated swapper at [`0x0E60154be285810DFa1d64FaC5acb4804d7A7b
 
 After execution:
 
-- the `RIF/USD` CoinPair can receive MOC from a dedicated RBTC-to-MOC subsidy auction;
+- Rootstock Labs can subsidize the `RIF/USD` oracle service by sending RBTC to a dedicated reverse auction, whose MOC output is added to the CoinPair's other revenue sources;
 - OMOC `TasksRunner` operators can trigger that auction once its RBTC threshold is met;
 - DOC/MOC and RIF/DOC conversions use the shared `MocSwapperV3Multihop` with the specified routes;
 - the two existing DOC/MOC reverse auctions use the shared swapper; and
