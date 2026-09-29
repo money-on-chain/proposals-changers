@@ -18,14 +18,16 @@ interface IMIP264001Ownable {
   function owner() external view returns (address);
 }
 
-/** @notice Runs the complete proposal against deployed Rootstock mainnet contracts. */
-contract MIP264001RifUsdSubsidyForkTest is Test {
-  string internal constant PARAMS_PATH = "./ignition/modules/MIP26-4001/parameters/rskMainnet.json";
+/** @notice Runs the complete proposal against deployed Rootstock contracts. */
+contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
   string internal constant PARAMS_KEY = ".MIP264001Module.";
-  uint256 internal constant FORK_BLOCK = 9_220_195;
-  address internal constant USD0 = 0x779Ded0c9e1022225f8E0630b35a9b54bE713736;
-  address internal constant WRBTC = 0x542fDA317318eBF1d3DEAf76E0b632741A7e677d;
 
+  address internal usd0;
+  address internal wrbtc;
+  uint24[3] internal docToMocFees;
+  uint24[3] internal mocToDocFees;
+  uint24[2] internal docToRifFees;
+  uint24[2] internal rifToDocFees;
   IMIP264001Guard internal guard;
   IMIP264001Swapper internal deprecatedMocswapperV3Multihop;
   IMIP264001Swapper internal mocSwapperV3Multihop;
@@ -43,16 +45,24 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
   address internal taskOwner;
 
   function setUp() public {
-    string memory params = vm.readFile(PARAMS_PATH);
+    string memory params = vm.readFile("./ignition/modules/MIP26-4001/parameters/rskMainnet.json");
     address guardAddress = _address(params, "multiCollateralGuard");
     mocSwapperV3Multihop = IMIP264001Swapper(_address(params, "mocSwapperV3Multihop"));
     docToMocAuction = _address(params, "docToMocAuction");
     mocToDocAuction = _address(params, "mocToDocAuction");
     tasksRunner = _address(params, "tasksRunner");
     taskOwner = _address(params, "taskOwner");
+    usd0 = _address(params, "usd0");
+    wrbtc = _address(params, "wrbtc");
+    docToMocFees = _fees3(params, "docToMocFees");
+    mocToDocFees = _fees3(params, "mocToDocFees");
+    docToRifFees = _fees2(params, "docToRifFees");
+    rifToDocFees = _fees2(params, "rifToDocFees");
 
-    string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", string("https://public-node.rsk.co"));
-    vm.createSelectFork(rpcUrl, FORK_BLOCK);
+    vm.createSelectFork(
+      vm.envOr("RSK_MAINNET_RPC_URL", string("https://public-node.rsk.co")),
+      9_220_195
+    );
 
     guard = IMIP264001Guard(guardAddress);
     rifBucket = IMIP264001Bucket(guard.buckets(0));
@@ -81,7 +91,13 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
       IMIP264001Auction(mocToDocAuction),
       guard,
       IMIP264001TasksRunner(tasksRunner),
-      address(subsidyTask)
+      address(subsidyTask),
+      usd0,
+      wrbtc,
+      docToMocFees,
+      mocToDocFees,
+      docToRifFees,
+      rifToDocFees
     );
   }
 
@@ -103,6 +119,8 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
     assertEq(changer.docToken(), docBucket.acToken());
     assertEq(changer.mocToken(), mocToken);
     assertEq(address(changer.tasksRunner()), tasksRunner);
+    assertEq(changer.usd0(), usd0);
+    assertEq(changer.wrbtc(), wrbtc);
     assertEq(
       changer.docToMocProvider(),
       deprecatedMocswapperV3Multihop.maxAmountToSwapProviders(docBucket.acToken(), mocToken)
@@ -140,24 +158,24 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
     address moc = rifBucket.feeToken();
     bytes memory docToMocPath = abi.encodePacked(
       doc,
-      uint24(3000),
-      USD0,
-      uint24(3000),
-      WRBTC,
-      uint24(3000),
+      docToMocFees[0],
+      usd0,
+      docToMocFees[1],
+      wrbtc,
+      docToMocFees[2],
       moc
     );
     bytes memory mocToDocPath = abi.encodePacked(
       moc,
-      uint24(3000),
-      WRBTC,
-      uint24(3000),
-      USD0,
-      uint24(3000),
+      mocToDocFees[0],
+      wrbtc,
+      mocToDocFees[1],
+      usd0,
+      mocToDocFees[2],
       doc
     );
-    bytes memory docToRifPath = abi.encodePacked(doc, uint24(3000), USD0, uint24(3000), rif);
-    bytes memory rifToDocPath = abi.encodePacked(rif, uint24(3000), USD0, uint24(3000), doc);
+    bytes memory docToRifPath = abi.encodePacked(doc, docToRifFees[0], usd0, docToRifFees[1], rif);
+    bytes memory rifToDocPath = abi.encodePacked(rif, rifToDocFees[0], usd0, rifToDocFees[1], doc);
     assertGt(docToMocPath.length, 0);
     assertGt(mocToDocPath.length, 0);
     assertGt(docToRifPath.length, 0);
@@ -269,5 +287,21 @@ contract MIP264001RifUsdSubsidyForkTest is Test {
 
   function _address(string memory params, string memory key) internal returns (address) {
     return vm.parseJsonAddress(params, string.concat(PARAMS_KEY, key));
+  }
+
+  function _fees3(
+    string memory params,
+    string memory key
+  ) internal returns (uint24[3] memory fees) {
+    uint256[] memory values = vm.parseJsonUintArray(params, string.concat(PARAMS_KEY, key));
+    for (uint256 i; i < 3; ++i) fees[i] = uint24(values[i]);
+  }
+
+  function _fees2(
+    string memory params,
+    string memory key
+  ) internal returns (uint24[2] memory fees) {
+    uint256[] memory values = vm.parseJsonUintArray(params, string.concat(PARAMS_KEY, key));
+    for (uint256 i; i < 2; ++i) fees[i] = uint24(values[i]);
   }
 }

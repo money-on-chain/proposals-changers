@@ -43,9 +43,6 @@ interface IMIP264001TasksRunner {
 
 /** @notice Configures the RIF/USD subsidy and retires the dedicated RIF/DOC swapper. */
 contract MIP264001RifUsdSubsidy is IChangeContract {
-  address private constant USD0 = 0x779Ded0c9e1022225f8E0630b35a9b54bE713736;
-  address private constant WRBTC = 0x542fDA317318eBF1d3DEAf76E0b632741A7e677d;
-
   IMIP264001Swapper public immutable mocSwapperV3Multihop;
   IMIP264001Auction public immutable docToMocAuction;
   IMIP264001Auction public immutable mocToDocAuction;
@@ -63,13 +60,26 @@ contract MIP264001RifUsdSubsidy is IChangeContract {
   address public immutable docToRifProvider;
   address public immutable rifToDocProvider;
 
+  address public immutable usd0;
+  address public immutable wrbtc;
+  uint24[3] public docToMocFees;
+  uint24[3] public mocToDocFees;
+  uint24[2] public docToRifFees;
+  uint24[2] public rifToDocFees;
+
   constructor(
     IMIP264001Swapper mocSwapperV3Multihop_,
     IMIP264001Auction docToMocAuction_,
     IMIP264001Auction mocToDocAuction_,
     IMIP264001Guard multiCollateralGuard_,
     IMIP264001TasksRunner tasksRunner_,
-    address rbtcToMocTask_
+    address rbtcToMocTask_,
+    address usd0_,
+    address wrbtc_,
+    uint24[3] memory docToMocFees_,
+    uint24[3] memory mocToDocFees_,
+    uint24[2] memory docToRifFees_,
+    uint24[2] memory rifToDocFees_
   ) {
     mocSwapperV3Multihop = mocSwapperV3Multihop_;
     docToMocAuction = docToMocAuction_;
@@ -77,6 +87,12 @@ contract MIP264001RifUsdSubsidy is IChangeContract {
     multiCollateralGuard = multiCollateralGuard_;
     tasksRunner = tasksRunner_;
     rbtcToMocTask = rbtcToMocTask_;
+    usd0 = usd0_;
+    wrbtc = wrbtc_;
+    docToMocFees = docToMocFees_;
+    mocToDocFees = mocToDocFees_;
+    docToRifFees = docToRifFees_;
+    rifToDocFees = rifToDocFees_;
 
     address _rifBucket = multiCollateralGuard_.buckets(0);
     address _docBucket = multiCollateralGuard_.buckets(1);
@@ -118,49 +134,49 @@ contract MIP264001RifUsdSubsidy is IChangeContract {
   function execute() external {
     // DOC -> USD0 -> WRBTC -> MOC
     address[] memory docToMocIntermediates = new address[](2);
-    docToMocIntermediates[0] = USD0;
-    docToMocIntermediates[1] = WRBTC;
-    uint24[] memory docToMocFees = new uint24[](3);
-    docToMocFees[0] = 3000;
-    docToMocFees[1] = 3000;
-    docToMocFees[2] = 3000;
+    docToMocIntermediates[0] = usd0;
+    docToMocIntermediates[1] = wrbtc;
+    uint24[] memory docToMocPathFees = new uint24[](3);
+    docToMocPathFees[0] = docToMocFees[0];
+    docToMocPathFees[1] = docToMocFees[1];
+    docToMocPathFees[2] = docToMocFees[2];
     mocSwapperV3Multihop.setPath(
       docToken,
       mocToken,
       docToMocIntermediates,
-      docToMocFees,
+      docToMocPathFees,
       docToMocProvider
     );
 
     // MOC -> WRBTC -> USD0 -> DOC
     address[] memory mocToDocIntermediates = new address[](2);
-    mocToDocIntermediates[0] = WRBTC;
-    mocToDocIntermediates[1] = USD0;
-    uint24[] memory mocToDocFees = new uint24[](3);
-    mocToDocFees[0] = 3000;
-    mocToDocFees[1] = 3000;
-    mocToDocFees[2] = 3000;
+    mocToDocIntermediates[0] = wrbtc;
+    mocToDocIntermediates[1] = usd0;
+    uint24[] memory mocToDocPathFees = new uint24[](3);
+    mocToDocPathFees[0] = mocToDocFees[0];
+    mocToDocPathFees[1] = mocToDocFees[1];
+    mocToDocPathFees[2] = mocToDocFees[2];
     mocSwapperV3Multihop.setPath(
       mocToken,
       docToken,
       mocToDocIntermediates,
-      mocToDocFees,
+      mocToDocPathFees,
       mocToDocProvider
     );
 
     // DOC -> USD0 -> RIF
     address[] memory viaUsd0 = new address[](1);
-    viaUsd0[0] = USD0;
-    uint24[] memory docToRifFees = new uint24[](2);
-    docToRifFees[0] = 3000;
-    docToRifFees[1] = 3000;
-    mocSwapperV3Multihop.setPath(docToken, rifToken, viaUsd0, docToRifFees, docToRifProvider);
+    viaUsd0[0] = usd0;
+    uint24[] memory docToRifPathFees = new uint24[](2);
+    docToRifPathFees[0] = docToRifFees[0];
+    docToRifPathFees[1] = docToRifFees[1];
+    mocSwapperV3Multihop.setPath(docToken, rifToken, viaUsd0, docToRifPathFees, docToRifProvider);
 
     // RIF -> USD0 -> DOC
-    uint24[] memory rifToDocFees = new uint24[](2);
-    rifToDocFees[0] = 3000;
-    rifToDocFees[1] = 3000;
-    mocSwapperV3Multihop.setPath(rifToken, docToken, viaUsd0, rifToDocFees, rifToDocProvider);
+    uint24[] memory rifToDocPathFees = new uint24[](2);
+    rifToDocPathFees[0] = rifToDocFees[0];
+    rifToDocPathFees[1] = rifToDocFees[1];
+    mocSwapperV3Multihop.setPath(rifToken, docToken, viaUsd0, rifToDocPathFees, rifToDocProvider);
 
     docToMocAuction.setMocSwapper(address(mocSwapperV3Multihop));
     mocToDocAuction.setMocSwapper(address(mocSwapperV3Multihop));

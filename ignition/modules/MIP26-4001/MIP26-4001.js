@@ -42,6 +42,12 @@ export default buildModule("MIP264001Module", (m) => {
       multiCollateralGuardAddress,
       m.getParameter("tasksRunner"),
       rbtcToMocTask,
+      m.getParameter("usd0"),
+      m.getParameter("wrbtc"),
+      m.getParameter("docToMocFees"),
+      m.getParameter("mocToDocFees"),
+      m.getParameter("docToRifFees"),
+      m.getParameter("rifToDocFees"),
     ],
     { id: "MIP264001RifUsdSubsidyChanger" },
   );
