@@ -1,0 +1,64 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_24-3c0fcf2e9e56c98eb54466cc9701926add1e3db5",
+  "solcVersion": "0.8.24",
+  "solcLongVersion": "0.8.24+commit.e11b9ed9",
+  "compilerType": "solc",
+  "userSourceNameMap": {
+    "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol": "npm/@moneyonchain/oracles@3.0.13/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "london",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200,
+        "details": {
+          "yulDetails": {
+            "optimizerSteps": "dhfoDgvulfnTUtnIf[xa[r]EscLMcCTUtTOntnfDIulLculVcul[j]Tpeulxa[rul]xa[r]cLgvifCTUca[r]LSsTOtfDnca[r]Iulc]jmul[jul]VcTOculjmul"
+          }
+        }
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers",
+            "storageLayout"
+          ]
+        }
+      },
+      "remappings": [
+        "npm/@moneyonchain/oracles@3.0.13/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@4.9.3/"
+      ],
+      "viaIR": true
+    },
+    "sources": {
+      "npm/@moneyonchain/oracles@3.0.13/contracts/ITask.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\ninterface ITask {\n    /**\n     * @notice Checks if the task can be executed.\n     * @return bool indicating if the task can be executed\n     */\n    function checkTask() external view returns (bool);\n\n    /**\n     * @notice Executes the task.\n     */\n    function runTask() external;\n}\n"
+      },
+      "npm/@moneyonchain/oracles@3.0.13/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.24;\n\nimport { ITask } from \"../../../ITask.sol\";\nimport { Ownable } from \"@openzeppelin/contracts/access/Ownable.sol\";\n\ncontract TaskTriggerOrder is ITask, Ownable {\n    error TaskNotAvailable();\n\n    IReverseAuction public immutable reverseAuction;\n    uint256 public revertSleepTime;\n    uint256 public lastRevertTimestamp;\n\n    event TriggerOrdersReverted(string reason, bytes data);\n\n    /**\n     * @notice Constructor\n     * @param reverseAuction_ The address of the reverse auction contract.\n     * @param revertSleepTime_ The delay in seconds applied after a revert.\n     * @param owner_ The address allowed to update revertSleepTime.\n     */\n    constructor(address reverseAuction_, uint256 revertSleepTime_, address owner_) Ownable() {\n        reverseAuction = IReverseAuction(reverseAuction_);\n        revertSleepTime = revertSleepTime_;\n        _transferOwnership(owner_);\n    }\n\n    /**\n     * @inheritdoc ITask\n     */\n    function checkTask() public view returns (bool) {\n        bool backoffComplete = lastRevertTimestamp == 0 || block.timestamp >= lastRevertTimestamp + revertSleepTime;\n        return backoffComplete && reverseAuction.readyToTriggerOrders();\n    }\n\n    function setRevertSleepTime(uint256 revertSleepTime_) external onlyOwner {\n        revertSleepTime = revertSleepTime_;\n    }\n\n    /**\n     * @inheritdoc ITask\n     */\n    function runTask() external {\n        try reverseAuction.triggerOrders() {} catch Error(string memory reason) {\n            lastRevertTimestamp = block.timestamp;\n            emit TriggerOrdersReverted(reason, \"\");\n        } catch (bytes memory data) {\n            lastRevertTimestamp = block.timestamp;\n            emit TriggerOrdersReverted(\"\", data);\n        }\n    }\n}\n\ninterface IReverseAuction {\n    function readyToTriggerOrders() external view returns (bool);\n    function triggerOrders() external;\n}\n"
+      },
+      "npm/@openzeppelin/contracts@4.9.3/access/Ownable.sol": {
+        "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../utils/Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        _checkOwner();\n        _;\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if the sender is not the owner.\n     */\n    function _checkOwner() internal view virtual {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby disabling any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+      },
+      "npm/@openzeppelin/contracts@4.9.3/utils/Context.sol": {
+        "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+      }
+    }
+  }
+}
