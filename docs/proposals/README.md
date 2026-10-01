@@ -36,3 +36,35 @@ Each new proposal receives a unique `MIP#` identifier following this rule:
 The full format is: `MIP#YYWWNN`.
 
 Example: `MIP#262701` = a proposal from 2026, week 27, sequence 01.
+
+## Proposal registry (`proposals.json`)
+
+[`proposals.json`](proposals.json) indexes every proposal in this folder. The dapps and the stable-protocol APIs read it to show, for each proposal voted on-chain, its MIP, title, summary and this markdown document. A changer submitted for voting that is not in the registry is shown as an unlisted proposal.
+
+Add a proposal's entry in the same pull request as its document, and its changer addresses as soon as they are deployed:
+
+```json
+{
+  "mip": "MIP#263101",
+  "title": "Add RIF/USD and TasksRunner to OMOC; Use RIF/USD₮0 for Liquidity",
+  "status": "Published",
+  "date": "2026-08-07",
+  "summary": "One or two plain-text sentences for proposal lists.",
+  "file": "MIP263101-add-rif-usd-and-tasks-runner-to-omoc.md",
+  "forumUrl": "https://forum.moneyonchain.com/t/add-rif-usd-and-tasksrunner-to-omoc-use-rif-usd-0-for-liquidity/468",
+  "changers": [
+    {
+      "network": "rskMainnet",
+      "name": "PreTasksRunnerChanger",
+      "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1"
+    }
+  ]
+}
+```
+
+- `status`: `Draft`, `Published` (posted to the forum) or `Withdrawn`. Whether it was voted and executed comes from the chain, not from here.
+- `date`: forum publication date (`YYYY-MM-DD`), `null` while it is a draft.
+- `changers`: every changer contract submitted for this MIP, on `rskMainnet` or `rskTestnet` (a MIP may have several, e.g. a redeploy after a failed vote). Addresses use their [EIP-55](https://eips.ethereum.org/EIPS/eip-55) checksum. `[]` when there is none.
+- Images in the document must be stored in [`images/`](images) and linked with a relative path; the dapps do not show external images or raw HTML.
+
+`pnpm validate:proposals` checks the registry (CI runs it on every change to this folder or to `ignition/deployments`): unique and well-formed MIPs, every document listed, valid checksums, each mainnet changer present in its document's "Changer Contract" section, and each address on the network its ignition deployment says.
