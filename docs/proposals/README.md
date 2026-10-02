@@ -41,7 +41,7 @@ Example: `MIP#262701` = a proposal from 2026, week 27, sequence 01.
 
 [`proposals.json`](proposals.json) indexes every proposal in this folder. The dapps and the stable-protocol APIs read it to show, for each proposal voted on-chain, its MIP, title, summary and this markdown document. A changer submitted for voting that is not in the registry is shown as an unlisted proposal.
 
-Add a proposal's entry in the same pull request as its document, and its changer addresses as soon as they are deployed:
+Add a proposal's entry in the same pull request as its document, and its changer addresses as soon as they are deployed. [AGENTS.md](AGENTS.md) describes where each value comes from (also read by coding agents):
 
 ```json
 {
