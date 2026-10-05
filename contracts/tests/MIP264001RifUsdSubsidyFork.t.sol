@@ -21,6 +21,8 @@ interface IMIP264001Ownable {
 /** @notice Runs the complete proposal against deployed Rootstock contracts. */
 contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
   string internal constant PARAMS_KEY = ".MIP264001Module.";
+  address internal constant DOC_TO_MOC_AUCTION_2 = 0x38ED1f563e75d88CF4DB5DB07972B143b3C8EBFb;
+  address internal constant DOC_TO_MOC_AUCTION_3 = 0x3D3dcCE7d6f0319FA4444A43c81732a7bAFb1713;
 
   address internal usd0;
   address internal wrbtc;
@@ -269,6 +271,39 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
     assertEq(address(subsidyAuction).balance, 0);
     assertGe(IERC20(mocToken).balanceOf(rifUsdCoinPair) - mocBefore, amountOutMin);
     assertFalse(subsidyTask.checkTask());
+  }
+
+  function testForkExecutesAllDocMocReverseAuctions() public {
+    address governor = guard.governor();
+    vm.prank(IMIP264001Ownable(governor).owner());
+    IGovernor(governor).executeChange(IChangeContract(address(changer)));
+
+    _assertAuctionExecutes(docToMocAuction);
+    _assertAuctionExecutes(mocToDocAuction);
+    _assertAuctionExecutes(DOC_TO_MOC_AUCTION_2);
+    _assertAuctionExecutes(DOC_TO_MOC_AUCTION_3);
+  }
+
+  function _assertAuctionExecutes(address auctionAddress) internal {
+    MocReverseAuction auction = MocReverseAuction(payable(auctionAddress));
+    address tokenIn = auction.tokenIn();
+    address tokenOut = auction.tokenOut();
+    address outputAccount = auction.outputAccount();
+    assertTrue(tokenIn == docBucket.acToken() || tokenIn == mocToken);
+    assertTrue(tokenOut == docBucket.acToken() || tokenOut == mocToken);
+    assertTrue(tokenIn != tokenOut);
+
+    deal(tokenIn, auctionAddress, 1 ether);
+    (uint256 amountIn, uint256 amountOutMin) = auction.getAmountOutMin();
+    assertGt(amountIn, 0);
+    assertGt(amountOutMin, 0);
+
+    uint256 inputBefore = IERC20(tokenIn).balanceOf(auctionAddress);
+    uint256 outputBefore = IERC20(tokenOut).balanceOf(outputAccount);
+    auction.triggerOrders();
+
+    assertEq(IERC20(tokenIn).balanceOf(auctionAddress), inputBefore - amountIn);
+    assertGe(IERC20(tokenOut).balanceOf(outputAccount) - outputBefore, amountOutMin);
   }
 
   function _assertSwap(address tokenIn, address tokenOut, uint256 amountIn) internal {
