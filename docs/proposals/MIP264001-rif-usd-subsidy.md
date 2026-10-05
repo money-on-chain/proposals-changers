@@ -98,15 +98,15 @@ Before the vote, the deployed changer, reverse auction, and task addresses will 
 
 ### The changer contract to vote would be:
 
-| Name                     | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
-| :----------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MIP264001RifUsdSubsidy` | [`0x00000000000000000000000000000000000FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| Name                            | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP264001RifUsdSubsidyChanger` | [`0x7a3ae8fd298aE810Cb4D513582a0455919398f1b`](https://rootstock.blockscout.com/address/0x7a3ae8fd298aE810Cb4D513582a0455919398f1b?tab=contract) |
 
-> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) linked above.
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x7a3ae8fd298aE810Cb4D513582a0455919398f1b?tab=contract) linked above.
 
 ## New Contracts
 
 | Name                                      | Address                                                                                                           |
 | :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
-| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | [`0x0...FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
-| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | [`0x0...FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | [`0x50...fa40`](https://rootstock.blockscout.com/address/0x5049ef3DD852ad07095E0ee0Bc9d65A5468efa40?tab=contract) |
+| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | [`0xab...C640`](https://rootstock.blockscout.com/address/0xab51493820D74DC5ee7db6aEc519ca5Ea5C2C640?tab=contract) |
