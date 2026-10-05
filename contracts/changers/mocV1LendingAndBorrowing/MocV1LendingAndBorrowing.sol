@@ -25,6 +25,10 @@ interface ITasksRunner {
   function getTasks() external view returns (address[] memory);
 }
 
+interface IOracleManager {
+  function registerCoinPair(bytes32 coinPair, address addr) external;
+}
+
 interface ICommissionSplitterTask {
   function commissionSplitter() external view returns (address);
 }
@@ -37,6 +41,18 @@ struct TasksRunnerMigration {
   ITasksRunner tasksRunner;
   address bufferFlushTask;
   address bufferLiquidateTask;
+  address tpInjectionTask;
+  address feeFlowBufferFlushTask;
+  address feeFlowBufferLiquidateTask;
+  address docToRbtcTask;
+  address docToMocLiquidationTask;
+  address rbtcToMocLiquidationTask;
+}
+
+struct LiquidationEngineRegistration {
+  IOracleManager oracleManager;
+  bytes32 name;
+  address engine;
 }
 
 /**
@@ -46,6 +62,10 @@ struct TasksRunnerMigration {
  *            on MoCInrate V1 (pointing to the newly deployed BufferCoinbase).
  *         2. Configure the WRBTC→USDT→DOC (and reverse DOC→USDT→WRBTC) swap
  *            paths on the mocSwapperExchange (a MocSwapperV3MultiHop instance).
+ *         3. Register the LiquidationEngine proxy in OracleManager so oracle
+ *            operators can subscribe to it using its bytes32 service name.
+ *         4. Replace the deprecated BitPro interest tasks and register the
+ *            buffer, TP injection, and reverse-auction tasks in TasksRunner.
  */
 contract MocV1LendingAndBorrowing is IChangeContract {
   IMoCInrate public immutable mocInrateV1;
@@ -55,9 +75,19 @@ contract MocV1LendingAndBorrowing is IChangeContract {
   ITasksRunner public immutable tasksRunner;
   address public immutable bufferFlushTask;
   address public immutable bufferLiquidateTask;
+  address public immutable tpInjectionTask;
+  address public immutable feeFlowBufferFlushTask;
+  address public immutable feeFlowBufferLiquidateTask;
+  address public immutable docToRbtcTask;
+  address public immutable docToMocLiquidationTask;
+  address public immutable rbtcToMocLiquidationTask;
+
+  IOracleManager public immutable oracleManager;
+  bytes32 public immutable liquidationEngineName;
+  address public immutable liquidationEngine;
 
   // Swapper exchange (MocSwapperV3MultiHop)
-  IMocSwapperMultihopV3 public immutable mocSwapperExchange;
+  IMocSwapperMultihopV3 public immutable mocSwapperExchangeMultiHop;
 
   // Token addresses used in the path
   address public immutable wrbtcToken;
@@ -79,7 +109,8 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     uint256 _newBitProRate,
     address payable _newBitProInterestAddress,
     TasksRunnerMigration memory _tasksRunnerMigration,
-    IMocSwapperMultihopV3 _mocSwapperExchange,
+    LiquidationEngineRegistration memory _liquidationEngineRegistration,
+    IMocSwapperMultihopV3 _mocSwapperExchangeMultiHop,
     address _wrbtcToken,
     address _usdtToken,
     address _docToken,
@@ -94,7 +125,16 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     tasksRunner = _tasksRunnerMigration.tasksRunner;
     bufferFlushTask = _tasksRunnerMigration.bufferFlushTask;
     bufferLiquidateTask = _tasksRunnerMigration.bufferLiquidateTask;
-    mocSwapperExchange = _mocSwapperExchange;
+    tpInjectionTask = _tasksRunnerMigration.tpInjectionTask;
+    feeFlowBufferFlushTask = _tasksRunnerMigration.feeFlowBufferFlushTask;
+    feeFlowBufferLiquidateTask = _tasksRunnerMigration.feeFlowBufferLiquidateTask;
+    docToRbtcTask = _tasksRunnerMigration.docToRbtcTask;
+    docToMocLiquidationTask = _tasksRunnerMigration.docToMocLiquidationTask;
+    rbtcToMocLiquidationTask = _tasksRunnerMigration.rbtcToMocLiquidationTask;
+    oracleManager = _liquidationEngineRegistration.oracleManager;
+    liquidationEngineName = _liquidationEngineRegistration.name;
+    liquidationEngine = _liquidationEngineRegistration.engine;
+    mocSwapperExchangeMultiHop = _mocSwapperExchangeMultiHop;
     wrbtcToken = _wrbtcToken;
     usdtToken = _usdtToken;
     docToken = _docToken;
@@ -113,10 +153,17 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     mocInrateV1.setBitProRate(newBitProRate);
     mocInrateV1.setBitProInterestAddress(newBitProInterestAddress);
 
+    // ── 2. Register the recurring tasks in TasksRunner ────────────────────
     tasksRunner.addTask(bufferFlushTask);
     tasksRunner.addTask(bufferLiquidateTask);
+    tasksRunner.addTask(tpInjectionTask);
+    tasksRunner.addTask(feeFlowBufferFlushTask);
+    tasksRunner.addTask(feeFlowBufferLiquidateTask);
+    tasksRunner.addTask(docToRbtcTask);
+    tasksRunner.addTask(docToMocLiquidationTask);
+    tasksRunner.addTask(rbtcToMocLiquidationTask);
 
-    // ── 2. Configure WRBTC→USDT→DOC path on mocSwapperExchange ─────────────
+    // ── 3. Configure WRBTC→USDT→DOC path on mocSwapperExchange ─────────────
     address[] memory intermediates = new address[](1);
     intermediates[0] = usdtToken;
 
@@ -124,7 +171,7 @@ contract MocV1LendingAndBorrowing is IChangeContract {
     feesWrbtcToDoc[0] = wrbtcUsdtFee; // WRBTC → USDT
     feesWrbtcToDoc[1] = usdtDocFee; // USDT  → DOC
 
-    mocSwapperExchange.setPath(
+    mocSwapperExchangeMultiHop.setPath(
       wrbtcToken,
       docToken,
       intermediates,
@@ -132,18 +179,21 @@ contract MocV1LendingAndBorrowing is IChangeContract {
       wrbtcToDocProvider
     );
 
-    // ── 3. Configure DOC→USDT→WRBTC path (reverse, needed for exactOutput) ──
+    // ── 4. Configure DOC→USDT→WRBTC path (reverse, needed for exactOutput) ──
     uint24[] memory feesDocToWrbtc = new uint24[](2);
     feesDocToWrbtc[0] = usdtDocFee; // DOC  → USDT
     feesDocToWrbtc[1] = wrbtcUsdtFee; // USDT → WRBTC
 
-    mocSwapperExchange.setPath(
+    mocSwapperExchangeMultiHop.setPath(
       docToken,
       wrbtcToken,
       intermediates,
       feesDocToWrbtc,
       docToWrbtcProvider
     );
+
+    // ── 5. Make the LiquidationEngine discoverable by oracle operators ────
+    oracleManager.registerCoinPair(liquidationEngineName, liquidationEngine);
   }
 
   function _removeSplitterTasks(address deprecatedSplitter) internal {

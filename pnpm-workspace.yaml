@@ -5,6 +5,7 @@ autoInstallPeers: false
 allowBuilds:
   es5-ext: true
   esbuild: true
+  lending-and-borrowing-sc@git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#2e8a5a4910a5d6494a37382ab8a6d8da464046ef: true
   keccak: false
   scrypt: false
   secp256k1: false
