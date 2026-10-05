@@ -96,13 +96,17 @@ Before the vote, the deployed changer, reverse auction, and task addresses will 
 
 ## Changer Contract
 
-| Name                     | Address and verified source |
-| :----------------------- | :-------------------------- |
-| `MIP264001RifUsdSubsidy` | `TBD`                       |
+### The changer contract to vote would be:
+
+| Name                     | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :----------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP264001RifUsdSubsidy` | [`0x00000000000000000000000000000000000FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) linked above.
 
 ## New Contracts
 
-| Name                                      | Address |
-| :---------------------------------------- | :------ |
-| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | `TBD`   |
-| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | `TBD`   |
+| Name                                      | Address                                                                                                           |
+| :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | [`0x0...FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | [`0x0...FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
