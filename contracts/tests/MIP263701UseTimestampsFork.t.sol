@@ -9,7 +9,6 @@ import { IGovernor } from "../interfaces/IGovernor.sol";
 interface IGovernedSchedule {
   function governor() external view returns (address);
 }
-
 interface IOwnableGovernor {
   function owner() external view returns (address);
 }
@@ -76,7 +75,9 @@ interface IMocReverseAuctionThresholdProbe {
 contract MIP263701UseTimestampsForkTest is Test {
   string internal constant MAINNET_PARAMS_PATH =
     "./ignition/modules/MIP26-3701/parameters/rskMainnet.json";
-  uint256 internal constant MAINNET_FORK_BLOCK = 9_220_195;
+  string internal constant MAINNET_DEPLOYED_ADDRESSES_PATH =
+    "./ignition/deployments/mip26-3701-rsk-mainnet/deployed_addresses.json";
+  uint256 internal constant MAINNET_FORK_BLOCK = 9_247_782;
 
   uint256 internal constant SEPTEMBER_2026_START = 1_788_220_800;
   uint256 internal constant OCTOBER_2026_START = 1_790_812_800;
@@ -120,35 +121,11 @@ contract MIP263701UseTimestampsForkTest is Test {
 
   function setUp() public {
     _readMainnetParameters();
+    _readMainnetDeployment();
 
     string memory defaultRpcUrl = "https://public-node.rsk.co";
     string memory rpcUrl = vm.envOr("RSK_MAINNET_RPC_URL", defaultRpcUrl);
     vm.createSelectFork(rpcUrl, MAINNET_FORK_BLOCK);
-
-    changer = new MIP263701UseTimestamps(
-      [mocProxy, mocStateProxy, mocInrateProxy, coinerProxy],
-      [
-        supporters,
-        rifOnChain,
-        btcUsdCoinPair,
-        rifUsdCoinPair,
-        tasksRunner,
-        rifQueue,
-        docQueue,
-        docToMocReverseAuction
-      ],
-      [mocUpgradeDelegator, flowUpgradeDelegator],
-      [
-        _deployArtifact("MoC"),
-        _deployArtifact("MoCState"),
-        _deployArtifact("MoCInrate"),
-        _deployArtifact("Coiner"),
-        _deployArtifact("Supporters"),
-        _deployArtifact("CoinPairPrice"),
-        _deployArtifact("TasksRunner")
-      ],
-      roundLockPeriod
-    );
   }
 
   function testFork_ExecutionMigratesCurrentMainnetSchedules() public {
@@ -273,12 +250,11 @@ contract MIP263701UseTimestampsForkTest is Test {
     IGovernor(governor).executeChange(IChangeContract(address(changer)));
   }
 
-  function _deployArtifact(string memory artifactName) internal returns (address deployed) {
-    bytes memory creationCode = vm.getCode(artifactName);
-    assembly {
-      deployed := create(0, add(creationCode, 0x20), mload(creationCode))
-    }
-    require(deployed != address(0), "implementation deployment failed");
+  function _readMainnetDeployment() internal {
+    string memory json = vm.readFile(MAINNET_DEPLOYED_ADDRESSES_PATH);
+    changer = MIP263701UseTimestamps(
+      vm.parseJsonAddress(json, ".['MIP263701Module#MIP263701UseTimestamps']")
+    );
   }
 
   function _readMainnetParameters() internal {

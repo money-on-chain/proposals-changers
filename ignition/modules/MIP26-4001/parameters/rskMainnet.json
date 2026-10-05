@@ -1,0 +1,16 @@
+{
+  "MIP264001Module": {
+    "multiCollateralGuard": "0x0237Ad1f0831b479a344E56646BC48B0885cF46F",
+    "mocSwapperV3Multihop": "0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73",
+    "docToMocAuction": "0x883e3433c236Abd3c301FFc9B59EA478C0C21c9a",
+    "mocToDocAuction": "0x3EB689a01c4e8ccaC7c72097104FF37Ccf907bBE",
+    "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
+    "taskOwner": "0xC61820bFB8F87391d62Cd3976dDc1d35e0cf7128",
+    "usd0": "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
+    "wrbtc": "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d",
+    "docToMocFees": [3000, 3000, 3000],
+    "mocToDocFees": [3000, 3000, 3000],
+    "docToRifFees": [3000, 3000],
+    "rifToDocFees": [3000, 3000]
+  }
+}
