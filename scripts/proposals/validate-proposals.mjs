@@ -21,7 +21,10 @@ const DEPLOYMENTS_DIR = join(ROOT, "ignition", "deployments");
 
 const STATUSES = ["Draft", "Published", "Withdrawn"];
 const NETWORKS = ["rskMainnet", "rskTestnet"];
+// Projects a proposal changes. Keep in sync with the dapps' tag labels.
+const TAGS = ["doc", "usdrif", "oracles", "voting", "staking"];
 const MIP_RE = /^MIP#(\d{2})(\d{2})(\d{2})$/;
+const CHAIN_IDS = { rskMainnet: 30, rskTestnet: 31 };
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 const ANY_ADDRESS_RE = /0x[0-9a-fA-F]{40}(?![0-9a-fA-F])/g;
 const MAX_SUMMARY = 500;
@@ -115,10 +118,12 @@ function keccak256(bytes) {
   return hex;
 }
 
-// EIP-55 mixed-case checksum
-function toChecksumAddress(address) {
+// EIP-55 mixed-case checksum or, given a chain id, EIP-1191: the
+// chain-specific variant Rootstock wallets and explorers (Blockscout) show.
+function toChecksumAddress(address, chainId) {
   const lower = address.slice(2).toLowerCase();
-  const hash = keccak256(new TextEncoder().encode(lower));
+  const prefix = chainId === undefined ? "" : `${chainId}0x`;
+  const hash = keccak256(new TextEncoder().encode(prefix + lower));
   let out = "0x";
   for (let i = 0; i < 40; i++) {
     out += parseInt(hash[i], 16) >= 8 ? lower[i].toUpperCase() : lower[i];
@@ -130,10 +135,27 @@ if (
   keccak256(new Uint8Array()) !==
     "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470" ||
   toChecksumAddress("0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed") !==
-    "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
+    "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed" ||
+  toChecksumAddress("0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed", 30) !==
+    "0x5aaEB6053f3e94c9b9a09f33669435E7ef1bEAeD"
 ) {
   console.error("keccak-256 self-test failed");
   process.exit(2);
+}
+
+/** Error text for an address that has neither an EIP-55 checksum nor an
+ * EIP-1191 one for `chainIds`; null when the checksum is valid. */
+function checksumError(address, chainIds) {
+  const valid = [
+    toChecksumAddress(address),
+    ...chainIds.map((id) => toChecksumAddress(address, id)),
+  ];
+  if (valid.includes(address)) return null;
+  const expected = [
+    `${valid[0]} (EIP-55)`,
+    ...chainIds.map((id, i) => `${valid[i + 1]} (EIP-1191, chain ${id})`),
+  ];
+  return `${address} has an invalid checksum, expected ${expected.join(" or ")}`;
 }
 
 // --- inputs -------------------------------------------------------------------
@@ -207,7 +229,17 @@ for (const [index, p] of registry.proposals.entries()) {
     continue;
   }
 
-  const known = ["mip", "title", "status", "date", "summary", "file", "forumUrl", "changers"];
+  const known = [
+    "mip",
+    "title",
+    "tags",
+    "status",
+    "date",
+    "summary",
+    "file",
+    "forumUrl",
+    "changers",
+  ];
   for (const key of Object.keys(p))
     if (!known.includes(key)) error(`${at}: unknown field "${key}"`);
 
@@ -225,6 +257,19 @@ for (const [index, p] of registry.proposals.entries()) {
   }
 
   if (typeof p.title !== "string" || !p.title.trim()) error(`${at}: title is required`);
+
+  // tags: at least one, from TAGS, no repeats, in TAGS order
+  if (!Array.isArray(p.tags) || p.tags.length === 0) {
+    error(`${at}: tags must be a non-empty array of ${TAGS.join(", ")}`);
+  } else {
+    for (const tag of p.tags) {
+      if (!TAGS.includes(tag)) error(`${at}: unknown tag "${tag}" (allowed: ${TAGS.join(", ")})`);
+    }
+    if (new Set(p.tags).size !== p.tags.length) error(`${at}: repeated tags`);
+    const ordered = [...p.tags].sort((a, b) => TAGS.indexOf(a) - TAGS.indexOf(b));
+    if (ordered.join() !== p.tags.join())
+      error(`${at}: tags must follow the order ${TAGS.join(", ")}`);
+  }
   if (!STATUSES.includes(p.status)) error(`${at}: status must be one of ${STATUSES.join(", ")}`);
 
   if (p.date !== null && (typeof p.date !== "string" || !isValidDate(p.date))) {
@@ -270,6 +315,21 @@ for (const [index, p] of registry.proposals.entries()) {
   const documented = changerSection(markdown).toLowerCase();
   for (const [ci, changer] of p.changers.entries()) {
     const cat = `${at} changers[${ci}]`;
+    const chainIds = CHAIN_IDS[changer.network] ? [CHAIN_IDS[changer.network]] : [];
+    for (const key of Object.keys(changer)) {
+      if (!["network", "name", "address", "submitter"].includes(key)) {
+        error(`${cat}: unknown field "${key}"`);
+      }
+    }
+    // submitter: the first preVote() sender (msg.sender), null until submitted
+    if (changer.submitter !== null && changer.submitter !== undefined) {
+      if (typeof changer.submitter !== "string" || !ADDRESS_RE.test(changer.submitter)) {
+        error(`${cat}: submitter must be a 0x-prefixed 20-byte hex address or null`);
+      } else {
+        const problem = checksumError(changer.submitter, chainIds);
+        if (problem) error(`${cat}: submitter ${problem}`);
+      }
+    }
     if (!NETWORKS.includes(changer.network)) {
       error(`${cat}: network must be one of ${NETWORKS.join(", ")}`);
     }
@@ -278,10 +338,8 @@ for (const [index, p] of registry.proposals.entries()) {
       error(`${cat}: address is not a 0x-prefixed 20-byte hex address`);
       continue;
     }
-    const checksummed = toChecksumAddress(changer.address);
-    if (changer.address !== checksummed) {
-      error(`${cat}: ${changer.address} has an invalid EIP-55 checksum, expected ${checksummed}`);
-    }
+    const problem = checksumError(changer.address, chainIds);
+    if (problem) error(`${cat}: ${problem}`);
 
     const lower = changer.address.toLowerCase();
     if (seenAddresses.has(lower)) {
@@ -330,10 +388,8 @@ for (const file of seenFiles) {
   }
   for (const [address] of changerSection(markdown).matchAll(ANY_ADDRESS_RE)) {
     if (/[a-f]/.test(address.slice(2)) && /[A-F]/.test(address.slice(2))) {
-      const checksummed = toChecksumAddress(address);
-      if (address !== checksummed) {
-        warn(`${where}: ${address} has an invalid EIP-55 checksum, expected ${checksummed}`);
-      }
+      const problem = checksumError(address, Object.values(CHAIN_IDS));
+      if (problem) warn(`${where}: ${problem}`);
     }
   }
 }

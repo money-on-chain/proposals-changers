@@ -4,6 +4,7 @@
     {
       "mip": "MIP#264001",
       "title": "RIF/USD Subsidy",
+      "tags": ["oracles"],
       "status": "Draft",
       "date": null,
       "summary": "Lets Rootstock Labs subsidize continuous RIF/USD price publications: an RBTC to MOC reverse auction converts the RBTC it receives and adds the resulting MOC to the RIF/USD CoinPair revenue that pays OMoC oracle operators.",
@@ -13,13 +14,15 @@
         {
           "network": "rskTestnet",
           "name": "MIP264001RifUsdSubsidyChanger",
-          "address": "0x0741F6cF89957aC631961d1c3F1fe215Ea5BF243"
+          "address": "0x0741F6cF89957aC631961d1c3F1fe215Ea5BF243",
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
         }
       ]
     },
     {
       "mip": "MIP#263701",
       "title": "Use Timestamps Instead of Blocks for Time Periods",
+      "tags": ["doc", "usdrif", "oracles"],
       "status": "Published",
       "date": "2026-09-15",
       "summary": "Moves the legacy MoC EMA, interest payment and Coiner schedules from block counts to timestamps, so their cadence no longer drifts with Rootstock block times, and aligns OMoC round periods with the same average month.",
@@ -29,18 +32,21 @@
         {
           "network": "rskMainnet",
           "name": "MIP263701UseTimestamps",
-          "address": "0x7add3451F0a0c7e4a12AA86f70ab4102a06A9Cb5"
+          "address": "0x7add3451F0a0c7e4a12AA86f70ab4102a06A9Cb5",
+          "submitter": "0x411a98203f117585C68508e90f140897A80BBFCD"
         },
         {
           "network": "rskTestnet",
           "name": "MIP263701UseTimestamps",
-          "address": "0x0A2Fe81743524633f077EB7572DFc94b37cdF7bf"
+          "address": "0x0A2Fe81743524633f077EB7572DFc94b37cdF7bf",
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
         }
       ]
     },
     {
       "mip": "MIP#263502",
       "title": "Split the RIF on Chain Panic Button and Migrate RIFPRO",
+      "tags": ["usdrif"],
       "status": "Draft",
       "date": null,
       "summary": "Gives RIF on Chain its own emergency circuit breaker, separate from Money on Chain's, and migrates RIFPRO to a denomination where one new RIFPRO is priced at one RIF.",
@@ -51,6 +57,7 @@
     {
       "mip": "MIP#263501",
       "title": "Grant Proposal Submitters a Temporary Accepted-Step Priority",
+      "tags": ["voting"],
       "status": "Draft",
       "date": null,
       "summary": "Upgrades the Voting Machine so the submitter of an accepted proposal has exclusive access to execute its accepted step for a limited period, after which anyone can execute it as today.",
@@ -60,13 +67,15 @@
         {
           "network": "rskTestnet",
           "name": "VotingMachineUpgradeProposal",
-          "address": "0x6EaC31B472320a96ddfEE436892A96a67c36A68D"
+          "address": "0x6EaC31B472320a96ddfEE436892A96a67c36A68D",
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
         }
       ]
     },
     {
       "mip": "MIP#263102",
       "title": "Use OMOC's TasksRunner and RIF/USD in RoC and MoC",
+      "tags": ["doc", "usdrif", "oracles"],
       "status": "Published",
       "date": "2026-08-26",
       "summary": "Migrates RIF price provision and recurring protocol task execution in RIF on Chain and Money on Chain to the decentralized OMOC RIF/USD CoinPair and TasksRunner services.",
@@ -76,13 +85,15 @@
         {
           "network": "rskMainnet",
           "name": "AddTasksRunnerChanger",
-          "address": "0xa20737ECBD96BFAF9CA670b6F9EbbD5f77C9d3ea"
+          "address": "0xa20737ECBD96BFAF9CA670b6F9EbbD5f77C9d3ea",
+          "submitter": "0x87452C34BE22aD3746B8d617fe1ED3D28C55ba5A"
         }
       ]
     },
     {
       "mip": "MIP#263101",
       "title": "Add RIF/USD and TasksRunner to OMOC; Use RIF/USD₮0 for Liquidity",
+      "tags": ["oracles"],
       "status": "Published",
       "date": "2026-08-07",
       "summary": "Prepares OMOC for the RoC and MoC migration: deploys the RIF/USD CoinPair and the TasksRunner infrastructure, and routes RoC RIF revenue conversion through the more liquid USD₮0/RIF, WBTC/USD₮0 and MOC/WBTC pools.",
@@ -92,13 +103,15 @@
         {
           "network": "rskMainnet",
           "name": "PreTasksRunnerChanger",
-          "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1"
+          "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1",
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
         }
       ]
     },
     {
       "mip": "MIP#262702",
       "title": "Code Cleanup for Deprecated BTCX Leveraged Positions (and Bug Fixes)",
+      "tags": ["doc"],
       "status": "Published",
       "date": "2026-06-23",
       "summary": "Removes the deprecated BTCX leveraged-position inrate payment code from the MoC contracts, reducing gas use and daily operational costs for BPRO holders, together with related bug fixes.",
@@ -108,18 +121,21 @@
         {
           "network": "rskMainnet",
           "name": "HardeningII",
-          "address": "0x23ceA36Ad14137DFcD3b309ffdbA354588350864"
+          "address": "0x23ceA36Ad14137DFcD3b309ffdbA354588350864",
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
         },
         {
           "network": "rskTestnet",
           "name": "HardeningII",
-          "address": "0x60ba742c58EA05fe6BafE9585c76f6382765F63b"
+          "address": "0x60ba742c58EA05fe6BafE9585c76f6382765F63b",
+          "submitter": null
         }
       ]
     },
     {
       "mip": "MIP#262701",
       "title": "Implementation of an Oracle Circuit Breaker and some other improvements",
+      "tags": ["oracles"],
       "status": "Published",
       "date": "2026-06-30",
       "summary": "Adds an OMOC circuit breaker that lets the foundation make oracle price queries return invalid when data integrity is in doubt. Executed as part of MIP#263101.",
@@ -130,6 +146,7 @@
     {
       "mip": "MIP#262301",
       "title": "Oracle Incentive Rebalancing and Protocol Cleanup Upgrade",
+      "tags": ["doc", "oracles"],
       "status": "Published",
       "date": "2026-06-04",
       "summary": "Improves incentives for OMoC oracle node operators and completes follow-ups of the Oracle Reliability Fix, while simplifying legacy MoC code paths and fixing identified bugs.",
@@ -139,18 +156,21 @@
         {
           "network": "rskMainnet",
           "name": "BufferPctAndCleanMocV1",
-          "address": "0x31eceE6031d6f7415a0921Fbec9A81742A44c395"
+          "address": "0x31eceE6031d6f7415a0921Fbec9A81742A44c395",
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
         },
         {
           "network": "rskTestnet",
           "name": "BufferPctAndCleanMocV1",
-          "address": "0xC55b49Dc267cd5fe82c763f0d6cc1820dCaaB503"
+          "address": "0xC55b49Dc267cd5fe82c763f0d6cc1820dCaaB503",
+          "submitter": null
         }
       ]
     },
     {
       "mip": "MIP#261801",
       "title": "Proposal: RIF On Chain V2 → V3 Upgrade (Multi-Collateral Support)",
+      "tags": ["usdrif"],
       "status": "Published",
       "date": "2026-05-12",
       "summary": "Upgrades RIF on Chain from V2 to V3, extending its collateral model to multi-collateral support.",
@@ -160,13 +180,15 @@
         {
           "network": "rskMainnet",
           "name": "MultiCollateralUpgradeChanger",
-          "address": "0x839228759C6640Bb486A05c11B6A81166d8a9DC7"
+          "address": "0x839228759C6640Bb486A05c11B6A81166d8a9DC7",
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
         }
       ]
     },
     {
       "mip": "MIP#261401",
       "title": "Oracle Reliability Fix and Protocol Unpause Proposal",
+      "tags": ["oracles"],
       "status": "Published",
       "date": "2026-04-18",
       "summary": "Fixes a bug in the decentralized oracles (OMoC) affecting price reliability, which led to pausing the protocol, and unpauses it once the patch is applied.",
@@ -176,13 +198,15 @@
         {
           "network": "rskMainnet",
           "name": "CoinPairPriceUpgradeProposal",
-          "address": "0x8168488D431Ab46A9abF905a9578F53BECc08F59"
+          "address": "0x8168488D431Ab46A9abF905a9578F53BECc08F59",
+          "submitter": "0xD6FDad4e02477A05A492f1AC51cfE0883C470022"
         }
       ]
     },
     {
       "mip": "MIP#260901",
       "title": "Proposal: Governance-Controlled Maximum Markup for MocVendors",
+      "tags": ["doc"],
       "status": "Published",
       "date": "2026-03-02",
       "summary": "Introduces a governance-controlled maximum markup for the MocVendors contract, set by MoC token holders, without changing current vendor conditions.",
@@ -192,13 +216,15 @@
         {
           "network": "rskMainnet",
           "name": "MocVendorsUpgradeChanger",
-          "address": "0x47F0704751012F531165fBBdbA2fCB3843514935"
+          "address": "0x47F0704751012F531165fBBdbA2fCB3843514935",
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
         }
       ]
     },
     {
       "mip": "MIP#260502",
       "title": "Post-mortem: flash Loan–based price manipulation attack on the MOC FLow Reverse Auction rBTC to MOC contract",
+      "tags": ["staking"],
       "status": "Published",
       "date": "2026-02-05",
       "summary": "Post-mortem of the sandwich-style price manipulation that made the protocol buy MOC at inflated prices when swapping RBTC to pay staking rewards.",
@@ -209,6 +235,7 @@
     {
       "mip": "MIP#260501",
       "title": "Proposal: Reverse Auction Flow Upgrade Using TWAP Pricing",
+      "tags": ["staking"],
       "status": "Published",
       "date": "2026-02-05",
       "summary": "Upgrades the MoC Reverse Auction flow to TWAP pricing, closing the flash loan–based price manipulation used against the RBTC to MOC reverse auction.",
@@ -218,7 +245,8 @@
         {
           "network": "rskMainnet",
           "name": "SetNewReverseAuction",
-          "address": "0xf900643c9E78923fA83fdD00288dE5Bcb346bE67"
+          "address": "0xf900643c9E78923fA83fdD00288dE5Bcb346bE67",
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
         }
       ]
     }
