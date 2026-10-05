@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import { Test } from "forge-std/Test.sol";
-import { MIP264001RifUsdSubsidy, IMIP264001Swapper, IMIP264001Auction, IMIP264001Guard, IMIP264001Bucket, IMIP264001TasksRunner } from "../changers/mip26_4001/MIP264001RifUsdSubsidy.sol";
+import { MIP264001RifUsdSubsidy, IMIP264001Swapper, IMIP264001Guard, IMIP264001Bucket } from "../changers/mip26_4001/MIP264001RifUsdSubsidy.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 import { MocReverseAuction } from "@moc/main/contracts/auxiliary/MocReverseAuction.sol";
@@ -21,6 +21,9 @@ interface IMIP264001Ownable {
 /** @notice Runs the complete proposal against deployed Rootstock contracts. */
 contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
   string internal constant PARAMS_KEY = ".MIP264001Module.";
+  string internal constant DEPLOYED_ADDRESSES_PATH =
+    "./ignition/deployments/mip26-4001-rsk-mainnet/deployed_addresses.json";
+  uint256 internal constant FORK_BLOCK = 9_299_514;
   address internal constant DOC_TO_MOC_AUCTION_2 = 0x38ED1f563e75d88CF4DB5DB07972B143b3C8EBFb;
   address internal constant DOC_TO_MOC_AUCTION_3 = 0x3D3dcCE7d6f0319FA4444A43c81732a7bAFb1713;
 
@@ -44,7 +47,6 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
   address internal tasksRunner;
   address internal rifUsdCoinPair;
   address internal mocToken;
-  address internal taskOwner;
 
   function setUp() public {
     string memory params = vm.readFile("./ignition/modules/MIP26-4001/parameters/rskMainnet.json");
@@ -53,7 +55,6 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
     docToMocAuction = _address(params, "docToMocAuction");
     mocToDocAuction = _address(params, "mocToDocAuction");
     tasksRunner = _address(params, "tasksRunner");
-    taskOwner = _address(params, "taskOwner");
     usd0 = _address(params, "usd0");
     wrbtc = _address(params, "wrbtc");
     docToMocFees = _fees3(params, "docToMocFees");
@@ -63,7 +64,7 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
 
     vm.createSelectFork(
       vm.envOr("RSK_MAINNET_RPC_URL", string("https://public-node.rsk.co")),
-      9_220_195
+      FORK_BLOCK
     );
 
     guard = IMIP264001Guard(guardAddress);
@@ -74,36 +75,21 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
     );
     (, rifUsdCoinPair) = rifBucket.pegContainer(0);
     mocToken = rifBucket.feeToken();
-    existingAuction = MocReverseAuction(payable(guard.coinbaseExecFeeRecipient()));
-
-    subsidyAuction = new MocReverseAuction(
-      address(guard.governor()),
-      address(existingAuction.mocSwapper()),
-      address(0),
-      mocToken,
-      rifUsdCoinPair,
-      existingAuction.orderThreshold(),
-      address(existingAuction.priceProvider()),
-      existingAuction.slippage()
+    string memory deployed = vm.readFile(DEPLOYED_ADDRESSES_PATH);
+    existingAuction = MocReverseAuction(payable(_deployedAddress(deployed, "MocReverseAuction")));
+    subsidyAuction = MocReverseAuction(
+      payable(_deployedAddress(deployed, "RevAuctionRBTCtoMOC_rifUsdSubsidy"))
     );
-    subsidyTask = new TaskTriggerOrder(address(subsidyAuction), 36000, taskOwner);
-    changer = new MIP264001RifUsdSubsidy(
-      mocSwapperV3Multihop,
-      IMIP264001Auction(docToMocAuction),
-      IMIP264001Auction(mocToDocAuction),
-      guard,
-      IMIP264001TasksRunner(tasksRunner),
-      address(subsidyTask),
-      usd0,
-      wrbtc,
-      docToMocFees,
-      mocToDocFees,
-      docToRifFees,
-      rifToDocFees
+    subsidyTask = TaskTriggerOrder(
+      _deployedAddress(deployed, "TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy")
+    );
+    changer = MIP264001RifUsdSubsidy(
+      _deployedAddress(deployed, "MIP264001RifUsdSubsidyChanger")
     );
   }
 
   function testForkDerivesAuctionInputsFromLiveContracts() public view {
+    assertEq(address(existingAuction), guard.coinbaseExecFeeRecipient());
     assertEq(mocToken, docBucket.feeToken());
     assertEq(address(rifBucket), guard.buckets(0));
     assertEq(address(docBucket), guard.buckets(1));
@@ -322,6 +308,13 @@ contract MIP264001RifUsdSubsidyMainnetForkTest is Test {
 
   function _address(string memory params, string memory key) internal returns (address) {
     return vm.parseJsonAddress(params, string.concat(PARAMS_KEY, key));
+  }
+
+  function _deployedAddress(string memory deployed, string memory contractName) internal pure returns (address) {
+    return vm.parseJsonAddress(
+      deployed,
+      string.concat(".['MIP264001Module#", contractName, "']")
+    );
   }
 
   function _fees3(
