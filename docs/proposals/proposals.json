@@ -15,7 +15,8 @@
           "network": "rskTestnet",
           "name": "MIP264001RifUsdSubsidyChanger",
           "address": "0x0741F6cF89957aC631961d1c3F1fe215Ea5BF243",
-          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42",
+          "executedTx": null
         }
       ]
     },
@@ -33,13 +34,15 @@
           "network": "rskMainnet",
           "name": "MIP263701UseTimestamps",
           "address": "0x7add3451F0a0c7e4a12AA86f70ab4102a06A9Cb5",
-          "submitter": "0x411a98203f117585C68508e90f140897A80BBFCD"
+          "submitter": "0x411a98203f117585C68508e90f140897A80BBFCD",
+          "executedTx": "0x30983b6767dc7807f87d9f31f6a4b6f9c68c74c192e38a6b9794690cc00bf495"
         },
         {
           "network": "rskTestnet",
           "name": "MIP263701UseTimestamps",
           "address": "0x0A2Fe81743524633f077EB7572DFc94b37cdF7bf",
-          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42",
+          "executedTx": null
         }
       ]
     },
@@ -68,7 +71,8 @@
           "network": "rskTestnet",
           "name": "VotingMachineUpgradeProposal",
           "address": "0x6EaC31B472320a96ddfEE436892A96a67c36A68D",
-          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42"
+          "submitter": "0xF3AeDc384D880eaE53D198551868C3574f10EC42",
+          "executedTx": null
         }
       ]
     },
@@ -86,7 +90,8 @@
           "network": "rskMainnet",
           "name": "AddTasksRunnerChanger",
           "address": "0xa20737ECBD96BFAF9CA670b6F9EbbD5f77C9d3ea",
-          "submitter": "0x87452C34BE22aD3746B8d617fe1ED3D28C55ba5A"
+          "submitter": "0x87452C34BE22aD3746B8d617fe1ED3D28C55ba5A",
+          "executedTx": "0x6cbe4d8ff6159fbb73db44f44e27bbeee139caf468d8dbf01097e3e31b22f10d"
         }
       ]
     },
@@ -104,7 +109,8 @@
           "network": "rskMainnet",
           "name": "PreTasksRunnerChanger",
           "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1",
-          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+          "executedTx": "0xd7379f99cb56315ce72a301193635223633f2357b543365bc771b4086abd086e"
         }
       ]
     },
@@ -122,13 +128,15 @@
           "network": "rskMainnet",
           "name": "HardeningII",
           "address": "0x23ceA36Ad14137DFcD3b309ffdbA354588350864",
-          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+          "executedTx": "0x8f699df3fffc89ef48dacc91f80e2788a4a7f1fa6b6b32a11e83ae95fe1ab9cf"
         },
         {
           "network": "rskTestnet",
           "name": "HardeningII",
           "address": "0x60ba742c58EA05fe6BafE9585c76f6382765F63b",
-          "submitter": null
+          "submitter": null,
+          "executedTx": null
         }
       ]
     },
@@ -157,13 +165,15 @@
           "network": "rskMainnet",
           "name": "BufferPctAndCleanMocV1",
           "address": "0x31eceE6031d6f7415a0921Fbec9A81742A44c395",
-          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4",
+          "executedTx": "0x147d20927a4d38dcaf08307e6cb5d83beea5117fee23c9a98248dd5d6dc81ac0"
         },
         {
           "network": "rskTestnet",
           "name": "BufferPctAndCleanMocV1",
           "address": "0xC55b49Dc267cd5fe82c763f0d6cc1820dCaaB503",
-          "submitter": null
+          "submitter": null,
+          "executedTx": null
         }
       ]
     },
@@ -181,7 +191,8 @@
           "network": "rskMainnet",
           "name": "MultiCollateralUpgradeChanger",
           "address": "0x839228759C6640Bb486A05c11B6A81166d8a9DC7",
-          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+          "executedTx": "0xb59dd3c0400fad040f6ca5adebf64a99c81cd6946840adc1ff345755ef380e8b"
         }
       ]
     },
@@ -199,7 +210,8 @@
           "network": "rskMainnet",
           "name": "CoinPairPriceUpgradeProposal",
           "address": "0x8168488D431Ab46A9abF905a9578F53BECc08F59",
-          "submitter": "0xD6FDad4e02477A05A492f1AC51cfE0883C470022"
+          "submitter": "0xD6FDad4e02477A05A492f1AC51cfE0883C470022",
+          "executedTx": "0x50cd62d3491d9f7f1eff550407156cf069cc12b653cc1713a5f651a3cb3de4be"
         }
       ]
     },
@@ -217,7 +229,8 @@
           "network": "rskMainnet",
           "name": "MocVendorsUpgradeChanger",
           "address": "0x47F0704751012F531165fBBdbA2fCB3843514935",
-          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4",
+          "executedTx": "0x0ff88473c34ef92760d8541fcac0d5e7fdfa38524a1877f724e9e24777330a2f"
         }
       ]
     },
@@ -246,7 +259,8 @@
           "network": "rskMainnet",
           "name": "SetNewReverseAuction",
           "address": "0xf900643c9E78923fA83fdD00288dE5Bcb346bE67",
-          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4"
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4",
+          "executedTx": "0xffd9a8dc7e1ac80b381861b30f86f6f7bff7a5ddc1c0a212abcdb8e566c7d8b6"
         }
       ]
     }

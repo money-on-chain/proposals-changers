@@ -34,7 +34,7 @@ Do not record voting results or execution (`Accepted`, `Executed`, ...): the API
 
 ## Finding changer addresses
 
-A changer is the contract voted on-chain: the one the Governor executes. Each entry is `{ "network", "name", "address", "submitter" }`, with `network` `rskMainnet` or `rskTestnet`.
+A changer is the contract voted on-chain: the one the Governor executes. Each entry is `{ "network", "name", "address", "submitter", "executedTx" }`, with `network` `rskMainnet` or `rskTestnet`.
 
 Use only these two sources:
 
@@ -54,6 +54,12 @@ Never take changer addresses from block explorers, chat messages or other reposi
 - VotingMachine: mainnet `0x65a5681be95d212f0c90ead40170d8277de81169`, testnet `0x7D124cC0f59aDA5793AD8edA9eD1836cB7e797a3`. Their transactions are listed on <https://rootstock.blockscout.com> and <https://rootstock-testnet.blockscout.com>.
 - Look at both the **transactions** and the **internal transactions** of the VotingMachine: proposals submitted from a multisig or a vesting contract arrive as internal calls, and then the submitter is that contract (the caller of `preVote`), not the account that signed the transaction.
 - Take the earliest call whose argument is the changer address. If the changer was never pre-voted on that network, `submitter` is `null`.
+
+### Finding the execution
+
+`executedTx` is the hash of the transaction that executed the changer: a successful `acceptedStep()` call to the network's VotingMachine (see the addresses above) during which the Governor calls the changer. Find it in the changer's **internal transactions** on Blockscout: the incoming call whose parent transaction is that `acceptedStep()`. Proposal documents usually also cite it as "TX ID" once executed. Write it in lowercase. It stays `null` until the changer is executed; a changer that was executed must have a `submitter`.
+
+Fill it at least for mainnet: until MIP#263501 is executed there, the mainnet VotingMachine emits no events, so this field is the only record of the execution. On testnet the dapps read executions from the indexed events, so it is optional there.
 
 ### Address format
 
@@ -90,6 +96,7 @@ It needs no installed dependencies. Fix every `error` line; CI fails on them. Re
 - [ ] Mainnet changers are in the document's "Changer Contract" section, testnet ones in an ignition deployment of the right network.
 - [ ] Addresses are checksummed and not used by another entry.
 - [ ] `tags` lists every project the changer modifies, and each `submitter` is the first `preVote` sender read from the chain (or `null`).
+- [ ] Each executed mainnet changer has its `acceptedStep` transaction in `executedTx`.
 - [ ] Existing changers were not modified or removed.
 - [ ] Entry order and README list are in sync.
 - [ ] `node scripts/proposals/validate-proposals.mjs` reports `0 error(s)`.

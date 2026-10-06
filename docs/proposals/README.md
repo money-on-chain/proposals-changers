@@ -58,7 +58,8 @@ Add a proposal's entry in the same pull request as its document, and its changer
       "network": "rskMainnet",
       "name": "PreTasksRunnerChanger",
       "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1",
-      "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd"
+      "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+      "executedTx": "0xd7379f99cb56315ce72a301193635223633f2357b543365bc771b4086abd086e"
     }
   ]
 }
@@ -67,7 +68,7 @@ Add a proposal's entry in the same pull request as its document, and its changer
 - `tags`: the projects the proposal changes, at least one, in this order: `doc` (Money on Chain), `usdrif` (RIF on Chain), `oracles` (OMOC), `voting` (governance), `staking` (MOC staking and its rewards flow).
 - `status`: `Draft`, `Published` (posted to the forum) or `Withdrawn`. Whether it was voted and executed comes from the chain, not from here.
 - `date`: forum publication date (`YYYY-MM-DD`), `null` while it is a draft.
-- `changers`: every changer contract submitted for this MIP, on `rskMainnet` or `rskTestnet` (a MIP may have several, e.g. a redeploy after a failed vote). `submitter` is the address that submitted the changer for voting (the first `preVote` sender), `null` until it is submitted. Addresses use an [EIP-55](https://eips.ethereum.org/EIPS/eip-55) checksum or Rootstock's [EIP-1191](https://eips.ethereum.org/EIPS/eip-1191) checksum for the network (as Rootstock explorers show them). `[]` when there is none.
+- `changers`: every changer contract submitted for this MIP, on `rskMainnet` or `rskTestnet` (a MIP may have several, e.g. a redeploy after a failed vote). `submitter` is the address that submitted the changer for voting (the first `preVote` sender), `null` until it is submitted. `executedTx` is the `acceptedStep` transaction that executed it, `null` until it is executed; the dapps also detect executions from the indexed VotingMachine events where the network emits them (testnet, and mainnet once MIP#263501 is executed), but on mainnet before that it is the only record. Addresses use an [EIP-55](https://eips.ethereum.org/EIPS/eip-55) checksum or Rootstock's [EIP-1191](https://eips.ethereum.org/EIPS/eip-1191) checksum for the network (as Rootstock explorers show them). `[]` when there is none.
 - Images in the document must be stored in [`images/`](images) and linked with a relative path; the dapps do not show external images or raw HTML.
 
 `pnpm validate:proposals` checks the registry (CI runs it on every change to this folder or to `ignition/deployments`): unique and well-formed MIPs, every document listed, valid checksums, each mainnet changer present in its document's "Changer Contract" section, and each address on the network its ignition deployment says.

@@ -221,6 +221,7 @@ const readme = readFileSync(join(PROPOSALS_DIR, "README.md"), "utf8");
 const seenMips = new Set();
 const seenFiles = new Set();
 const seenAddresses = new Map();
+const seenExecutions = new Map();
 
 for (const [index, p] of registry.proposals.entries()) {
   const at = `proposals[${index}]${p && p.mip ? ` (${p.mip})` : ""}`;
@@ -317,7 +318,7 @@ for (const [index, p] of registry.proposals.entries()) {
     const cat = `${at} changers[${ci}]`;
     const chainIds = CHAIN_IDS[changer.network] ? [CHAIN_IDS[changer.network]] : [];
     for (const key of Object.keys(changer)) {
-      if (!["network", "name", "address", "submitter"].includes(key)) {
+      if (!["network", "name", "address", "submitter", "executedTx"].includes(key)) {
         error(`${cat}: unknown field "${key}"`);
       }
     }
@@ -328,6 +329,21 @@ for (const [index, p] of registry.proposals.entries()) {
       } else {
         const problem = checksumError(changer.submitter, chainIds);
         if (problem) error(`${cat}: submitter ${problem}`);
+      }
+    }
+    // executedTx: the acceptedStep() transaction that executed the changer,
+    // null until executed (or when the indexed events already record it)
+    if (changer.executedTx !== null && changer.executedTx !== undefined) {
+      if (typeof changer.executedTx !== "string" || !/^0x[0-9a-f]{64}$/.test(changer.executedTx)) {
+        error(
+          `${cat}: executedTx must be a lowercase 0x-prefixed 32-byte transaction hash or null`,
+        );
+      } else {
+        if (!changer.submitter) error(`${cat}: executedTx is set but submitter is null`);
+        if (seenExecutions.has(changer.executedTx)) {
+          error(`${cat}: executedTx already used by ${seenExecutions.get(changer.executedTx)}`);
+        }
+        seenExecutions.set(changer.executedTx, cat);
       }
     }
     if (!NETWORKS.includes(changer.network)) {
