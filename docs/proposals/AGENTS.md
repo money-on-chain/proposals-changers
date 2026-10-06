@@ -8,15 +8,16 @@ The field format is described in [README.md](README.md#proposal-registry-proposa
 
 ## When to update the registry
 
-| Event                                                                                                                    | Change                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| A new `MIPYYWWNN-*.md` document is added                                                                                 | Add its entry (`status: "Draft"`, `date: null`, `forumUrl: null`, `changers: []` unless already deployed) and its line in the README list. |
-| A changer is deployed (new `ignition/deployments/<id>/`, or an address added to a document's "Changer Contract" section) | Add it to that MIP's `changers`.                                                                                                           |
-| The proposal is posted on the forum                                                                                      | `status: "Published"`, `date`, `forumUrl`.                                                                                                 |
-| The proposal is abandoned                                                                                                | `status: "Withdrawn"`. Keep its changers.                                                                                                  |
-| A changer is redeployed (e.g. after a failed vote)                                                                       | **Add** the new changer; never remove or edit the old one, it may already have votes on-chain.                                             |
+| Event                                                                                                                    | Change                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A new `MIPYYWWNN-*.md` document is added                                                                                 | Add its entry (`status: "Draft"`, `date: null`, `forumUrl: null`, `changers: []` unless already deployed) and its line in the README list.                                    |
+| A changer is deployed (new `ignition/deployments/<id>/`, or an address added to a document's "Changer Contract" section) | Add it to that MIP's `changers`.                                                                                                                                              |
+| The proposal is posted on the forum                                                                                      | `status: "Published"`, `date`, `forumUrl`.                                                                                                                                    |
+| The proposal is abandoned                                                                                                | `status: "Withdrawn"`. Keep its changers.                                                                                                                                     |
+| A changer is redeployed (e.g. after a failed vote)                                                                       | **Add** the new changer; never remove or edit the old one, it may already have votes on-chain.                                                                                |
+| A submission failed on-chain (expired in pre-vote, not selected, no quorum, rejected)                                    | Nothing while the team may try again: submitting the same changer again needs no change, a new changer is added as above. `status: "Withdrawn"` once the team gives up on it. |
 
-Do not record voting results or execution (`Accepted`, `Executed`, ...): the APIs read those from the chain.
+`status` is editorial (`Draft`, `Published`, `Withdrawn`): what the team decided. Do not record voting results (in pre-vote, expired, not selected, no quorum, rejected, accepted, executed, ...): the APIs and dapps read the voting status from the chain. The one exception is `executedTx` on mainnet changers, see [Finding the execution](#finding-the-execution).
 
 ## Where each field comes from
 
