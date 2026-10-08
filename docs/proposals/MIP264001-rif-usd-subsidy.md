@@ -2,7 +2,7 @@
 
 > :memo: `MIP#264001`
 
-> :warning: **Status: DRAFT**
+> :warning: **Status: `In voting`**
 
 ## Overview
 
@@ -34,13 +34,13 @@ Reading these values at deployment keeps the new auction aligned with the active
 
 ### 2. Register its task in OMOC `TasksRunner`
 
-The proposal deploys a `TaskTriggerOrder` for the new reverse auction and adds it to OMOC's `TasksRunner` at [`0xd99a43ba443068Ea539CeB623aE24e6C9910b975`](https://rootstock.blockscout.com/address/0xd99a43ba443068Ea539CeB623AE24e6C9910b975?tab=contract).
+The proposal deploys a `TaskTriggerOrder` for the new reverse auction and adds it to OMOC's `TasksRunner` at [`0xd9...b975`](https://rootstock.blockscout.com/address/0xd99a43ba443068Ea539CeB623AE24e6C9910b975?tab=contract).
 
 The task becomes eligible when the reverse auction has accumulated at least its order threshold in RBTC. The task's revert backoff is 36,000 seconds. On execution, it triggers the auction and the resulting MOC is transferred directly to the `RIF/USD` CoinPair.
 
 ### 3. Move RIF/DOC paths to the shared multi-hop swapper
 
-The proposal configures [`MocSwapperV3Multihop`](https://rootstock.blockscout.com/address/0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73?tab=contract) at `0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73` with these paths:
+The proposal configures [`MocSwapperV3Multihop`](https://rootstock.blockscout.com/address/0x24122d7FF0EF57C18e5C333E2c7bD863e4F23c73?tab=contract) at `0x24...3c73` with these paths:
 
 | Conversion | Path                     |
 | :--------- | :----------------------- |
@@ -57,14 +57,14 @@ The changer reads the RIF and DOC token addresses, the MOC fee token, and the ex
 
 The following existing reverse auctions will use the shared multi-hop swapper:
 
-| Contract                              | Address                                                                                                                                          | Conversion |
-| :------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| `RevAuctionDOCtoMOC_rocRewardsBuffer` | [`0x883e3433c236Abd3c301FFc9B59EA478C0C21c9a`](https://rootstock.blockscout.com/address/0x883e3433c236Abd3c301FFc9B59EA478C0C21c9a?tab=contract) | DOC → MOC  |
-| `RevAuctionMOCtoDOC_docBucket`        | [`0x3EB689a01c4e8ccaC7c72097104FF37Ccf907bBE`](https://rootstock.blockscout.com/address/0x3EB689a01c4e8ccaC7c72097104FF37Ccf907bBE?tab=contract) | MOC → DOC  |
+| Contract                              | Address                                                                                                           | Conversion |
+| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------- | :--------- |
+| `RevAuctionDOCtoMOC_rocRewardsBuffer` | [`0x88...1c9a`](https://rootstock.blockscout.com/address/0x883e3433c236Abd3c301FFc9B59EA478C0C21c9a?tab=contract) | DOC → MOC  |
+| `RevAuctionMOCtoDOC_docBucket`        | [`0x3E...7bBE`](https://rootstock.blockscout.com/address/0x3EB689a01c4e8ccaC7c72097104FF37Ccf907bBE?tab=contract) | MOC → DOC  |
 
-The `MocMultiCollateralGuard` at [`0x0237Ad1f0831b479a344E56646BC48B0885cF46F`](https://rootstock.blockscout.com/address/0x0237Ad1f0831b479a344E56646BC48B0885cF46F?tab=contract) will also use the shared swapper for both RIF-to-DOC and DOC-to-RIF bucket conversions.
+The `MocMultiCollateralGuard` at [`0x02...F46F`](https://rootstock.blockscout.com/address/0x0237Ad1f0831b479a344E56646BC48B0885cF46F?tab=contract) will also use the shared swapper for both RIF-to-DOC and DOC-to-RIF bucket conversions.
 
-This removes the dedicated swapper at [`0x0E60154be285810DFa1d64FaC5acb4804d7A7ba0`](https://rootstock.blockscout.com/address/0x0E60154be285810DFa1d64FaC5acb4804d7A7ba0?tab=contract) from the active paths covered by this proposal.
+This removes the dedicated swapper at [`0x0E...7ba0`](https://rootstock.blockscout.com/address/0x0E60154be285810DFa1d64FaC5acb4804d7A7ba0?tab=contract) from the active paths covered by this proposal.
 
 ---
 
@@ -96,13 +96,17 @@ Before the vote, the deployed changer, reverse auction, and task addresses will 
 
 ## Changer Contract
 
-| Name                     | Address and verified source |
-| :----------------------- | :-------------------------- |
-| `MIP264001RifUsdSubsidy` | `TBD`                       |
+### The changer contract to vote would be:
+
+| Name                            | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP264001RifUsdSubsidyChanger` | [`0x7a3ae8fd298aE810Cb4D513582a0455919398f1b`](https://rootstock.blockscout.com/address/0x7a3ae8fd298aE810Cb4D513582a0455919398f1b?tab=contract) |
+
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x7a3ae8fd298aE810Cb4D513582a0455919398f1b?tab=contract) linked above.
 
 ## New Contracts
 
-| Name                                      | Address |
-| :---------------------------------------- | :------ |
-| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | `TBD`   |
-| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | `TBD`   |
+| Name                                      | Address                                                                                                           |
+| :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | [`0x50...fa40`](https://rootstock.blockscout.com/address/0x5049ef3DD852ad07095E0ee0Bc9d65A5468efa40?tab=contract) |
+| `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | [`0xab...C640`](https://rootstock.blockscout.com/address/0xab51493820D74DC5ee7db6aEc519ca5Ea5C2C640?tab=contract) |
