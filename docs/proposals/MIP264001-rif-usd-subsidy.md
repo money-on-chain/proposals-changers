@@ -2,7 +2,7 @@
 
 > :memo: `MIP#264001`
 
-> :warning: **Status: `In voting`**
+> :warning: **Status: `Implemented`**
 
 ## Overview
 
@@ -110,3 +110,15 @@ Before the vote, the deployed changer, reverse auction, and task addresses will 
 | :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
 | `RevAuctionRBTCtoMOC_rifUsdSubsidy`       | [`0x50...fa40`](https://rootstock.blockscout.com/address/0x5049ef3DD852ad07095E0ee0Bc9d65A5468efa40?tab=contract) |
 | `TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy` | [`0xab...C640`](https://rootstock.blockscout.com/address/0xab51493820D74DC5ee7db6aEc519ca5Ea5C2C640?tab=contract) |
+
+---
+
+## Status
+
+📣 The voting process is over:
+* `29.0%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0x92ebab4e5394ae2b52a5490884cc1a9efeb838bf280649a4659e702d5a4d3efd`](https://rootstock.blockscout.com/tx/0x92ebab4e5394ae2b52a5490884cc1a9efeb838bf280649a4659e702d5a4d3efd)
