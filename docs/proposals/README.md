@@ -36,3 +36,39 @@ Each new proposal receives a unique `MIP#` identifier following this rule:
 The full format is: `MIP#YYWWNN`.
 
 Example: `MIP#262701` = a proposal from 2026, week 27, sequence 01.
+
+## Proposal registry (`proposals.json`)
+
+[`proposals.json`](proposals.json) indexes every proposal in this folder. The dapps and the stable-protocol APIs read it to show, for each proposal voted on-chain, its MIP, title, summary and this markdown document. A changer submitted for voting that is not in the registry is shown as an unlisted proposal.
+
+Add a proposal's entry in the same pull request as its document, and its changer addresses as soon as they are deployed. [AGENTS.md](AGENTS.md) describes where each value comes from (also read by coding agents):
+
+```json
+{
+  "mip": "MIP#263101",
+  "title": "Add RIF/USD and TasksRunner to OMOC; Use RIF/USD₮0 for Liquidity",
+  "tags": ["oracles"],
+  "status": "Published",
+  "date": "2026-08-07",
+  "summary": "One or two plain-text sentences for proposal lists.",
+  "file": "MIP263101-add-rif-usd-and-tasks-runner-to-omoc.md",
+  "forumUrl": "https://forum.moneyonchain.com/t/add-rif-usd-and-tasksrunner-to-omoc-use-rif-usd-0-for-liquidity/468",
+  "changers": [
+    {
+      "network": "rskMainnet",
+      "name": "PreTasksRunnerChanger",
+      "address": "0x015F2836467Ce43E27D22b0d03929c371Ff1d0f1",
+      "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+      "executedTx": "0xd7379f99cb56315ce72a301193635223633f2357b543365bc771b4086abd086e"
+    }
+  ]
+}
+```
+
+- `tags`: the projects the proposal changes, at least one, in this order: `doc` (Money on Chain), `usdrif` (RIF on Chain), `oracles` (OMOC), `voting` (governance), `staking` (MOC staking and its rewards flow).
+- `status`: the editorial status, set by the team: `Draft`, `Published` (posted to the forum) or `Withdrawn` (abandoned). The voting status is separate and comes from the chain, never from here: in pre-vote, in vote, vote ended, accepted, executed, execution failed, expired in pre-vote, not selected, no quorum, rejected by votes against, unregistered. A proposal that failed (expired, not selected, no quorum, rejected) stays `Published` while the team may submit it again; set `Withdrawn` once it won't be.
+- `date`: forum publication date (`YYYY-MM-DD`), `null` while it is a draft.
+- `changers`: every changer contract submitted for this MIP, on `rskMainnet` or `rskTestnet` (a MIP may have several, e.g. a redeploy after a failed vote). `submitter` is the address that submitted the changer for voting (the first `preVote` sender), `null` until it is submitted. `executedTx` is the `acceptedStep` transaction that executed it, `null` until it is executed; the dapps also detect executions from the indexed VotingMachine events where the network emits them (testnet, and mainnet once MIP#263501 is executed), but on mainnet before that it is the only record. Addresses use an [EIP-55](https://eips.ethereum.org/EIPS/eip-55) checksum or Rootstock's [EIP-1191](https://eips.ethereum.org/EIPS/eip-1191) checksum for the network (as Rootstock explorers show them). `[]` when there is none.
+- Images in the document must be stored in [`images/`](images) and linked with a relative path; the dapps do not show external images or raw HTML.
+
+`pnpm validate:proposals` checks the registry (CI runs it on every change to this folder or to `ignition/deployments`): unique and well-formed MIPs, every document listed, valid checksums, each mainnet changer present in its document's "Changer Contract" section, and each address on the network its ignition deployment says.

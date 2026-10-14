@@ -1,0 +1,32 @@
+name: Proposals registry
+
+on:
+  push:
+    paths:
+      - "docs/proposals/**"
+      - "ignition/deployments/**"
+      - "scripts/proposals/**"
+      - ".github/workflows/proposals.yml"
+  pull_request:
+    paths:
+      - "docs/proposals/**"
+      - "ignition/deployments/**"
+      - "scripts/proposals/**"
+      - ".github/workflows/proposals.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # Dependency-free script: no install step needed
+      - name: Validate docs/proposals/proposals.json
+        run: node scripts/proposals/validate-proposals.mjs
