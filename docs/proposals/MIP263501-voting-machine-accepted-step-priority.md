@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263501`
 
-> :warning: **Status: `DRAFT`**
+> :warning: **Status: `Under review`**
 
 ## Overview
 
@@ -78,8 +78,8 @@ For implementation-level questions, readers can give their preferred AI assistan
 
 ### The changer contract to vote would be:
 
-| Name               | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
-| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MIP263501Changer` | [`0x00000000000000000000000000000000000FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+| Name                           | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :----------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VotingMachineUpgradeProposal` | [`0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05`](https://rootstock.blockscout.com/address/0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05?tab=contract) |
 
-> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) linked above.
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05?tab=contract) linked above.
