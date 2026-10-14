@@ -1,6 +1,6 @@
 {
   "name": "@moneyonchain/proposals-changers",
-  "version": "3.0.20",
+  "version": "3.0.21",
   "private": true,
   "description": "Money on Chain governance proposals and changers",
   "license": "UNLICENSED",
@@ -93,17 +93,9 @@
     "validate:proposals": "node scripts/proposals/validate-proposals.mjs"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,cjs,mjs}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
-    ],
-    "contracts/**/*.sol": [
-      "prettier --write",
-      "solhint --max-warnings=0"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,cjs,mjs}": ["eslint --fix --max-warnings=0", "prettier --write"],
+    "contracts/**/*.sol": ["prettier --write", "solhint --max-warnings=0"],
+    "*.{json,md,yml,yaml}": ["prettier --write"]
   },
   "overrides": {},
   "type": "module",
@@ -143,11 +135,5 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "config/solidity.js",
-    "config/solidity.d.ts",
-    "contracts",
-    "ignition",
-    "scripts"
-  ]
+  "files": ["config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
 }
