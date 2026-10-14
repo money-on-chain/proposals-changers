@@ -88,7 +88,8 @@
     "deploy:testnet:voting-quorum:ignition": "npx hardhat --network rskTestnet --build-profile default ignition deploy ignition/modules/testnet-only/TestnetVotingQuorumChanger.js --parameters ignition/modules/testnet-only/parameters/rskTestnetQuorum.json --deployment-id testnet-voting-quorum-rsk-testnet",
     "deploy:testnet:legacy-upgrade-delegator-governor:ignition": "npx hardhat --network rskTestnet --build-profile default ignition deploy ignition/modules/testnet-only/TestnetLegacyUpgradeDelegatorGovernorChanger.js --deployment-id testnet-legacy-upgrade-delegator-governor-rsk-testnet",
     "deploy:mainnet:lending-v1:ignition": "npx hardhat --network rskMainnet ignition deploy ignition/modules/LendingAndBorrowingV1/LendingAndBorrowingV1.js --parameters ignition/modules/LendingAndBorrowingV1/parameters/rskMainnet.json --deployment-id lending-v1-rsk-mainnet",
-    "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js"
+    "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js",
+    "validate:proposals": "node scripts/proposals/validate-proposals.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,cjs,mjs}": [
