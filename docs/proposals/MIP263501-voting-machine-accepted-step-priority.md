@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263501`
 
-> :warning: **Status: DRAFT**
+> :warning: **Status: `DRAFT`**
 
 ## Overview
 
@@ -72,6 +72,10 @@ The changer address and its verified-source URL will be added before the governa
 
 For implementation-level questions, readers can give their preferred AI assistant the verified contract URL. The verified source code contains the complete implementation and can be used to answer specific technical questions about the change.
 
-| Changer address and verified source |
-| :---- |
-| `TBD` |
+### The changer contract to vote would be:
+
+| Name               | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP263501Changer` | [`0x00000000000000000000000000000000000FIXME`](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) |
+
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x00000000000000000000000000000000000FIXME?tab=contract) linked above.
