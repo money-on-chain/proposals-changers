@@ -24,7 +24,7 @@ This proposal gives the original submitter a short, exclusive opportunity to wai
 
 ### Fix to known issue GOV-11: Proposal round counter could wrap after 256 proposals
 
-The current deployed Voting Machine stores its proposal voting-round counter as `uint8`, limiting it to 256 rounds. If the counter wraps, proposal and voter-round tracking can be affected. [GOV-11 — Proposal round counter could wrap after 256 proposals](https://gist.github.com/nubis/9c24c0e2792e4dbb25db74f8f478756f) records this known issue and its remediation in the Voting Machine implementation. MIP#263501 deploys the upgraded implementation that widens the counter, fixing the issue while also adding the temporary accepted-step priority window.
+The current deployed Voting Machine stores its proposal voting-round counter as `uint8`, limiting it to 256 rounds. If the counter wraps, proposal and voter-round tracking can be affected. [GOV-11 — Proposal round counter could wrap after 256 proposals](https://gist.github.com/nubis/9c24c0e2792e4dbb25db74f8f478756f#gov-11--proposal-round-counter-could-wrap-after-256-proposals) records this known issue and its remediation in the Voting Machine implementation. MIP#263501 deploys the upgraded implementation that widens the counter, fixing the issue while also adding the temporary accepted-step priority window.
 
 ---
 
