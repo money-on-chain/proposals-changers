@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import { Test } from "forge-std/Test.sol";
-import { VotingMachineUpgradeProposal, IRegistry, IUpgradeDelegator } from "../changers/voting_machine_upgrade/VotingMachineUpgradeProposal.sol";
+import { VotingMachineUpgradeProposal, IRegistry } from "../changers/voting_machine_upgrade/VotingMachineUpgradeProposal.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 
@@ -67,7 +67,9 @@ interface IVotingMachineProbe {
 contract VotingMachineUpgradeProposalForkTest is Test {
   string internal constant MAINNET_PARAMS_PATH =
     "ignition/modules/upgrade_votingMachine/parameters/rskMainnet.json";
-  uint256 internal constant FORK_BLOCK = 8980146;
+  string internal constant MAINNET_DEPLOYED_ADDRESSES_PATH =
+    "ignition/deployments/mip26-3501-rsk-mainnet/deployed_addresses.json";
+  uint256 internal constant FORK_BLOCK = 9_324_473;
   uint256 internal constant EXPECTED_PRIORITY_TIME_DELTA = 86400;
   address internal constant MOC_V1_PROXY = 0xf773B590aF754D597770937Fa8ea7AbDf2668370;
 
@@ -91,18 +93,24 @@ contract VotingMachineUpgradeProposalForkTest is Test {
   uint256 internal acceptedStepPriorityTimeDelta;
   address internal newVotingMachineImplementation;
   IRegistry internal registry;
+  VotingMachineUpgradeProposal internal changer;
 
   function setUp() public {
     vm.createSelectFork("https://public-node.rsk.co", FORK_BLOCK);
     _readMainnetParamsFromJson();
-    newVotingMachineImplementation = _deployFromArtifact(
-      "contracts/compat/DeployableVotingMachine.sol:DeployableVotingMachine"
-    );
+    _readMainnetDeploymentFromJson();
     registry = IVotingMachineRegistry(votingMachineProxy).registry();
+    assertGt(newVotingMachineImplementation.code.length, 0, "implementation is not deployed");
+    assertGt(address(changer).code.length, 0, "changer is not deployed");
+    assertEq(changer.votingMachineProxy(), votingMachineProxy);
+    assertEq(address(changer.registry()), address(registry));
+    assertEq(address(changer.upgradeDelegator()), upgradeDelegator);
+    assertEq(changer.newVotingMachineImplementation(), newVotingMachineImplementation);
+    assertEq(changer.acceptedStepPriorityTimeDelta(), acceptedStepPriorityTimeDelta);
     _forceVotingRoundTo260();
   }
 
-  function testFork_DeployAndExecuteChanger() public {
+  function testFork_ExecuteDeployedChanger() public {
     _executeChanger();
 
     assertEq(
@@ -240,6 +248,22 @@ contract VotingMachineUpgradeProposalForkTest is Test {
     );
   }
 
+  function _readMainnetDeploymentFromJson() internal {
+    string memory json = vm.readFile(MAINNET_DEPLOYED_ADDRESSES_PATH);
+    assertEq(
+      vm.parseJsonAddress(json, ".VotingMachineUpgradeChangerModule#VotingMachineProxy"),
+      votingMachineProxy,
+      "deployed proxy does not match mainnet parameters"
+    );
+    newVotingMachineImplementation = vm.parseJsonAddress(
+      json,
+      ".VotingMachineUpgradeChangerModule#VotingMachineImplementation"
+    );
+    changer = VotingMachineUpgradeProposal(
+      vm.parseJsonAddress(json, ".VotingMachineUpgradeChangerModule#VotingMachineUpgradeProposal")
+    );
+  }
+
   function _loadAddress(address target, bytes32 slot) internal view returns (address) {
     return address(uint160(uint256(vm.load(target, slot))));
   }
@@ -303,27 +327,10 @@ contract VotingMachineUpgradeProposalForkTest is Test {
       "new implementation must differ from current"
     );
 
-    VotingMachineUpgradeProposal changer = new VotingMachineUpgradeProposal(
-      votingMachineProxy,
-      registry,
-      IUpgradeDelegator(upgradeDelegator),
-      newVotingMachineImplementation,
-      uint248(acceptedStepPriorityTimeDelta)
-    );
-
     IGovernor governor = IGovernor(IGoverned(upgradeDelegator).governor());
     address governorOwner = IOwnableLike(address(governor)).owner();
 
     vm.prank(governorOwner);
     governor.executeChange(IChangeContract(address(changer)));
-  }
-
-  function _deployFromArtifact(string memory artifactPath) internal returns (address deployed) {
-    bytes memory bytecode = vm.getCode(artifactPath);
-    require(bytecode.length != 0, "artifact bytecode is empty");
-    assembly ("memory-safe") {
-      deployed := create(0, add(bytecode, 0x20), mload(bytecode))
-    }
-    require(deployed != address(0), "deployment failed");
   }
 }

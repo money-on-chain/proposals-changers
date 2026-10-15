@@ -72,8 +72,6 @@ The upgrade will be executed only after:
 
 ## Changer Contract
 
-The changer address and its verified-source URL will be added before the governance vote.
-
 For implementation-level questions, readers can give their preferred AI assistant the verified contract URL. The verified source code contains the complete implementation and can be used to answer specific technical questions about the change.
 
 ### The changer contract to vote would be:
