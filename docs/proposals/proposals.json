@@ -68,12 +68,19 @@
       "mip": "MIP#263501",
       "title": "Grant Proposal Submitters a Temporary Accepted-Step Priority",
       "tags": ["voting"],
-      "status": "Draft",
-      "date": null,
+      "status": "Published",
+      "date": "2026-10-14",
       "summary": "Upgrades the Voting Machine so the submitter of an accepted proposal has exclusive access to execute its accepted step for a limited period, after which anyone can execute it as today.",
       "file": "MIP263501-voting-machine-accepted-step-priority.md",
-      "forumUrl": null,
+      "forumUrl": "https://forum.moneyonchain.com/t/grant-proposal-submitters-a-temporary-accepted-step-priority/477",
       "changers": [
+        {
+          "network": "rskMainnet",
+          "name": "VotingMachineUpgradeProposal",
+          "address": "0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05",
+          "submitter": "0x4e9e0E64FF95F9a629d1f756119fa636f30BBacd",
+          "executedTx": null
+        },
         {
           "network": "rskTestnet",
           "name": "VotingMachineUpgradeProposal",
