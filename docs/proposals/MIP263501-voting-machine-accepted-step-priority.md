@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263501`
 
-> :warning: **Status: `In voting`**
+> :warning: **Status: `Implemented`**
 
 ## Overview
 
@@ -81,3 +81,14 @@ For implementation-level questions, readers can give their preferred AI assistan
 | `VotingMachineUpgradeProposal` | [`0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05`](https://rootstock.blockscout.com/address/0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05?tab=contract) |
 
 > :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x1130acdf30D3c7a550c263152DCd99aCFf7c0d05?tab=contract) linked above.
+---
+
+## Status
+
+📣 The voting process is over:
+* `29.4%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0x09cb3f27f3ca9c54a2dadc4ea37f1b941a856d5fa10168e365ff914017b878da`](https://rootstock.blockscout.com/tx/0x09cb3f27f3ca9c54a2dadc4ea37f1b941a856d5fa10168e365ff914017b878da)
