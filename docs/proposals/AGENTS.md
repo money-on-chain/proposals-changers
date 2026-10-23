@@ -17,7 +17,7 @@ The field format is described in [README.md](README.md#proposal-registry-proposa
 | A changer is redeployed (e.g. after a failed vote)                                                                       | **Add** the new changer; never remove or edit the old one, it may already have votes on-chain.                                                                                |
 | A submission failed on-chain (expired in pre-vote, not selected, no quorum, rejected)                                    | Nothing while the team may try again: submitting the same changer again needs no change, a new changer is added as above. `status: "Withdrawn"` once the team gives up on it. |
 
-`status` is editorial (`Draft`, `Published`, `Withdrawn`): what the team decided. Do not record voting results (in pre-vote, expired, not selected, no quorum, rejected, accepted, executed, ...): the APIs and dapps read the voting status from the chain. The one exception is `executedTx` on mainnet changers, see [Finding the execution](#finding-the-execution).
+`status` is editorial (`Draft`, `Published`, `Withdrawn`): what the team decided. Do not record voting results (in pre-vote, expired, not selected, no quorum, rejected, accepted, executed, ...): the APIs and dapps read the voting status from the chain. The one exception is `executedTx` and `executedAt` on mainnet changers, see [Finding the execution](#finding-the-execution).
 
 ## Where each field comes from
 
@@ -35,7 +35,7 @@ The field format is described in [README.md](README.md#proposal-registry-proposa
 
 ## Finding changer addresses
 
-A changer is the contract voted on-chain: the one the Governor executes. Each entry is `{ "network", "name", "address", "submitter", "executedTx" }`, with `network` `rskMainnet` or `rskTestnet`.
+A changer is the contract voted on-chain: the one the Governor executes. Each entry is `{ "network", "name", "address", "submitter", "executedTx", "executedAt" }`, with `network` `rskMainnet` or `rskTestnet`.
 
 Use only these two sources:
 
@@ -59,6 +59,8 @@ Never take changer addresses from block explorers, chat messages or other reposi
 ### Finding the execution
 
 `executedTx` is the hash of the transaction that executed the changer: a successful `acceptedStep()` call to the network's VotingMachine (see the addresses above) during which the Governor calls the changer. Find it in the changer's **internal transactions** on Blockscout: the incoming call whose parent transaction is that `acceptedStep()`. Proposal documents usually also cite it as "TX ID" once executed. Write it in lowercase. It stays `null` until the changer is executed; a changer that was executed must have a `submitter`.
+
+`executedAt` is the timestamp of the block that includes `executedTx`, in UTC and to the second: `YYYY-MM-DDTHH:MM:SSZ` (e.g. `2026-08-18T12:52:41Z`). Read it from the transaction page on Blockscout, or from the node: `eth_getTransactionReceipt` gives the block number and `eth_getBlockByNumber` its `timestamp` (Unix seconds). Set it in the same change as `executedTx`; both stay `null` until the execution. The dapps sort the proposal history by it.
 
 Fill it at least for mainnet: until MIP#263501 is executed there, the mainnet VotingMachine emits no events, so this field is the only record of the execution. On testnet the dapps read executions from the indexed events, so it is optional there.
 
@@ -97,7 +99,7 @@ It needs no installed dependencies. Fix every `error` line; CI fails on them. Re
 - [ ] Mainnet changers are in the document's "Changer Contract" section, testnet ones in an ignition deployment of the right network.
 - [ ] Addresses are checksummed and not used by another entry.
 - [ ] `tags` lists every project the changer modifies, and each `submitter` is the first `preVote` sender read from the chain (or `null`).
-- [ ] Each executed mainnet changer has its `acceptedStep` transaction in `executedTx`.
+- [ ] Each executed mainnet changer has its `acceptedStep` transaction in `executedTx` and that block's timestamp in `executedAt`.
 - [ ] Existing changers were not modified or removed.
 - [ ] Entry order and README list are in sync.
 - [ ] `node scripts/proposals/validate-proposals.mjs` reports `0 error(s)`.
