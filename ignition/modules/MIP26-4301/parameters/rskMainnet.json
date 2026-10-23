@@ -1,0 +1,20 @@
+{
+  "MIP264301Module": {
+    "coinerProxy": "0x661F7d510cdB40638f5Afd9f9dF8877398500593",
+    "flowUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
+    "destination": "0xf09006E812BE98c7B18c877Af5C126629acB6cAb",
+    "secondaryDestination": "0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183",
+    "coinerBuffer": "0x5646c6988d5D3d7F78F15683CE3aca11699BCDBb",
+    "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
+    "coinerBufferFlushTask": "0x23428Ef986A8DcC067152F0a2C46FcC476d2AA9f",
+    "coinerBufferLiquidateTask": "0x1D994baB150f55332F39aaeE3bC94cb4CA73A659",
+    "tasksRunnerBuffer": "0x5028486837bcF926AD02E935cfFC3D475B39E189",
+    "tasksRunnerBufferFlushTask": "0xfA56735EB4da217F3a607a43Ed51117c76923ae3",
+    "tasksRunnerBufferLiquidateTask": "0x02643c891Df6b31E2d557be10e654Af1EE007D64",
+    "mocRewardsBuffer": "0xf09006E812BE98c7B18c877Af5C126629acB6cAb",
+    "btcUsdCoinPair": "0xa288319eCb63301e21963E21EF3Ca8fb720d2672",
+    "reverseAuctionRifToMoc": "0xf674b1e58c791A96735DC0431C3e83c67e6e1609",
+    "reverseAuctionRifToMoc2": "0x437427737A562239a3f1e73cb3A9F87FE258150c",
+    "reverseAuctionRifToMoc3": "0x323f6117A256E8f697Ac8d2816eb71e9B7134809"
+  }
+}
