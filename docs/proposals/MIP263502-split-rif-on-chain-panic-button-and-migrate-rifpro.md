@@ -85,9 +85,10 @@ For implementation-level questions, readers can give their preferred AI assistan
 
 ### The changer contract to vote would be:
 
-| Name  | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
-| :---- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TBD` | [`0x0000000000000000000000000000000000000TBD`](https://rootstock.blockscout.com/address/0x0000000000000000000000000000000000000TBD?tab=contract) |
+| Name                                | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :---------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PauserSplitRifProMigrationChanger` | [`0x4E227DebAf627c9C1254806a4969e0B169A9C015`](https://rootstock.blockscout.com/address/0x4E227DebAf627c9C1254806a4969e0B169A9C015?tab=contract) |
 
-> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x0000000000000000000000000000000000000TBD?tab=contract) linked above.
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x4E227DebAf627c9C1254806a4969e0B169A9C015?tab=contract) linked above.
+
 ---
