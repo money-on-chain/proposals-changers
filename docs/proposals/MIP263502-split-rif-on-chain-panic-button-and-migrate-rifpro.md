@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263502`
 
-> :warning: **Status: `Under review`**
+> :warning: **Status: `In voting`**
 
 ## Overview
 

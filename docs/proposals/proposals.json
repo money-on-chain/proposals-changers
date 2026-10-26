@@ -56,13 +56,21 @@
     {
       "mip": "MIP#263502",
       "title": "Split the RIF on Chain Panic Button and Migrate RIFPRO",
-      "tags": ["usdrif"],
-      "status": "Draft",
-      "date": null,
+      "tags": ["doc", "usdrif"],
+      "status": "Published",
+      "date": "2026-10-26",
       "summary": "Gives RIF on Chain its own emergency circuit breaker, separate from Money on Chain's, and migrates RIFPRO to a denomination where one new RIFPRO is priced at one RIF.",
       "file": "MIP263502-split-rif-on-chain-panic-button-and-migrate-rifpro.md",
-      "forumUrl": null,
-      "changers": []
+      "forumUrl": "https://forum.moneyonchain.com/t/split-the-rif-on-chain-panic-button-and-migrate-rifpro",
+      "changers": [
+        {
+          "network": "rskMainnet",
+          "name": "PauserSplitRifProMigrationChanger",
+          "address": "0x4E227DebAf627c9C1254806a4969e0B169A9C015",
+          "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4",
+          "executedTx": null
+        }
+      ]
     },
     {
       "mip": "MIP#263501",
