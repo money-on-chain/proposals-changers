@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263502`
 
-> :warning: **Status: DRAFT**
+> :warning: **Status: `Under review`**
 
 ## Overview
 
@@ -16,7 +16,7 @@ The changes are executed together by one changer contract.
 
 ### Give RIF on Chain its own circuit breaker
 
-After [MIP#263102](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md) is accepted, RoC will receive the RIF price through the decentralized OMOC oracle infrastructure. Even with decentralized price provision in place, RoC should retain a circuit breaker that can be activated when an exceptional situation requires immediate protection.
+After [MIP#263102](MIP263102-use-omoc-tasks-runner-and-rif-usd-in-roc-and-moc.md) [(in the forum)](https://forum.moneyonchain.com/t/use-omocs-tasksrunner-and-rif-usd-in-roc-and-moc) is accepted, RoC will receive the RIF price through the decentralized OMOC oracle infrastructure. Even with decentralized price provision in place, RoC should retain a circuit breaker that can be activated when an exceptional situation requires immediate protection.
 
 In the current threat environment, including increasingly automated and AI-assisted attacks, governance-delegated circuit breakers have proven to be a useful way to protect protocols and their users while an issue is assessed and addressed.
 
@@ -81,10 +81,13 @@ The upgrade will be executed only after:
 
 ## Changer Contract
 
-The changer address and its verified-source URL will be added before the governance vote.
-
 For implementation-level questions, readers can give their preferred AI assistant the verified contract URL. The verified source code contains the complete implementation and can be used to answer specific technical questions about the change.
 
-| Changer address and verified source |
-| :---- |
-| `TBD` |
+### The changer contract to vote would be:
+
+| Name  | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :---- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TBD` | [`0x0000000000000000000000000000000000000TBD`](https://rootstock.blockscout.com/address/0x0000000000000000000000000000000000000TBD?tab=contract) |
+
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x0000000000000000000000000000000000000TBD?tab=contract) linked above.
+---
