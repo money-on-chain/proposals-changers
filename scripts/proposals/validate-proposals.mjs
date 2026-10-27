@@ -318,7 +318,7 @@ for (const [index, p] of registry.proposals.entries()) {
     const cat = `${at} changers[${ci}]`;
     const chainIds = CHAIN_IDS[changer.network] ? [CHAIN_IDS[changer.network]] : [];
     for (const key of Object.keys(changer)) {
-      if (!["network", "name", "address", "submitter", "executedTx"].includes(key)) {
+      if (!["network", "name", "address", "submitter", "executedTx", "executedAt"].includes(key)) {
         error(`${cat}: unknown field "${key}"`);
       }
     }
@@ -345,6 +345,21 @@ for (const [index, p] of registry.proposals.entries()) {
         }
         seenExecutions.set(changer.executedTx, cat);
       }
+    }
+    // executedAt: the timestamp of executedTx's block, in UTC; set exactly
+    // when executedTx is
+    if (changer.executedAt !== null && changer.executedAt !== undefined) {
+      if (
+        typeof changer.executedAt !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(changer.executedAt) ||
+        Number.isNaN(Date.parse(changer.executedAt))
+      ) {
+        error(`${cat}: executedAt must be a UTC timestamp (YYYY-MM-DDTHH:MM:SSZ) or null`);
+      } else if (!changer.executedTx) {
+        error(`${cat}: executedAt is set but executedTx is null`);
+      }
+    } else if (changer.executedTx) {
+      error(`${cat}: executedTx is set but executedAt is null`);
     }
     if (!NETWORKS.includes(changer.network)) {
       error(`${cat}: network must be one of ${NETWORKS.join(", ")}`);
