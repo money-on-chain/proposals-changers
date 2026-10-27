@@ -5,11 +5,11 @@
   "description": "Money on Chain governance proposals and changers",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@moc/flow": "git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.4",
+    "@moc/flow": "git+ssh://git@github.com/money-on-chain/MoC-Flow.git#v3.0.5",
     "@moc/lending": "git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v3.0.20",
     "@moc/main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
     "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
-    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.20",
+    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.21",
     "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.7",
     "@moc/price-oracle-interfaces": "git+ssh://git@github.com/money-on-chain/price_oracle_interfaces.git#v0.1.0",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.7",
@@ -90,22 +90,32 @@
     "deploy:testnet:legacy-upgrade-delegator-governor:ignition": "npx hardhat --network rskTestnet --build-profile default ignition deploy ignition/modules/testnet-only/TestnetLegacyUpgradeDelegatorGovernorChanger.js --deployment-id testnet-legacy-upgrade-delegator-governor-rsk-testnet",
     "deploy:mainnet:lending-v1:ignition": "npx hardhat --network rskMainnet ignition deploy ignition/modules/LendingAndBorrowingV1/LendingAndBorrowingV1.js --parameters ignition/modules/LendingAndBorrowingV1/parameters/rskMainnet.json --deployment-id lending-v1-rsk-mainnet",
     "count:set-oracle-address": "node scripts/oracles/count_set_oracle_address.js",
-    "validate:proposals": "node scripts/proposals/validate-proposals.mjs"
+    "validate:proposals": "node scripts/proposals/validate-proposals.mjs",
+    "deploy:testnet:mip26-4301:ignition": "npx hardhat --network rskTestnet --build-profile default ignition deploy ignition/modules/MIP26-4301/MIP26-4301.js --parameters ignition/modules/MIP26-4301/parameters/rskTestnet.json --deployment-id mip26-4301-rsk-testnet",
+    "deploy:mainnet:mip26-4301:ignition": "npx hardhat --network rskMainnet --build-profile default ignition deploy ignition/modules/MIP26-4301/MIP26-4301.js --parameters ignition/modules/MIP26-4301/parameters/rskMainnet.json --deployment-id mip26-4301-rsk-mainnet"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,cjs,mjs}": ["eslint --fix --max-warnings=0", "prettier --write"],
-    "contracts/**/*.sol": ["prettier --write", "solhint --max-warnings=0"],
-    "*.{json,md,yml,yaml}": ["prettier --write"]
+    "*.{ts,tsx,js,cjs,mjs}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "contracts/**/*.sol": [
+      "prettier --write",
+      "solhint --max-warnings=0"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "overrides": {},
   "type": "module",
   "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065",
   "peerDependencies": {
-    "@moc/flow": "3.0.4",
+    "@moc/flow": "3.0.5",
     "@moc/lending": "3.0.20",
     "@moc/main": "3.0.9",
     "@moc/moc-main": "3.0.9",
-    "@moc/oracles": "3.0.20",
+    "@moc/oracles": "3.0.21",
     "@moc/periphery": "3.0.7",
     "@moc/price-oracle-interfaces": "0.1.0",
     "@moc/rbtc": "3.0.7",
@@ -135,5 +145,11 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
+  "files": [
+    "config/solidity.js",
+    "config/solidity.d.ts",
+    "contracts",
+    "ignition",
+    "scripts"
+  ]
 }

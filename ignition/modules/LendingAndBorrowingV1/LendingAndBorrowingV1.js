@@ -74,9 +74,13 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
     "rbtcToMocLiquidationReverseAuctionSlippage",
     "0",
   );
-  const reverseAuctionTaskRevertSleepTime = m.getParameter(
-    "reverseAuctionTaskRevertSleepTime",
-    3600,
+  const reverseAuctionTaskBaseRevertSleepTime = m.getParameter(
+    "reverseAuctionTaskBaseRevertSleepTime",
+    300,
+  );
+  const reverseAuctionTaskMaxRevertSleepTime = m.getParameter(
+    "reverseAuctionTaskMaxRevertSleepTime",
+    36000,
   );
 
   // ─── MocV1LendingAndBorrowing changer parameter ──────────────────────────────
@@ -519,19 +523,31 @@ export default buildModule("LendingAndBorrowingV1Module", (m) => {
 
   const docToRbtcReverseAuctionTask = m.contract(
     "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol:TaskTriggerOrder",
-    [docToRbtcReverseAuction, reverseAuctionTaskRevertSleepTime, pauser],
+    [
+      docToRbtcReverseAuction,
+      reverseAuctionTaskBaseRevertSleepTime,
+      reverseAuctionTaskMaxRevertSleepTime,
+    ],
     { id: "TaskTriggerOrderDocToRbtc" },
   );
 
   const docToMocLiquidationReverseAuctionTask = m.contract(
     "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol:TaskTriggerOrder",
-    [docToMocLiquidationReverseAuction, reverseAuctionTaskRevertSleepTime, pauser],
+    [
+      docToMocLiquidationReverseAuction,
+      reverseAuctionTaskBaseRevertSleepTime,
+      reverseAuctionTaskMaxRevertSleepTime,
+    ],
     { id: "TaskTriggerOrderDocToMocLiquidation" },
   );
 
   const rbtcToMocLiquidationReverseAuctionTask = m.contract(
     "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol:TaskTriggerOrder",
-    [rbtcToMocLiquidationReverseAuction, reverseAuctionTaskRevertSleepTime, pauser],
+    [
+      rbtcToMocLiquidationReverseAuction,
+      reverseAuctionTaskBaseRevertSleepTime,
+      reverseAuctionTaskMaxRevertSleepTime,
+    ],
     { id: "TaskTriggerOrderRbtcToMocLiquidation" },
   );
 

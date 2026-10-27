@@ -21,6 +21,7 @@ optimizer_runs = 200
 via_ir = true
 evm_version = "london"
 fs_permissions = [
+  { access = "read", path = "./ignition/modules/MIP26-4301/parameters" },
   { access = "read", path = "./ignition/modules/BufferPctAndCleanMocV1/parameters" },
   { access = "read", path = "./ignition/modules/LendingAndBorrowingV1/parameters" },
   { access = "read", path = "./ignition/modules/MIP26-4001/parameters" },
