@@ -72,6 +72,35 @@ Ignition supplies the three addresses as an array to the constructor. The new
 threshold is fixed by `RIF_TO_MOC_ORDER_THRESHOLD = 5000 ether`. Testnet parameters
 use the corresponding existing RIF-to-MOC auctions with the same output roles.
 
+Ignition also deploys a replacement `TaskSplit` for the RBTC-only commission
+splitter. The changer removes `deprecatedSplitTask` from TasksRunner and adds the
+new task. Mainnet replaces `0x40652119dfC7a114c43D36bd5369400577803E91`, which calls
+splitter `0x114921bcbd5fc34E103494d338cA492B9400B0fD`. Testnet replaces
+`0xd384B7fB51a6542caC42a28B47a8935a7D39FBFb`.
+
+The new task uses the same splitter and balance thresholds, with `token` and
+`feeToken` both set to `address(0)`. Its RBTC threshold remains 0.01 RBTC. The
+positive fee-token threshold is retained so a disabled fee token (zero balance)
+cannot satisfy `checkTask` through a `0 >= 0` comparison. Fee-token balances can
+no longer keep the task available after an RBTC split.
+
+Ignition deploys 13 replacement `TaskTriggerOrder` instances from `@moc/oracles
+v3.0.21`. Each keeps the reverse auction read from its old task and uses:
+
+- `BASE_SLEEP_TIME = 300` seconds (5 minutes).
+- `MAX_REVERT_SLEEP_TIME = 36000` seconds (10 hours).
+
+The retry delay doubles after consecutive failures, capped at 10 hours; a successful
+execution resets the backoff. The new version has no owner argument. Parameters
+`deprecatedTriggerOrderTask1` through `deprecatedTriggerOrderTask13` identify the
+registered tasks to replace on each network. The mainnet inventory was checked at
+block `9361187`; testnet at block `8229516`. Both contain 13 reverse-auction tasks.
+
+The changer validates matching auctions and the new backoff parameters, removes
+all old trigger tasks, and registers their replacements. Ignition returns the 13
+new task deployment futures for inspection. This preserves the task count for the
+migration (the four retired buffer tasks remain the only net removals).
+
 The existing Coiner emission amounts and timestamp schedule are preserved. This assumes
 MIP26-3701 has already migrated Coiner to timestamp scheduling.
 Network proxy and delegator addresses come from the MIP26-3701 parameters.
@@ -84,11 +113,16 @@ pnpm run deploy:mainnet:mip26-4301:ignition
 These commands deploy the implementation and changer. Governance executes the changer.
 
 The fork test uses the real mainnet Coiner proxy, MOC token and governance at
-block `9350345`. It deploys the proposed Coiner implementation and changer.
+block `9350345`. It deploys the proposed Coiner implementation, RBTC-only split task, 13 trigger
+tasks and changer.
 It checks state preservation, both mint stages, authorization, atomic rollback,
 removal of both buffers' flush and liquidate tasks and manual draining of both buffers to the configured
 recipients. It also verifies rewards routing at 70/3/27 and the three auction
-thresholds changing from 20,000 to 5,000 RIF.
+thresholds changing from 20,000 to 5,000 RIF. The split-task regression test
+reproduces the old perpetual availability with MOC balances and verifies that the
+replacement becomes available only at the RBTC threshold and stops after splitting.
+The trigger-task tests verify replacement coverage, auction preservation, configured
+backoff and increasing retry delays on real failed auction calls.
 Buffer tests prepare MOC balances directly with `deal`, independently of Coiner
 issuance.
 The stage-2 test uses an auxiliary changer through real governance to set the

@@ -2,6 +2,8 @@
 pragma solidity 0.8.24;
 
 import { Test } from "forge-std/Test.sol";
+import { TaskTriggerOrder } from "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol";
+import { TaskSplit } from "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MIP264301FlowUpdate, IMIP264301UpgradeDelegator, IMIP264301Coiner, IMIP264301Buffer, IMIP264301TasksRunner } from "../changers/mip26_4301/MIP264301FlowUpdate.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
@@ -30,7 +32,12 @@ interface IBufferRetirementProbe is IMIP264301Buffer {
 }
 
 interface ITasksRunnerRetirementProbe is IMIP264301TasksRunner {
+  function getTasks() external view returns (address[] memory);
   function containsTask(address task) external view returns (bool);
+}
+
+interface ITriggerOrderAuctionProbe {
+  function reverseAuction() external view returns (address);
 }
 
 interface IRifToMocAuctionThresholdProbe {
@@ -76,6 +83,9 @@ contract MIP264301FlowUpdateForkTest is Test {
   IBufferRetirementProbe internal mocRewardsBuffer;
   address internal btcUsdCoinPair;
   address[3] internal reverseAuctionsRifToMoc;
+  TaskSplit internal deprecatedSplitTask;
+  TaskSplit internal newSplitTask;
+  address[2][] internal triggerOrderTaskReplacements;
 
   function setUp() public {
     vm.createSelectFork(
@@ -120,6 +130,28 @@ contract MIP264301FlowUpdateForkTest is Test {
       vm.parseJsonAddress(params, ".MIP264301Module.reverseAuctionRifToMoc2"),
       vm.parseJsonAddress(params, ".MIP264301Module.reverseAuctionRifToMoc3")
     ];
+    deprecatedSplitTask = TaskSplit(
+      vm.parseJsonAddress(params, ".MIP264301Module.deprecatedSplitTask")
+    );
+    newSplitTask = new TaskSplit(
+      address(deprecatedSplitTask.commissionSplitter()),
+      address(0),
+      address(0),
+      deprecatedSplitTask.tokenBalanceThreshold(),
+      deprecatedSplitTask.feeTokenBalanceThreshold()
+    );
+    for (uint256 i = 1; i <= 13; i++) {
+      address deprecatedTask = vm.parseJsonAddress(
+        params,
+        string.concat(".MIP264301Module.deprecatedTriggerOrderTask", vm.toString(i))
+      );
+      TaskTriggerOrder replacement = new TaskTriggerOrder(
+        ITriggerOrderAuctionProbe(deprecatedTask).reverseAuction(),
+        5 minutes,
+        10 hours
+      );
+      triggerOrderTaskReplacements.push([deprecatedTask, address(replacement)]);
+    }
     governor = IGovernor(coiner.governor());
     previousImplementation = _implementation();
     // Only deploy the proposed implementation; retain the existing mainnet proxy and state.
@@ -130,22 +162,11 @@ contract MIP264301FlowUpdateForkTest is Test {
     }
     require(deployed != address(0), "Coiner implementation deployment failed");
     implementation = deployed;
-    changer = new MIP264301FlowUpdate(
-      address(coiner),
-      upgradeDelegator,
+    changer = _deployChanger(
       implementation,
-      vm.parseJsonAddress(params, ".MIP264301Module.destination"),
-      vm.parseJsonAddress(params, ".MIP264301Module.secondaryDestination"),
-      coinerBuffer,
       tasksRunner,
-      coinerBufferFlushTask,
-      coinerBufferLiquidateTask,
-      tasksRunnerBuffer,
-      tasksRunnerBufferFlushTask,
-      tasksRunnerBufferLiquidateTask,
-      mocRewardsBuffer,
-      btcUsdCoinPair,
-      reverseAuctionsRifToMoc
+      vm.parseJsonAddress(params, ".MIP264301Module.destination"),
+      vm.parseJsonAddress(params, ".MIP264301Module.secondaryDestination")
     );
     assertGt(address(coiner).code.length, 0);
     assertGt(address(token).code.length, 0);
@@ -198,22 +219,11 @@ contract MIP264301FlowUpdateForkTest is Test {
   function testForkDistributionFailureRollsBackUpgrade() public {
     bytes32 stateBefore = _emissionState();
     // Changer bytecode has no distribution setter, so configuration must revert.
-    MIP264301FlowUpdate invalid = new MIP264301FlowUpdate(
-      address(coiner),
-      upgradeDelegator,
+    MIP264301FlowUpdate invalid = _deployChanger(
       address(changer),
-      changer.destination(),
-      changer.secondaryDestination(),
-      coinerBuffer,
       tasksRunner,
-      coinerBufferFlushTask,
-      coinerBufferLiquidateTask,
-      tasksRunnerBuffer,
-      tasksRunnerBufferFlushTask,
-      tasksRunnerBufferLiquidateTask,
-      mocRewardsBuffer,
-      btcUsdCoinPair,
-      reverseAuctionsRifToMoc
+      changer.destination(),
+      changer.secondaryDestination()
     );
     address governorOwner = ICoinerGovernorOwner(address(governor)).owner();
     vm.prank(governorOwner);
@@ -338,25 +348,108 @@ contract MIP264301FlowUpdateForkTest is Test {
     }
   }
 
+  function testForkReplacesCommissionSplitTask() public {
+    assertTrue(tasksRunner.containsTask(address(deprecatedSplitTask)));
+    assertFalse(tasksRunner.containsTask(address(newSplitTask)));
+    _executeChanger(changer);
+    assertFalse(tasksRunner.containsTask(address(deprecatedSplitTask)));
+    assertTrue(tasksRunner.containsTask(address(newSplitTask)));
+    assertEq(
+      address(newSplitTask.commissionSplitter()),
+      address(deprecatedSplitTask.commissionSplitter())
+    );
+    assertEq(newSplitTask.tokenBalanceThreshold(), deprecatedSplitTask.tokenBalanceThreshold());
+    assertEq(
+      newSplitTask.feeTokenBalanceThreshold(),
+      deprecatedSplitTask.feeTokenBalanceThreshold()
+    );
+  }
+
+  function testForkSplitTaskIgnoresFeeTokensAndRunsOnlyForRBTC() public {
+    _executeChanger(changer);
+    address splitter = address(newSplitTask.commissionSplitter());
+    uint256 nativeThreshold = newSplitTask.tokenBalanceThreshold();
+    uint256 feeThreshold = newSplitTask.feeTokenBalanceThreshold();
+    vm.deal(splitter, 0);
+    deal(address(token), splitter, feeThreshold);
+    assertTrue(deprecatedSplitTask.checkTask());
+    deprecatedSplitTask.runTask();
+    assertTrue(deprecatedSplitTask.checkTask(), "Old task stays available after splitting");
+    assertFalse(newSplitTask.checkTask(), "Fee tokens must not make replacement available");
+    vm.deal(splitter, nativeThreshold - 1);
+    assertFalse(newSplitTask.checkTask());
+    vm.deal(splitter, nativeThreshold);
+    assertTrue(newSplitTask.checkTask());
+    newSplitTask.runTask();
+    assertFalse(newSplitTask.checkTask(), "Task must stop being available after splitting RBTC");
+    assertEq(splitter.balance, 0);
+    assertEq(token.balanceOf(splitter), feeThreshold);
+  }
+
+  function testForkReplacesAllTriggerOrderTasksWithFiveMinuteBaseAndTenHourMax() public {
+    assertEq(triggerOrderTaskReplacements.length, 13);
+    address[] memory beforeTasks = tasksRunner.getTasks();
+    uint256 auctionTasks;
+    for (uint256 i = 0; i < beforeTasks.length; i++) {
+      try ITriggerOrderAuctionProbe(beforeTasks[i]).reverseAuction() returns (address) {
+        auctionTasks++;
+      } catch {}
+    }
+    assertEq(auctionTasks, 13, "Task inventory must cover every reverse auction");
+    for (uint256 i = 0; i < triggerOrderTaskReplacements.length; i++) {
+      assertTrue(tasksRunner.containsTask(triggerOrderTaskReplacements[i][0]));
+      assertFalse(tasksRunner.containsTask(triggerOrderTaskReplacements[i][1]));
+    }
+    _executeChanger(changer);
+    // The four retired buffer tasks are the only net removals.
+    assertEq(tasksRunner.getTasks().length, beforeTasks.length - 4);
+    for (uint256 i = 0; i < triggerOrderTaskReplacements.length; i++) {
+      address oldTask = triggerOrderTaskReplacements[i][0];
+      TaskTriggerOrder replacement = TaskTriggerOrder(triggerOrderTaskReplacements[i][1]);
+      assertFalse(tasksRunner.containsTask(oldTask));
+      assertTrue(tasksRunner.containsTask(address(replacement)));
+      assertEq(
+        address(replacement.reverseAuction()),
+        ITriggerOrderAuctionProbe(oldTask).reverseAuction()
+      );
+      assertEq(replacement.BASE_SLEEP_TIME(), 5 minutes);
+      assertEq(replacement.MAX_REVERT_SLEEP_TIME(), 10 hours);
+      assertEq(replacement.errorCount(), 0);
+      assertEq(replacement.currentRevertSleepTime(), 0);
+    }
+  }
+
+  function testForkTriggerOrderBackoffGrowsFromFiveMinutesToTenHours() public {
+    _executeChanger(changer);
+    TaskTriggerOrder task = TaskTriggerOrder(triggerOrderTaskReplacements[0][1]);
+    // The real RBTC auction cannot swap without funds, producing real trigger failures.
+    vm.deal(address(task.reverseAuction()), 0);
+    task.runTask();
+    assertEq(task.errorCount(), 1);
+    assertEq(task.currentRevertSleepTime(), 5 minutes);
+    uint256 firstFailureAt = task.lastRevertTimestamp();
+    vm.warp(block.timestamp + 1);
+    task.runTask();
+    assertEq(task.errorCount(), 1, "Calls during backoff must not increase errors");
+    assertEq(task.lastRevertTimestamp(), firstFailureAt);
+    for (uint256 attempt = 2; attempt <= 9; attempt++) {
+      vm.warp(task.lastRevertTimestamp() + task.currentRevertSleepTime());
+      task.runTask();
+      uint256 expected = (5 minutes) * (2 ** (attempt - 1));
+      if (expected > 10 hours) expected = 10 hours;
+      assertEq(task.errorCount(), attempt);
+      assertEq(task.currentRevertSleepTime(), expected);
+    }
+  }
+
   function testForkTaskRemovalFailureRollsBackCoinerChanges() public {
     address destinationBefore = coiner.getDestination();
     bytes32 stateBefore = _emissionState();
-    MIP264301FlowUpdate invalid = new MIP264301FlowUpdate(
-      address(coiner),
-      upgradeDelegator,
+    MIP264301FlowUpdate invalid = _deployChanger(
       implementation,
-      changer.destination(),
-      changer.secondaryDestination(),
-      coinerBuffer,
       IMIP264301TasksRunner(address(token)),
-      coinerBufferFlushTask,
-      coinerBufferLiquidateTask,
-      tasksRunnerBuffer,
-      tasksRunnerBufferFlushTask,
-      tasksRunnerBufferLiquidateTask,
-      mocRewardsBuffer,
-      btcUsdCoinPair,
-      reverseAuctionsRifToMoc
+      changer.destination(),
+      changer.secondaryDestination()
     );
     address governorOwner = ICoinerGovernorOwner(address(governor)).owner();
     vm.prank(governorOwner);
@@ -396,6 +489,37 @@ contract MIP264301FlowUpdateForkTest is Test {
     assertEq(token.totalSupply() - supplyBefore, amount);
     assertEq(coiner.getRemainingToMint(), remaining - amount);
     assertEq(coiner.getNextMintAt(), block.timestamp + coiner.getMintTimestampInterval());
+  }
+
+  function _deployChanger(
+    address implementation_,
+    IMIP264301TasksRunner runner_,
+    address destination_,
+    address secondaryDestination_
+  ) internal returns (MIP264301FlowUpdate) {
+    address[3] memory auctions = reverseAuctionsRifToMoc;
+    address[2] memory splitTasks = [address(deprecatedSplitTask), address(newSplitTask)];
+    address[2][] memory triggerOrderTasks = triggerOrderTaskReplacements;
+    return
+      new MIP264301FlowUpdate(
+        address(coiner),
+        upgradeDelegator,
+        implementation_,
+        destination_,
+        secondaryDestination_,
+        coinerBuffer,
+        runner_,
+        coinerBufferFlushTask,
+        coinerBufferLiquidateTask,
+        tasksRunnerBuffer,
+        tasksRunnerBufferFlushTask,
+        tasksRunnerBufferLiquidateTask,
+        mocRewardsBuffer,
+        btcUsdCoinPair,
+        auctions,
+        splitTasks,
+        triggerOrderTasks
+      );
   }
 
   function _executeChanger(MIP264301FlowUpdate proposal) internal {

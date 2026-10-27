@@ -9,7 +9,7 @@
     "@moc/lending": "git+ssh://git@github.com/money-on-chain/lending-and-borrowing-sc.git#v3.0.20",
     "@moc/main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
     "@moc/moc-main": "git+ssh://git@github.com/money-on-chain/main-sc-protocol-v2.git#v3.0.9",
-    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.20",
+    "@moc/oracles": "git+ssh://git@github.com/money-on-chain/OMoC-Decentralized-Oracle.git#v3.0.21",
     "@moc/periphery": "git+ssh://git@github.com/money-on-chain/MoC-Periphery#v3.0.7",
     "@moc/price-oracle-interfaces": "git+ssh://git@github.com/money-on-chain/price_oracle_interfaces.git#v0.1.0",
     "@moc/rbtc": "git+ssh://git@github.com/money-on-chain/main-RBTC-contract.git#v3.0.7",
@@ -95,9 +95,17 @@
     "deploy:mainnet:mip26-4301:ignition": "npx hardhat --network rskMainnet --build-profile default ignition deploy ignition/modules/MIP26-4301/MIP26-4301.js --parameters ignition/modules/MIP26-4301/parameters/rskMainnet.json --deployment-id mip26-4301-rsk-mainnet"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,cjs,mjs}": ["eslint --fix --max-warnings=0", "prettier --write"],
-    "contracts/**/*.sol": ["prettier --write", "solhint --max-warnings=0"],
-    "*.{json,md,yml,yaml}": ["prettier --write"]
+    "*.{ts,tsx,js,cjs,mjs}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "contracts/**/*.sol": [
+      "prettier --write",
+      "solhint --max-warnings=0"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "overrides": {},
   "type": "module",
@@ -107,7 +115,7 @@
     "@moc/lending": "3.0.20",
     "@moc/main": "3.0.9",
     "@moc/moc-main": "3.0.9",
-    "@moc/oracles": "3.0.20",
+    "@moc/oracles": "3.0.21",
     "@moc/periphery": "3.0.7",
     "@moc/price-oracle-interfaces": "0.1.0",
     "@moc/rbtc": "3.0.7",
@@ -137,5 +145,11 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["config/solidity.js", "config/solidity.d.ts", "contracts", "ignition", "scripts"]
+  "files": [
+    "config/solidity.js",
+    "config/solidity.d.ts",
+    "contracts",
+    "ignition",
+    "scripts"
+  ]
 }

@@ -15,6 +15,20 @@
     "btcUsdCoinPair": "0x39192498FcF1dBE11653040bB49308E09A1056AC",
     "reverseAuctionRifToMoc": "0xda962496b194757Be56E8856be4F4190e5290729",
     "reverseAuctionRifToMoc2": "0x211854BB4968174edc886a59a51600fA3Fe21704",
-    "reverseAuctionRifToMoc3": "0x55c888D946784fcc732dB1bB4A5b059C67aE5510"
+    "reverseAuctionRifToMoc3": "0x55c888D946784fcc732dB1bB4A5b059C67aE5510",
+    "deprecatedSplitTask": "0xd384B7fB51a6542caC42a28B47a8935a7D39FBFb",
+    "deprecatedTriggerOrderTask1": "0xEFb72b1C4F536ECB867533070784817434AfE910",
+    "deprecatedTriggerOrderTask2": "0x4f237C0Da78e7a29C91A5c607fdb992F5BaA1282",
+    "deprecatedTriggerOrderTask3": "0x8ffB9Db7e722F50056d31058Fc0075c165c60c0d",
+    "deprecatedTriggerOrderTask4": "0x13421161F352E6E995fe1ae7A907F11716e880df",
+    "deprecatedTriggerOrderTask5": "0xdf3Af84D75a247626dcf166203f35F328238A2D3",
+    "deprecatedTriggerOrderTask6": "0x79dc7754eFA114c2F22A8bBD2e4c60A1f541E541",
+    "deprecatedTriggerOrderTask7": "0xA92Ca568e96885B0439d38D8293847f4190dB400",
+    "deprecatedTriggerOrderTask8": "0xE3fa879063A2f6B6E8e02C38D53a4bCfbC83d0d5",
+    "deprecatedTriggerOrderTask9": "0x36484aDA55dEE0854cFb07CBECE344F799E7bB2b",
+    "deprecatedTriggerOrderTask10": "0x96B1e6d7A6d229efb0b7D1488d0b079FB132Ac8b",
+    "deprecatedTriggerOrderTask11": "0x2942792ce734038110f48E3C66d4e3155E812462",
+    "deprecatedTriggerOrderTask12": "0x0aF72276598CBA8326dc29eDeDe949A05E1205AD",
+    "deprecatedTriggerOrderTask13": "0x9Ec9e06295D3dd04E455d989785794553631b319"
   }
 }

@@ -21,4 +21,5 @@ export const npmFilesToBuild = [
   "@moc/oracles/contracts/tasks/mocFlow/buffer/TaskLiquidate.sol",
   "@moc/oracles/contracts/tasks/lending/TaskTPInjection.sol",
   "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol",
 ];

@@ -29,7 +29,11 @@ export default buildModule("MIP264001Module", (m) => {
 
   const rbtcToMocTask = m.contract(
     "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol:TaskTriggerOrder",
-    [rbtcToMocAuction, m.getParameter("revertSleepTime", 36000), m.getParameter("taskOwner")],
+    [
+      rbtcToMocAuction,
+      m.getParameter("revertSleepTime", 36000),
+      m.getParameter("revertSleepTime", 36000),
+    ],
     { id: "TaskTriggerOrderRBTCtoMOC_rifUsdSubsidy" },
   );
 
