@@ -50,11 +50,11 @@ interface IMIP264301ReverseAuction {
 
 /**
  * @notice Updates MOC issuance and reward routing, retires intermediate buffer tasks,
- *         lowers RIF auction thresholds and replaces split and trigger-order tasks.
+ *         lowers RIF auction thresholds, replaces split and trigger-order tasks,
+ *         and enables price publications with expiration on both coin pairs.
  */
 contract MIP264301FlowUpdate is IChangeContract {
-  address public immutable destination;
-  address public immutable secondaryDestination;
+  address public immutable multisigRewards;
   uint256 public constant SECONDARY_PERCENT = 2500;
   uint256 public constant RIF_TO_MOC_ORDER_THRESHOLD = 5000 ether;
   uint256 public constant TRIGGER_ORDER_BASE_TIME = 5 minutes;
@@ -72,6 +72,8 @@ contract MIP264301FlowUpdate is IChangeContract {
   address public immutable tasksRunnerBufferLiquidateTask;
   IMIP264301Buffer public immutable mocRewardsBuffer;
   address public immutable btcUsdCoinPair;
+  address public immutable rifUsdCoinPair;
+  address public immutable newCoinPairPriceImplementation;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc2;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc3;
@@ -84,8 +86,7 @@ contract MIP264301FlowUpdate is IChangeContract {
     address coinerProxy_,
     IMIP264301UpgradeDelegator flowUpgradeDelegator_,
     address newCoinerImplementation_,
-    address destination_,
-    address secondaryDestination_,
+    address multisigRewards_,
     IMIP264301Buffer coinerBuffer_,
     IMIP264301TasksRunner tasksRunner_,
     address coinerBufferFlushTask_,
@@ -97,13 +98,14 @@ contract MIP264301FlowUpdate is IChangeContract {
     address btcUsdCoinPair_,
     address[3] memory reverseAuctionsRifToMoc_,
     address[2] memory splitTasks_,
-    address[2][] memory triggerOrderTasks_
+    address[2][] memory triggerOrderTasks_,
+    address rifUsdCoinPair_,
+    address newCoinPairPriceImplementation_
   ) {
     require(coinerProxy_ != address(0), "Invalid Coiner proxy");
     require(address(flowUpgradeDelegator_) != address(0), "Invalid UpgradeDelegator");
     require(newCoinerImplementation_ != address(0), "Invalid implementation");
-    require(destination_ != address(0), "Invalid destination");
-    require(secondaryDestination_ != address(0), "Invalid secondary destination");
+    require(multisigRewards_ != address(0), "Invalid multisig rewards");
     require(address(coinerBuffer_) != address(0), "Invalid buffer");
     require(address(tasksRunner_) != address(0), "Invalid TasksRunner");
     require(coinerBufferFlushTask_ != coinerBufferLiquidateTask_, "Duplicate buffer task");
@@ -118,6 +120,12 @@ contract MIP264301FlowUpdate is IChangeContract {
     require(tasksRunnerBuffer_ != address(0), "Invalid TasksRunner buffer");
     require(address(mocRewardsBuffer_) != address(0), "Invalid MOC rewards buffer");
     require(btcUsdCoinPair_ != address(0), "Invalid BTC/USD coin pair");
+    require(rifUsdCoinPair_ != address(0), "Invalid RIF/USD coin pair");
+    require(rifUsdCoinPair_ != btcUsdCoinPair_, "Duplicate coin pair");
+    require(
+      newCoinPairPriceImplementation_.code.length > 0,
+      "Invalid CoinPairPrice implementation"
+    );
     require(splitTasks_[0] != address(0) && splitTasks_[1] != address(0), "Invalid split task");
     require(splitTasks_[0] != splitTasks_[1], "Split task must be replaced");
     require(
@@ -177,8 +185,7 @@ contract MIP264301FlowUpdate is IChangeContract {
       IMIP264301BufferTask(tasksRunnerBufferLiquidateTask_).buffer() == tasksRunnerBuffer_,
       "Invalid TasksRunner buffer liquidate task"
     );
-    destination = destination_;
-    secondaryDestination = secondaryDestination_;
+    multisigRewards = multisigRewards_;
     coinerProxy = coinerProxy_;
     flowUpgradeDelegator = flowUpgradeDelegator_;
     newCoinerImplementation = newCoinerImplementation_;
@@ -191,6 +198,8 @@ contract MIP264301FlowUpdate is IChangeContract {
     tasksRunnerBufferLiquidateTask = tasksRunnerBufferLiquidateTask_;
     mocRewardsBuffer = mocRewardsBuffer_;
     btcUsdCoinPair = btcUsdCoinPair_;
+    rifUsdCoinPair = rifUsdCoinPair_;
+    newCoinPairPriceImplementation = newCoinPairPriceImplementation_;
     reverseAuctionRifToMoc = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[0]);
     reverseAuctionRifToMoc2 = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[1]);
     reverseAuctionRifToMoc3 = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[2]);
@@ -202,11 +211,11 @@ contract MIP264301FlowUpdate is IChangeContract {
     // 1. Upgrade Coiner to MoC-Flow v3.0.5 while retaining the proxy's issuance state.
     flowUpgradeDelegator.upgrade(coinerProxy, newCoinerImplementation);
 
-    // 2. Send future mint steps directly to the primary (75%) and secondary (25%)
+    // 2. Send future mint steps directly to the primary (75%) and multisig (25%)
     // recipients, bypassing the old Coiner distribution buffer.
     IMIP264301Coiner(coinerProxy).setMintDistribution(
-      destination,
-      secondaryDestination,
+      address(mocRewardsBuffer),
+      multisigRewards,
       SECONDARY_PERCENT
     );
 
@@ -245,6 +254,12 @@ contract MIP264301FlowUpdate is IChangeContract {
     for (uint256 i = 0; i < newTriggerOrderTasks.length; i++) {
       tasksRunner.addTask(newTriggerOrderTasks[i]);
     }
+
+    // 9. Upgrade both registered price feeds to oracles v3.0.21, enabling V4
+    // publications with expiration while preserving the legacy V3 publishing API.
+    // The proxy state and round schedules are retained; no reinitialization is needed.
+    flowUpgradeDelegator.upgrade(btcUsdCoinPair, newCoinPairPriceImplementation);
+    flowUpgradeDelegator.upgrade(rifUsdCoinPair, newCoinPairPriceImplementation);
   }
 
   function _updateMocRewardsBuffer() internal {

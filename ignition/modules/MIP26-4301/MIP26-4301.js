@@ -4,6 +4,13 @@ export default buildModule("MIP264301Module", (m) => {
   const coinerImplementation = m.contract("@moc/flow/contracts/Coiner.sol:Coiner", [], {
     id: "CoinerImplementation",
   });
+  const coinPairPriceImplementation = m.contract(
+    "@moc/oracles/contracts/CoinPairPrice.sol:CoinPairPrice",
+    [],
+    {
+      id: "CoinPairPriceImplementation",
+    },
+  );
   const deprecatedSplitTask = m.contractAt(
     "IMIP264301SplitTask",
     m.getParameter("deprecatedSplitTask"),
@@ -39,8 +46,7 @@ export default buildModule("MIP264301Module", (m) => {
     m.getParameter("coinerProxy"),
     m.getParameter("flowUpgradeDelegator"),
     coinerImplementation,
-    m.getParameter("destination"),
-    m.getParameter("secondaryDestination"),
+    m.getParameter("multisigRewards"),
     m.getParameter("coinerBuffer"),
     m.getParameter("tasksRunner"),
     m.getParameter("coinerBufferFlushTask"),
@@ -57,7 +63,15 @@ export default buildModule("MIP264301Module", (m) => {
     ],
     [deprecatedSplitTask, newSplitTask],
     triggerOrderTasks,
+    m.getParameter("rifUsdCoinPair"),
+    coinPairPriceImplementation,
   ]);
 
-  return { coinerImplementation, newSplitTask, ...newTriggerOrderTasks, changer };
+  return {
+    coinerImplementation,
+    coinPairPriceImplementation,
+    newSplitTask,
+    ...newTriggerOrderTasks,
+    changer,
+  };
 });

@@ -14,6 +14,7 @@ export const npmFilesToBuild = [
   "@moc/flow/contracts/BufferCoinbase.sol",
   "@moc/flow/contracts/BufferToken.sol",
   "@moc/flow/contracts/Coiner.sol",
+  "@moc/oracles/contracts/CoinPairPrice.sol",
   "@moc/oracles/contracts/LiquidationEngine.sol",
   "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
   "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",

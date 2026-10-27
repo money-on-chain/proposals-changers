@@ -2,13 +2,14 @@
 
 Deploys Coiner from `@moc/flow` (`MoC-Flow v3.0.5`) and its governance changer.
 The changer upgrades the existing Coiner proxy through the Flow UpgradeDelegator,
-then calls `setMintDistribution` in the same transaction. The constructor receives
-`destination` and `secondaryDestination` from the Ignition parameter file.
+then calls `setMintDistribution` in the same transaction. The primary recipient
+is `mocRewardsBuffer`; `multisigRewards` comes from the Ignition parameter file.
 The secondary share is fixed by `SECONDARY_PERCENT = 2500` (25%).
-Both network files configure:
+Each network routes the primary 75% share to its own rewards buffer:
 
-- Primary destination: `0xf09006E812BE98c7B18c877Af5C126629acB6cAb` (75%).
-- Secondary destination: `0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183` (25%, `2500` basis points).
+- Mainnet primary destination: `0xf09006E812BE98c7B18c877Af5C126629acB6cAb` (75%).
+- Testnet primary destination: `0x40d86d6ac67059bAe5ae42B6FCaB843c1c6af300` (75%).
+- Multisig rewards: `0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183` (25%, `2500` basis points).
 
 The changer also removes the buffer's flush and liquidate tasks from TasksRunner,
 sets its general liquidation threshold to zero, and clears every output's flush
@@ -101,6 +102,19 @@ all old trigger tasks, and registers their replacements. Ignition returns the 13
 new task deployment futures for inspection. This preserves the task count for the
 migration (the four retired buffer tasks remain the only net removals).
 
+Ignition deploys one shared `CoinPairPrice` implementation from `@moc/oracles
+v3.0.21`, and the changer upgrades both registered price-feed proxies through the
+existing Flow UpgradeDelegator:
+
+- BTC/USD: `0xa288319eCb63301e21963E21EF3Ca8fb720d2672` on mainnet.
+- RIF/USD: `0xaFb1B8C320ACc776c1279bcDB24Ab8F84aB727A4` on mainnet.
+
+The new implementation adds `publishPriceWithExpiration` for V4 publications and
+retains legacy V3 publishing. The existing proxy state, prices and rounds are
+preserved without reinitialization. `btcUsdCoinPair` and `rifUsdCoinPair` supply the
+network-specific proxies. OracleManager also registers `TASKSRUNNER` as a round
+participant; it is not a price-feed proxy and is not upgraded to CoinPairPrice.
+
 The existing Coiner emission amounts and timestamp schedule are preserved. This assumes
 MIP26-3701 has already migrated Coiner to timestamp scheduling.
 Network proxy and delegator addresses come from the MIP26-3701 parameters.
@@ -114,7 +128,7 @@ These commands deploy the implementation and changer. Governance executes the ch
 
 The fork test uses the real mainnet Coiner proxy, MOC token and governance at
 block `9350345`. It deploys the proposed Coiner implementation, RBTC-only split task, 13 trigger
-tasks and changer.
+tasks, the shared CoinPairPrice implementation and changer.
 It checks state preservation, both mint stages, authorization, atomic rollback,
 removal of both buffers' flush and liquidate tasks and manual draining of both buffers to the configured
 recipients. It also verifies rewards routing at 70/3/27 and the three auction
@@ -122,7 +136,10 @@ thresholds changing from 20,000 to 5,000 RIF. The split-task regression test
 reproduces the old perpetual availability with MOC balances and verifies that the
 replacement becomes available only at the RBTC threshold and stops after splitting.
 The trigger-task tests verify replacement coverage, auction preservation, configured
-backoff and increasing retry delays on real failed auction calls.
+backoff and increasing retry delays on real failed auction calls. Coin-pair tests
+check coverage of all registered price feeds, preserved state, V4 publications
+with valid and expired signatures, and legacy V3 publishing using real staking
+and oracle-owner signer rotation on the fork.
 Buffer tests prepare MOC balances directly with `deal`, independently of Coiner
 issuance.
 The stage-2 test uses an auxiliary changer through real governance to set the

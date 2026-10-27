@@ -6,6 +6,7 @@ import { TaskTriggerOrder } from "@moc/oracles/contracts/tasks/mocFlow/reverseAu
 import { TaskSplit } from "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MIP264301FlowUpdate, IMIP264301UpgradeDelegator, IMIP264301Coiner, IMIP264301Buffer, IMIP264301TasksRunner } from "../changers/mip26_4301/MIP264301FlowUpdate.sol";
+import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
 
@@ -44,6 +45,50 @@ interface IRifToMocAuctionThresholdProbe {
   function orderThreshold() external view returns (uint256);
 }
 
+interface ICoinPairExpirationProbe {
+  function getCoinPair() external view returns (bytes32);
+  function getOracleManager() external view returns (address);
+  function governor() external view returns (address);
+  function roundLockPeriodSecs() external view returns (uint256);
+  function getPriceInfo() external view returns (uint256, bool, uint256);
+  function getRoundInfo()
+    external
+    view
+    returns (uint256, uint256, uint256, uint256, address[] memory, address[] memory);
+  function publishPrice(
+    uint256 version,
+    bytes32 pair,
+    uint256 price,
+    address votedOracle,
+    uint256 publicationBlock,
+    uint8[] calldata v,
+    bytes32[] calldata r,
+    bytes32[] calldata s
+  ) external;
+  function publishPriceWithExpiration(
+    uint256 version,
+    bytes32 pair,
+    uint256 price,
+    address votedOracle,
+    uint256 publicationBlock,
+    uint256 expiration,
+    uint8[] calldata v,
+    bytes32[] calldata r,
+    bytes32[] calldata s
+  ) external;
+}
+
+interface ICoinPairOracleManagerProbe {
+  function getCoinPairCount() external view returns (uint256);
+  function getCoinPairAtIndex(uint256 index) external view returns (bytes32);
+  function getContractAddress(bytes32 pair) external view returns (address);
+  function getStakingContract() external view returns (address);
+}
+
+interface IPriceSignerStakingProbe {
+  function setOracleAddress(address oracle) external;
+}
+
 interface ICoinerGovernorOwner {
   function owner() external view returns (address);
 }
@@ -62,7 +107,7 @@ contract CoinerStage2TestChanger is IChangeContract {
 }
 
 /** @notice Executes MIP26-4301 against the real Coiner, token and governance on mainnet. */
-contract MIP264301FlowUpdateForkTest is Test {
+contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
   uint256 internal constant FORK_BLOCK = 9_350_345;
   bytes32 internal constant IMPLEMENTATION_SLOT =
     0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
@@ -82,6 +127,8 @@ contract MIP264301FlowUpdateForkTest is Test {
   address internal implementation;
   IBufferRetirementProbe internal mocRewardsBuffer;
   address internal btcUsdCoinPair;
+  address internal rifUsdCoinPair;
+  address internal coinPairPriceImplementation;
   address[3] internal reverseAuctionsRifToMoc;
   TaskSplit internal deprecatedSplitTask;
   TaskSplit internal newSplitTask;
@@ -152,6 +199,14 @@ contract MIP264301FlowUpdateForkTest is Test {
       );
       triggerOrderTaskReplacements.push([deprecatedTask, address(replacement)]);
     }
+    rifUsdCoinPair = vm.parseJsonAddress(params, ".MIP264301Module.rifUsdCoinPair");
+    bytes memory coinPairCode = vm.getCode("CoinPairPrice");
+    address deployedCoinPair;
+    assembly ("memory-safe") {
+      deployedCoinPair := create(0, add(coinPairCode, 32), mload(coinPairCode))
+    }
+    require(deployedCoinPair != address(0), "CoinPairPrice implementation deployment failed");
+    coinPairPriceImplementation = deployedCoinPair;
     governor = IGovernor(coiner.governor());
     previousImplementation = _implementation();
     // Only deploy the proposed implementation; retain the existing mainnet proxy and state.
@@ -165,8 +220,7 @@ contract MIP264301FlowUpdateForkTest is Test {
     changer = _deployChanger(
       implementation,
       tasksRunner,
-      vm.parseJsonAddress(params, ".MIP264301Module.destination"),
-      vm.parseJsonAddress(params, ".MIP264301Module.secondaryDestination")
+      vm.parseJsonAddress(params, ".MIP264301Module.multisigRewards")
     );
     assertGt(address(coiner).code.length, 0);
     assertGt(address(token).code.length, 0);
@@ -182,8 +236,8 @@ contract MIP264301FlowUpdateForkTest is Test {
     assertEq(_emissionState(), stateBefore, "Emission state changed during upgrade");
     assertEq(coiner.governor(), governorBefore);
     assertEq(token.totalSupply(), supplyBefore);
-    assertEq(coiner.getDestination(), changer.destination());
-    assertEq(coiner.getSecondaryDestination(), changer.secondaryDestination());
+    assertEq(coiner.getDestination(), address(changer.mocRewardsBuffer()));
+    assertEq(coiner.getSecondaryDestination(), changer.multisigRewards());
     assertEq(coiner.getSecondaryDestinationPercent(), 2500);
   }
 
@@ -222,8 +276,7 @@ contract MIP264301FlowUpdateForkTest is Test {
     MIP264301FlowUpdate invalid = _deployChanger(
       address(changer),
       tasksRunner,
-      changer.destination(),
-      changer.secondaryDestination()
+      changer.multisigRewards()
     );
     address governorOwner = ICoinerGovernorOwner(address(governor)).owner();
     vm.prank(governorOwner);
@@ -254,16 +307,16 @@ contract MIP264301FlowUpdateForkTest is Test {
     // Keep historical rounding dust and add 100 units to distribute 75/25.
     uint256 historicalDust = coinerBuffer.getLiquidated();
     deal(address(token), address(coinerBuffer), historicalDust + 100);
-    uint256 primaryBefore = token.balanceOf(changer.destination());
-    uint256 secondaryBefore = token.balanceOf(changer.secondaryDestination());
+    uint256 primaryBefore = token.balanceOf(address(changer.mocRewardsBuffer()));
+    uint256 secondaryBefore = token.balanceOf(changer.multisigRewards());
 
     coinerBuffer.liquidate();
     for (uint256 i = 0; i < coinerBuffer.getNumOutputs(); i++) {
       coinerBuffer.flush(i);
     }
 
-    assertEq(token.balanceOf(changer.destination()), primaryBefore + 75);
-    assertEq(token.balanceOf(changer.secondaryDestination()), secondaryBefore + 25);
+    assertEq(token.balanceOf(address(changer.mocRewardsBuffer())), primaryBefore + 75);
+    assertEq(token.balanceOf(changer.multisigRewards()), secondaryBefore + 25);
     assertEq(token.balanceOf(address(coinerBuffer)), historicalDust);
   }
 
@@ -442,14 +495,58 @@ contract MIP264301FlowUpdateForkTest is Test {
     }
   }
 
+  function testForkUpgradesAllRegisteredPriceFeedsAndPreservesState() public {
+    address[2] memory pairs = [btcUsdCoinPair, rifUsdCoinPair];
+    bytes32[2] memory stateBefore = [_coinPairStateHash(pairs[0]), _coinPairStateHash(pairs[1])];
+    bytes32 tasksRunnerImplementation = vm.load(address(tasksRunner), IMPLEMENTATION_SLOT);
+    ICoinPairOracleManagerProbe manager = ICoinPairOracleManagerProbe(
+      ICoinPairExpirationProbe(btcUsdCoinPair).getOracleManager()
+    );
+    uint256 priceFeeds;
+    for (uint256 i = 0; i < manager.getCoinPairCount(); i++) {
+      bytes32 name = manager.getCoinPairAtIndex(i);
+      if (name == bytes32("TASKSRUNNER")) continue;
+      address registered = manager.getContractAddress(name);
+      assertTrue(registered == pairs[0] || registered == pairs[1], "Uncovered price feed");
+      priceFeeds++;
+    }
+    assertEq(priceFeeds, pairs.length);
+    _executeChanger(changer);
+    for (uint256 i = 0; i < pairs.length; i++) {
+      assertEq(
+        address(uint160(uint256(vm.load(pairs[i], IMPLEMENTATION_SLOT)))),
+        coinPairPriceImplementation
+      );
+      assertEq(_coinPairStateHash(pairs[i]), stateBefore[i], "Price feed state changed");
+    }
+    assertEq(vm.load(address(tasksRunner), IMPLEMENTATION_SLOT), tasksRunnerImplementation);
+  }
+
+  function testForkBothCoinPairsPublishPricesWithExpiration() public {
+    _executeChanger(changer);
+    _publishSignedCoinPairPrice(btcUsdCoinPair, true, false);
+    _publishSignedCoinPairPrice(rifUsdCoinPair, true, false);
+  }
+
+  function testForkBothCoinPairsRejectExpiredPublications() public {
+    _executeChanger(changer);
+    _publishSignedCoinPairPrice(btcUsdCoinPair, true, true);
+    _publishSignedCoinPairPrice(rifUsdCoinPair, true, true);
+  }
+
+  function testForkBothCoinPairsStillAcceptLegacyV3Publications() public {
+    _executeChanger(changer);
+    _publishSignedCoinPairPrice(btcUsdCoinPair, false, false);
+    _publishSignedCoinPairPrice(rifUsdCoinPair, false, false);
+  }
+
   function testForkTaskRemovalFailureRollsBackCoinerChanges() public {
     address destinationBefore = coiner.getDestination();
     bytes32 stateBefore = _emissionState();
     MIP264301FlowUpdate invalid = _deployChanger(
       implementation,
       IMIP264301TasksRunner(address(token)),
-      changer.destination(),
-      changer.secondaryDestination()
+      changer.multisigRewards()
     );
     address governorOwner = ICoinerGovernorOwner(address(governor)).owner();
     vm.prank(governorOwner);
@@ -476,26 +573,107 @@ contract MIP264301FlowUpdateForkTest is Test {
       ? (remaining * coiner.getFirstStagePercent()) / 10000
       : (remaining < coiner.getSecondStageConstant() ? remaining : coiner.getSecondStageConstant());
     assertGt(amount, 0);
-    uint256 primaryBefore = token.balanceOf(changer.destination());
-    uint256 secondaryBefore = token.balanceOf(changer.secondaryDestination());
+    uint256 primaryBefore = token.balanceOf(address(changer.mocRewardsBuffer()));
+    uint256 secondaryBefore = token.balanceOf(changer.multisigRewards());
     uint256 coinerBalanceBefore = token.balanceOf(address(coiner));
     uint256 supplyBefore = token.totalSupply();
     vm.warp(block.timestamp > coiner.getNextMintAt() ? block.timestamp : coiner.getNextMintAt());
     coiner.mintStep();
     uint256 secondaryAmount = (amount * 2500) / 10000;
-    assertEq(token.balanceOf(changer.destination()) - primaryBefore, amount - secondaryAmount);
-    assertEq(token.balanceOf(changer.secondaryDestination()) - secondaryBefore, secondaryAmount);
+    assertEq(
+      token.balanceOf(address(changer.mocRewardsBuffer())) - primaryBefore,
+      amount - secondaryAmount
+    );
+    assertEq(token.balanceOf(changer.multisigRewards()) - secondaryBefore, secondaryAmount);
     assertEq(token.balanceOf(address(coiner)), coinerBalanceBefore);
     assertEq(token.totalSupply() - supplyBefore, amount);
     assertEq(coiner.getRemainingToMint(), remaining - amount);
     assertEq(coiner.getNextMintAt(), block.timestamp + coiner.getMintTimestampInterval());
   }
 
+  function _coinPairStateHash(address proxy) internal view returns (bytes32 stateHash) {
+    bytes4[6] memory getters = [
+      ICoinPairExpirationProbe.getPriceInfo.selector,
+      ICoinPairExpirationProbe.getRoundInfo.selector,
+      ICoinPairExpirationProbe.getCoinPair.selector,
+      ICoinPairExpirationProbe.getOracleManager.selector,
+      ICoinPairExpirationProbe.governor.selector,
+      ICoinPairExpirationProbe.roundLockPeriodSecs.selector
+    ];
+    for (uint256 i = 0; i < getters.length; i++) {
+      (bool success, bytes memory data) = proxy.staticcall(abi.encodeWithSelector(getters[i]));
+      require(success, "Coin pair state read failed");
+      stateHash = keccak256(abi.encode(stateHash, data));
+    }
+  }
+
+  function _publishSignedCoinPairPrice(address proxy, bool withExpiration, bool expired) internal {
+    ICoinPairExpirationProbe pair = ICoinPairExpirationProbe(proxy);
+    ICoinPairOracleManagerProbe manager = ICoinPairOracleManagerProbe(pair.getOracleManager());
+    IPriceSignerStakingProbe staking = IPriceSignerStakingProbe(manager.getStakingContract());
+    (, , , , address[] memory owners, ) = pair.getRoundInfo();
+    assertGt(owners.length, 0);
+    uint256 majority = owners.length / 2 + 1;
+    uint256[] memory keys = new uint256[](majority);
+    address[] memory signers = new address[](majority);
+    for (uint256 i = 0; i < majority; i++) {
+      keys[i] = uint256(uint160(proxy)) + i + 1;
+      signers[i] = vm.addr(keys[i]);
+      vm.prank(owners[i]);
+      staking.setOracleAddress(signers[i]);
+    }
+    (uint256 previousPrice, , uint256 publicationBlock) = pair.getPriceInfo();
+    bytes32 coinPair = pair.getCoinPair();
+    uint256 price = previousPrice + 333333;
+    // Read through the cheatcode so the optimizer cannot recompute the signed
+    // expiration after vm.warp changes this transaction's timestamp.
+    uint256 expiration = vm.getBlockTimestamp() + 5 minutes;
+    bytes32 digest = withExpiration
+      ? keccak256(
+        abi.encodePacked(
+          "\x19Ethereum Signed Message:\n180",
+          uint256(4),
+          coinPair,
+          price,
+          signers[0],
+          publicationBlock,
+          expiration
+        )
+      )
+      : _buildDigest(3, coinPair, price, signers[0], publicationBlock);
+    (uint8[] memory v, bytes32[] memory r, bytes32[] memory sigS) = _buildSortedSignatures(
+      IOracleCheats(address(vm)),
+      keys,
+      signers,
+      digest
+    );
+    if (expired) vm.warp(expiration + 1);
+    vm.prank(signers[0]);
+    if (expired) vm.expectRevert("Signature expired");
+    if (withExpiration) {
+      pair.publishPriceWithExpiration(
+        4,
+        coinPair,
+        price,
+        signers[0],
+        publicationBlock,
+        expiration,
+        v,
+        r,
+        sigS
+      );
+    } else {
+      pair.publishPrice(3, coinPair, price, signers[0], publicationBlock, v, r, sigS);
+    }
+    (uint256 publishedPrice, , uint256 publishedBlock) = pair.getPriceInfo();
+    assertEq(publishedPrice, expired ? previousPrice : price);
+    assertEq(publishedBlock, expired ? publicationBlock : block.number);
+  }
+
   function _deployChanger(
     address implementation_,
     IMIP264301TasksRunner runner_,
-    address destination_,
-    address secondaryDestination_
+    address multisigRewards_
   ) internal returns (MIP264301FlowUpdate) {
     address[3] memory auctions = reverseAuctionsRifToMoc;
     address[2] memory splitTasks = [address(deprecatedSplitTask), address(newSplitTask)];
@@ -505,8 +683,7 @@ contract MIP264301FlowUpdateForkTest is Test {
         address(coiner),
         upgradeDelegator,
         implementation_,
-        destination_,
-        secondaryDestination_,
+        multisigRewards_,
         coinerBuffer,
         runner_,
         coinerBufferFlushTask,
@@ -518,7 +695,9 @@ contract MIP264301FlowUpdateForkTest is Test {
         btcUsdCoinPair,
         auctions,
         splitTasks,
-        triggerOrderTasks
+        triggerOrderTasks,
+        rifUsdCoinPair,
+        coinPairPriceImplementation
       );
   }
 

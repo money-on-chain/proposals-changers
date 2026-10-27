@@ -2,8 +2,7 @@
   "MIP264301Module": {
     "coinerProxy": "0x661F7d510cdB40638f5Afd9f9dF8877398500593",
     "flowUpgradeDelegator": "0x131564703310a294C1bFDC09D10EC0659f18E253",
-    "destination": "0xf09006E812BE98c7B18c877Af5C126629acB6cAb",
-    "secondaryDestination": "0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183",
+    "multisigRewards": "0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183",
     "coinerBuffer": "0x5646c6988d5D3d7F78F15683CE3aca11699BCDBb",
     "tasksRunner": "0xd99a43ba443068Ea539CeB623aE24e6C9910b975",
     "coinerBufferFlushTask": "0x23428Ef986A8DcC067152F0a2C46FcC476d2AA9f",
@@ -29,6 +28,7 @@
     "deprecatedTriggerOrderTask10": "0xe0892b3597a8f0C6aBAE3164274866070202798C",
     "deprecatedTriggerOrderTask11": "0x3E6642E3DeAcB46CD9CB235D12Dec91F277DFB2F",
     "deprecatedTriggerOrderTask12": "0xbe08844f3ED9Cc829EfB54c9f0d335C2914D02bc",
-    "deprecatedTriggerOrderTask13": "0xab51493820D74DC5ee7db6aEc519ca5Ea5C2C640"
+    "deprecatedTriggerOrderTask13": "0xab51493820D74DC5ee7db6aEc519ca5Ea5C2C640",
+    "rifUsdCoinPair": "0xaFb1B8C320ACc776c1279bcDB24Ab8F84aB727A4"
   }
 }
