@@ -48,6 +48,11 @@ interface IMIP264301ReverseAuction {
   function setOrderThreshold(uint256 orderThreshold) external;
 }
 
+interface IMIP264301RifBucket {
+  function feeToken() external view returns (address);
+  function setFeeTokenParams(address feeToken, address feeTokenPriceProvider) external;
+}
+
 /**
  * @notice Updates MOC issuance and reward routing, retires intermediate buffer tasks,
  *         lowers RIF auction thresholds, replaces split and trigger-order tasks,
@@ -74,6 +79,8 @@ contract MIP264301FlowUpdate is IChangeContract {
   address public immutable btcUsdCoinPair;
   address public immutable rifUsdCoinPair;
   address public immutable newCoinPairPriceImplementation;
+  IMIP264301RifBucket public immutable rifBucket;
+  address public immutable mocRifPriceProvider;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc2;
   IMIP264301ReverseAuction public immutable reverseAuctionRifToMoc3;
@@ -100,7 +107,9 @@ contract MIP264301FlowUpdate is IChangeContract {
     address[2] memory splitTasks_,
     address[2][] memory triggerOrderTasks_,
     address rifUsdCoinPair_,
-    address newCoinPairPriceImplementation_
+    address newCoinPairPriceImplementation_,
+    IMIP264301RifBucket rifBucket_,
+    address mocRifPriceProvider_
   ) {
     require(coinerProxy_ != address(0), "Invalid Coiner proxy");
     require(address(flowUpgradeDelegator_) != address(0), "Invalid UpgradeDelegator");
@@ -122,6 +131,8 @@ contract MIP264301FlowUpdate is IChangeContract {
     require(btcUsdCoinPair_ != address(0), "Invalid BTC/USD coin pair");
     require(rifUsdCoinPair_ != address(0), "Invalid RIF/USD coin pair");
     require(rifUsdCoinPair_ != btcUsdCoinPair_, "Duplicate coin pair");
+    require(address(rifBucket_) != address(0), "Invalid RIF bucket");
+    require(mocRifPriceProvider_ != address(0), "Invalid MOC/RIF price provider");
     require(
       newCoinPairPriceImplementation_.code.length > 0,
       "Invalid CoinPairPrice implementation"
@@ -200,6 +211,8 @@ contract MIP264301FlowUpdate is IChangeContract {
     btcUsdCoinPair = btcUsdCoinPair_;
     rifUsdCoinPair = rifUsdCoinPair_;
     newCoinPairPriceImplementation = newCoinPairPriceImplementation_;
+    rifBucket = rifBucket_;
+    mocRifPriceProvider = mocRifPriceProvider_;
     reverseAuctionRifToMoc = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[0]);
     reverseAuctionRifToMoc2 = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[1]);
     reverseAuctionRifToMoc3 = IMIP264301ReverseAuction(reverseAuctionsRifToMoc_[2]);
@@ -260,6 +273,11 @@ contract MIP264301FlowUpdate is IChangeContract {
     // The proxy state and round schedules are retained; no reinitialization is needed.
     flowUpgradeDelegator.upgrade(btcUsdCoinPair, newCoinPairPriceImplementation);
     flowUpgradeDelegator.upgrade(rifUsdCoinPair, newCoinPairPriceImplementation);
+
+    // 10. Use the MOC-to-RIF auction's provider (RIF per MOC) to price bucket fees.
+    // Preserve the fee token; only replace its provider, whose old RIF/USD input
+    // can report an invalid price and prevent users from paying fees in MOC.
+    rifBucket.setFeeTokenParams(rifBucket.feeToken(), mocRifPriceProvider);
   }
 
   function _updateMocRewardsBuffer() internal {

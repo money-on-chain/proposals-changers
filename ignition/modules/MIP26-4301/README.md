@@ -115,6 +115,17 @@ preserved without reinitialization. `btcUsdCoinPair` and `rifUsdCoinPair` supply
 network-specific proxies. OracleManager also registers `TASKSRUNNER` as a round
 participant; it is not a price-feed proxy and is not upgraded to CoinPairPrice.
 
+The changer updates the RIF bucket's `feeTokenPriceProvider` through
+`setFeeTokenParams`, preserving its current fee token. Mainnet replaces
+`0xC6f37A4DF82B21aC382442BC73D668B3B2F4Cef0` with
+`0x5bACAfE394710E729e2B6A1Ac20A4cDC53ff7D8a`, the MOC-to-RIF auction's provider.
+This price is RIF per MOC, as required to divide RIF fees into MOC amounts. The old
+provider's RIF/USD input can report invalid prices, forcing fees to be paid in RIF.
+
+Parameters `rifBucket` and `mocRifPriceProvider` identify the bucket and replacement
+provider. Testnet uses bucket `0xa416934264515bb381E3b746f10f22D5c6f9431a` and provider
+`0x06C490E58269f5B3E093a98C08Ca6ABB905C573C`, matching its MOC-to-RIF auction.
+
 The existing Coiner emission amounts and timestamp schedule are preserved. This assumes
 MIP26-3701 has already migrated Coiner to timestamp scheduling.
 Network proxy and delegator addresses come from the MIP26-3701 parameters.
@@ -139,7 +150,8 @@ The trigger-task tests verify replacement coverage, auction preservation, config
 backoff and increasing retry delays on real failed auction calls. Coin-pair tests
 check coverage of all registered price feeds, preserved state, V4 publications
 with valid and expired signatures, and legacy V3 publishing using real staking
-and oracle-owner signer rotation on the fork.
+and oracle-owner signer rotation on the fork. The RIF fee-provider test checks the
+new provider, a valid price and preservation of the existing fee token.
 Buffer tests prepare MOC balances directly with `deal`, independently of Coiner
 issuance.
 The stage-2 test uses an auxiliary changer through real governance to set the
