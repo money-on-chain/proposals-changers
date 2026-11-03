@@ -65,6 +65,8 @@ export default buildModule("MIP264301Module", (m) => {
     triggerOrderTasks,
     m.getParameter("rifUsdCoinPair"),
     coinPairPriceImplementation,
+    m.getParameter("rifBucket"),
+    m.getParameter("mocRifPriceProvider"),
   ]);
 
   return {

@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { TaskTriggerOrder } from "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol";
 import { TaskSplit } from "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { MIP264301FlowUpdate, IMIP264301UpgradeDelegator, IMIP264301Coiner, IMIP264301Buffer, IMIP264301TasksRunner } from "../changers/mip26_4301/MIP264301FlowUpdate.sol";
+import { MIP264301FlowUpdate, IMIP264301UpgradeDelegator, IMIP264301Coiner, IMIP264301Buffer, IMIP264301TasksRunner, IMIP264301RifBucket } from "../changers/mip26_4301/MIP264301FlowUpdate.sol";
 import { OracleTestHelper, IOracleCheats } from "./helpers/OracleTestHelper.sol";
 import { IChangeContract } from "../interfaces/IChangeContract.sol";
 import { IGovernor } from "../interfaces/IGovernor.sol";
@@ -89,6 +89,14 @@ interface IPriceSignerStakingProbe {
   function setOracleAddress(address oracle) external;
 }
 
+interface IRifBucketFeePriceProbe is IMIP264301RifBucket {
+  function feeTokenPriceProvider() external view returns (address);
+}
+
+interface IFeePriceProviderProbe {
+  function peek() external view returns (bytes32, bool);
+}
+
 interface ICoinerGovernorOwner {
   function owner() external view returns (address);
 }
@@ -129,6 +137,8 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
   address internal btcUsdCoinPair;
   address internal rifUsdCoinPair;
   address internal coinPairPriceImplementation;
+  IRifBucketFeePriceProbe internal rifBucket;
+  address internal mocRifPriceProvider;
   address[3] internal reverseAuctionsRifToMoc;
   TaskSplit internal deprecatedSplitTask;
   TaskSplit internal newSplitTask;
@@ -207,6 +217,8 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
     }
     require(deployedCoinPair != address(0), "CoinPairPrice implementation deployment failed");
     coinPairPriceImplementation = deployedCoinPair;
+    rifBucket = IRifBucketFeePriceProbe(vm.parseJsonAddress(params, ".MIP264301Module.rifBucket"));
+    mocRifPriceProvider = vm.parseJsonAddress(params, ".MIP264301Module.mocRifPriceProvider");
     governor = IGovernor(coiner.governor());
     previousImplementation = _implementation();
     // Only deploy the proposed implementation; retain the existing mainnet proxy and state.
@@ -540,6 +552,18 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
     _publishSignedCoinPairPrice(rifUsdCoinPair, false, false);
   }
 
+  function testForkUpdatesRifBucketFeePriceProviderAndPreservesFeeToken() public {
+    address previousProvider = rifBucket.feeTokenPriceProvider();
+    address feeTokenBefore = rifBucket.feeToken();
+    _executeChanger(changer);
+    assertEq(rifBucket.feeTokenPriceProvider(), mocRifPriceProvider);
+    assertTrue(rifBucket.feeTokenPriceProvider() != previousProvider);
+    assertEq(rifBucket.feeToken(), feeTokenBefore);
+    (bytes32 price, bool valid) = IFeePriceProviderProbe(mocRifPriceProvider).peek();
+    assertGt(uint256(price), 0);
+    assertTrue(valid, "Replacement fee price must be valid");
+  }
+
   function testForkTaskRemovalFailureRollsBackCoinerChanges() public {
     address destinationBefore = coiner.getDestination();
     bytes32 stateBefore = _emissionState();
@@ -697,7 +721,9 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
         splitTasks,
         triggerOrderTasks,
         rifUsdCoinPair,
-        coinPairPriceImplementation
+        coinPairPriceImplementation,
+        rifBucket,
+        mocRifPriceProvider
       );
   }
 

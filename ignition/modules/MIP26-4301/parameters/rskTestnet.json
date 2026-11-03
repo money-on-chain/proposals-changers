@@ -29,6 +29,8 @@
     "deprecatedTriggerOrderTask11": "0x2942792ce734038110f48E3C66d4e3155E812462",
     "deprecatedTriggerOrderTask12": "0x0aF72276598CBA8326dc29eDeDe949A05E1205AD",
     "deprecatedTriggerOrderTask13": "0x9Ec9e06295D3dd04E455d989785794553631b319",
-    "rifUsdCoinPair": "0x45Eda601198Db28413fa7653300C52d5E4Db9b8b"
+    "rifUsdCoinPair": "0x45Eda601198Db28413fa7653300C52d5E4Db9b8b",
+    "rifBucket": "0xa416934264515bb381E3b746f10f22D5c6f9431a",
+    "mocRifPriceProvider": "0x06C490E58269f5B3E093a98C08Ca6ABB905C573C"
   }
 }
