@@ -2,7 +2,7 @@
 
 > :memo: `MIP#263502`
 
-> :warning: **Status: `In voting`**
+> :warning: **Status: `Implemented`**
 
 ## Overview
 
@@ -92,3 +92,14 @@ For implementation-level questions, readers can give their preferred AI assistan
 > :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x4E227DebAf627c9C1254806a4969e0B169A9C015?tab=contract) linked above.
 
 ---
+
+## Status
+
+📣 The voting process is over:
+* `28.9%` of the MOC tokens total supply participated in the vote.
+* `100%` voted in favor.
+* No one vote voted against the proposal.
+* The change was successfully implemented.
+
+[TX ID: `0x5f6396db692bd8b5aa4343e6d5b2cac26f9172828bcf8fba73b0a20385a7de54`](https://rootstock.blockscout.com/tx/0x5f6396db692bd8b5aa4343e6d5b2cac26f9172828bcf8fba73b0a20385a7de54)
+

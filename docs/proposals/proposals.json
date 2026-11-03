@@ -72,7 +72,8 @@
           "name": "PauserSplitRifProMigrationChanger",
           "address": "0x4E227DebAf627c9C1254806a4969e0B169A9C015",
           "submitter": "0xbFd33A62e03FB7c649E771e37F2d2d5Bb008cCa4",
-          "executedTx": null
+          "executedTx": "0x5f6396db692bd8b5aa4343e6d5b2cac26f9172828bcf8fba73b0a20385a7de54",
+          "executedAt": "2026-11-03T18:03:43Z"
         }
       ]
     },
