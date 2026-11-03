@@ -1,0 +1,8 @@
+{
+  "RewardsProgramModule": {
+    "coinerProxy": "0x5b7071270C3FD3d99BE411baCb145b2fb47F0D0F",
+    "distributor": "0x0000000000000000000000000000000000000000",
+    "tasksRunner": "0x0E00baCDf5c6d6F51777998B4d7A660FD29e0fb6"
+  }
+}
+
