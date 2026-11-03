@@ -39,6 +39,7 @@ export default {
       "@moc/oracles/contracts/tasks/lending/TaskTPInjection.sol",
       "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol",
       "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol",
+      "@moc/oracles/contracts/tasks/mocFlow/rewards/TaskRewardsStartPeriod.sol",
       "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
       "@moc/lending/contracts/adapters/MocAdapterV1.sol",
       "@moc/lending/contracts/MocLendingManager.sol",
