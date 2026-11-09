@@ -16,7 +16,7 @@ MOC issuance and oracle rewards currently pass through intermediate buffers that
 
 Some TasksRunner tasks can remain eligible when there is no useful work to perform, or retry a failing auction too frequently. Adjusting these tasks should help operators spend their turns on work that can succeed and avoid repeated failed transactions.
 
-An oracle signature should only authorize a price publication for a short window. If a signed price can be held and published much later, the publisher has more opportunity to choose a favorable moment to use it. Expiring signatures after a specified block reduces that price optionality. The oracle upgrade also prepares the price feeds to support publications requested by the protocol when an operation needs a fresh price.
+An oracle signature should only authorize a price publication for a short window. If a signed price can be held and published much later, the publisher has more opportunity to choose a favorable moment to use it. Giving new signatures an expiration timestamp lets oracle operators limit that price optionality. The oracle upgrade also prepares the price feeds to support publications requested by the protocol when an operation needs a fresh price.
 
 ## Proposed Changes
 
@@ -42,11 +42,11 @@ The commission-splitting task will be replaced with one that checks the RBTC bal
 
 The 13 registered reverse-auction trigger tasks will also be replaced. Each replacement retains its auction, but after a failed attempt it waits before retrying. The delay starts at five minutes, doubles after consecutive failures, and is capped at ten hours; a successful execution resets it. This reduces repeated failed calls while leaving the auctions available for later attempts.
 
-### 5. Give oracle signatures an expiration block
+### 5. Give oracle signatures an expiration timestamp
 
-The BTC/USD and RIF/USD price feeds will gain a publication method in which oracle signatures include an expiration block. A publication using those signatures must occur before that block. Oracle nodes can therefore sign prices for a short validity window, reducing the opportunity to hold a signed price and choose when to publish it.
+The BTC/USD and RIF/USD price feeds will gain a publication method in which new V4 oracle signatures include an expiration timestamp. A publication using a V4 signature must occur no later than that time. Oracle nodes can therefore choose a short validity window, reducing the opportunity to hold a signed price and choose when to publish it. The contract checks the signed expiration but does not impose a maximum window; its length depends on the timestamp the signers choose.
 
-The current publication method remains available during the transition. The upgrade preserves each feed's current price, state, and round schedule. It also supplies the price-feed capability needed for future conditional publications when a protocol operation calls for a fresh price; this changer does not turn on conditional publication by itself.
+The current V3 publication method remains available during the transition, and the new method can also accept legacy V3 signatures. Those signatures do not themselves carry an expiration timestamp. The upgrade preserves each feed's current price, state, and round schedule. It also supplies the price-feed capability needed for future conditional publications when a protocol operation calls for a fresh price; this changer does not turn on conditional publication by itself.
 
 ### 6. Correct the MOC fee price in RoC's RIF bucket
 
