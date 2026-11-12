@@ -8,6 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
+- `MIP#264301` — [Flow Rewards and Oracle Reliability Improvements](MIP264301-flow-rewards-and-oracle-reliability.md) — **DRAFT**
 - `MIP#264001` — [RIF/USD Subsidy](MIP264001-rif-usd-subsidy.md)
 - `MIP#263701` — [Use Timestamps Instead of Blocks for Time Periods](MIP263701-use-timestamps-instead-of-blocks-for-time-periods.md)
 - `MIP#263502` — [Split the RIF on Chain Panic Button and Migrate RIFPRO](MIP263502-split-rif-on-chain-panic-button-and-migrate-rifpro.md)
@@ -22,6 +23,13 @@ This is a chronological list of proposals (published or pending publication), so
 - `MIP#260901` — [Proposal: Governance-Controlled Maximum Markup for MocVendors](MIP260901-proposal-governance-controlled-maximum-markup-for-mocvendors.md)
 - `MIP#260501` — [Proposal: Reverse Auction Flow Upgrade Using TWAP Pricing](MIP260501-proposal-reverse-auction-flow-upgrade-using-twap-pricing.md)
 - `MIP#260502` — [Post-mortem: flash Loan–based price manipulation attack on the MOC FLow Reverse Auction rBTC to MOC contract](MIP260502-post-mortem-flash-loan-based-price-manipulation-attack.md)
+
+## Legacy documents
+
+These earlier documents are kept for reference and are not entries in the MIP proposal registry:
+
+- [P20250826 — Fee Reduction & Weekly Rate Update](legacy-P20250826.md)
+- [P20260604 — Oracle Incentive Rebalancing and Protocol Cleanup Upgrade](legacy-P20260604.md)
 
 ## MIP numbering
 

@@ -2,6 +2,17 @@
   "schemaVersion": 1,
   "proposals": [
     {
+      "mip": "MIP#264301",
+      "title": "Flow Rewards and Oracle Reliability Improvements",
+      "tags": ["doc", "usdrif", "oracles"],
+      "status": "Draft",
+      "date": null,
+      "summary": "Routes MOC issuance and oracle rewards directly to their recipients, updates TasksRunner tasks and RIF-to-MOC auction thresholds, adds expiring oracle signatures, and corrects the price used for RIF bucket fees paid in MOC. It also prepares the flow for future BPRO-holder rewards and on-demand price publication.",
+      "file": "MIP264301-flow-rewards-and-oracle-reliability.md",
+      "forumUrl": null,
+      "changers": []
+    },
+    {
       "mip": "MIP#264001",
       "title": "RIF/USD Subsidy",
       "tags": ["usdrif", "oracles"],
