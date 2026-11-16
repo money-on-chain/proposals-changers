@@ -116,7 +116,9 @@ contract CoinerStage2TestChanger is IChangeContract {
 
 /** @notice Executes MIP26-4301 against the real Coiner, token and governance on mainnet. */
 contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
-  uint256 internal constant FORK_BLOCK = 9_350_345;
+  string internal constant DEPLOYED_ADDRESSES_PATH =
+    "./ignition/deployments/mip26-4301-rsk-mainnet/deployed_addresses.json";
+  uint256 internal constant FORK_BLOCK = 9_417_981;
   bytes32 internal constant IMPLEMENTATION_SLOT =
     0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
   ICoinerDistributionProbe internal coiner;
@@ -187,55 +189,33 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
       vm.parseJsonAddress(params, ".MIP264301Module.reverseAuctionRifToMoc2"),
       vm.parseJsonAddress(params, ".MIP264301Module.reverseAuctionRifToMoc3")
     ];
+    string memory deployed = vm.readFile(DEPLOYED_ADDRESSES_PATH);
     deprecatedSplitTask = TaskSplit(
       vm.parseJsonAddress(params, ".MIP264301Module.deprecatedSplitTask")
     );
-    newSplitTask = new TaskSplit(
-      address(deprecatedSplitTask.commissionSplitter()),
-      address(0),
-      address(0),
-      deprecatedSplitTask.tokenBalanceThreshold(),
-      deprecatedSplitTask.feeTokenBalanceThreshold()
-    );
+    newSplitTask = TaskSplit(_deployedAddress(deployed, "RBTCOnlySplitTask"));
     for (uint256 i = 1; i <= 13; i++) {
       address deprecatedTask = vm.parseJsonAddress(
         params,
         string.concat(".MIP264301Module.deprecatedTriggerOrderTask", vm.toString(i))
       );
-      TaskTriggerOrder replacement = new TaskTriggerOrder(
-        ITriggerOrderAuctionProbe(deprecatedTask).reverseAuction(),
-        5 minutes,
-        10 hours
+      address replacement = _deployedAddress(
+        deployed,
+        string.concat("TriggerOrderTask", vm.toString(i))
       );
-      triggerOrderTaskReplacements.push([deprecatedTask, address(replacement)]);
+      triggerOrderTaskReplacements.push([deprecatedTask, replacement]);
     }
     rifUsdCoinPair = vm.parseJsonAddress(params, ".MIP264301Module.rifUsdCoinPair");
-    bytes memory coinPairCode = vm.getCode("CoinPairPrice");
-    address deployedCoinPair;
-    assembly ("memory-safe") {
-      deployedCoinPair := create(0, add(coinPairCode, 32), mload(coinPairCode))
-    }
-    require(deployedCoinPair != address(0), "CoinPairPrice implementation deployment failed");
-    coinPairPriceImplementation = deployedCoinPair;
+    coinPairPriceImplementation = _deployedAddress(deployed, "CoinPairPriceImplementation");
     rifBucket = IRifBucketFeePriceProbe(vm.parseJsonAddress(params, ".MIP264301Module.rifBucket"));
     mocRifPriceProvider = vm.parseJsonAddress(params, ".MIP264301Module.mocRifPriceProvider");
     governor = IGovernor(coiner.governor());
     previousImplementation = _implementation();
-    // Only deploy the proposed implementation; retain the existing mainnet proxy and state.
-    bytes memory code = vm.getCode("Coiner");
-    address deployed;
-    assembly ("memory-safe") {
-      deployed := create(0, add(code, 32), mload(code))
-    }
-    require(deployed != address(0), "Coiner implementation deployment failed");
-    implementation = deployed;
-    changer = _deployChanger(
-      implementation,
-      tasksRunner,
-      vm.parseJsonAddress(params, ".MIP264301Module.multisigRewards")
-    );
+    implementation = _deployedAddress(deployed, "CoinerImplementation");
+    changer = MIP264301FlowUpdate(_deployedAddress(deployed, "MIP264301FlowUpdate"));
     assertGt(address(coiner).code.length, 0);
     assertGt(address(token).code.length, 0);
+    assertGt(address(changer).code.length, 0);
     assertTrue(previousImplementation != implementation);
   }
 
@@ -749,5 +729,13 @@ contract MIP264301FlowUpdateForkTest is Test, OracleTestHelper {
           coiner.getNextMintAt()
         )
       );
+  }
+
+  function _deployedAddress(
+    string memory deployed,
+    string memory contractName
+  ) internal pure returns (address) {
+    return
+      vm.parseJsonAddress(deployed, string.concat(".['MIP264301Module#", contractName, "']"));
   }
 }
