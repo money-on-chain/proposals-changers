@@ -9,7 +9,8 @@ Each network routes the primary 75% share to its own rewards buffer:
 
 - Mainnet primary destination: `0xf09006E812BE98c7B18c877Af5C126629acB6cAb` (75%).
 - Testnet primary destination: `0x40d86d6ac67059bAe5ae42B6FCaB843c1c6af300` (75%).
-- Multisig rewards: `0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183` (25%, `2500` basis points).
+- Mainnet multisig rewards: `0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183` (25%, `2500` basis points).
+- Testnet multisig rewards: `0xd08B5ac0800267f187AFe2452B7B176E5D98948d` (25%, `2500` basis points).
 
 The changer also removes the buffer's flush and liquidate tasks from TasksRunner,
 sets its general liquidation threshold to zero, and clears every output's flush
