@@ -2,7 +2,7 @@
 
 > :memo: `MIP#264301`
 
-> :warning: **Status: `Draft`**
+> :warning: **Status: `Published`**
 
 ## Overview
 
@@ -58,4 +58,8 @@ MOC issuance and rewards reach their existing destinations through fewer steps, 
 
 ## Changer Contract
 
-The `MIP264301FlowUpdate` changer has not yet been assigned a mainnet address in this draft. Its address and verified code link will be added here before the proposal is submitted for voting.
+### The changer contract to vote would be:
+
+| Name                  | Address (and link to verified code in RSK Blockscout explorer)                                                                                   |
+| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP264301FlowUpdate` | [`0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa`](https://rootstock.blockscout.com/address/0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa?tab=contract) |

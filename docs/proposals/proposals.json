@@ -5,12 +5,21 @@
       "mip": "MIP#264301",
       "title": "Flow Rewards and Oracle Reliability Improvements",
       "tags": ["doc", "usdrif", "oracles"],
-      "status": "Draft",
-      "date": null,
+      "status": "Published",
+      "date": "2026-11-12",
       "summary": "Routes MOC issuance and oracle rewards directly to their recipients, updates TasksRunner tasks and RIF-to-MOC auction thresholds, adds expiring oracle signatures, and corrects the price used for RIF bucket fees paid in MOC. It also prepares the flow for future BPRO-holder rewards and on-demand price publication.",
       "file": "MIP264301-flow-rewards-and-oracle-reliability.md",
-      "forumUrl": null,
-      "changers": []
+      "forumUrl": "https://forum.moneyonchain.com/t/flow-rewards-and-oracle-reliability-improvements/495",
+      "changers": [
+        {
+          "network": "rskMainnet",
+          "name": "MIP264301FlowUpdate",
+          "address": "0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa",
+          "submitter": null,
+          "executedTx": null,
+          "executedAt": null
+        }
+      ]
     },
     {
       "mip": "MIP#264001",

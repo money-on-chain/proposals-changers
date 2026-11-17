@@ -8,7 +8,7 @@ These documents describe proposed changes to the protocols. They are intended to
 
 This is a chronological list of proposals (published or pending publication), sorted with the newest entries first.
 
-- `MIP#264301` — [Flow Rewards and Oracle Reliability Improvements](MIP264301-flow-rewards-and-oracle-reliability.md) — **DRAFT**
+- `MIP#264301` — [Flow Rewards and Oracle Reliability Improvements](MIP264301-flow-rewards-and-oracle-reliability.md)
 - `MIP#264001` — [RIF/USD Subsidy](MIP264001-rif-usd-subsidy.md)
 - `MIP#263701` — [Use Timestamps Instead of Blocks for Time Periods](MIP263701-use-timestamps-instead-of-blocks-for-time-periods.md)
 - `MIP#263502` — [Split the RIF on Chain Panic Button and Migrate RIFPRO](MIP263502-split-rif-on-chain-panic-button-and-migrate-rifpro.md)
