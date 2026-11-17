@@ -2,7 +2,7 @@
   "MIP264301Module": {
     "coinerProxy": "0x5b7071270C3FD3d99BE411baCb145b2fb47F0D0F",
     "flowUpgradeDelegator": "0xa12a9A492eFEBf4E43B174A57886286dA5057B8D",
-    "multisigRewards": "0xA088A8FCD247dcB1E99c7f98e2ef3CA7f274B183",
+    "multisigRewards": "0xd08B5ac0800267f187AFe2452B7B176E5D98948d",
     "coinerBuffer": "0xBBD8aFD5E7D3127D9Ee372D9AD2BC0B0af8af066",
     "tasksRunner": "0x0E00baCDf5c6d6F51777998B4d7A660FD29e0fb6",
     "coinerBufferFlushTask": "0xe020AbAdD33145613cb98813921DC49FBc69B8Ae",
