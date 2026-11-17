@@ -2,7 +2,7 @@
 
 > :memo: `MIP#264301`
 
-> :warning: **Status: `Draft`**
+> :warning: **Status: `Under review`**
 
 ## Overview
 
@@ -56,6 +56,15 @@ When a user pays RIF bucket fees in MOC, the bucket needs a RIF-per-MOC price to
 
 MOC issuance and rewards reach their existing destinations through fewer steps, and the unused buffer tasks are retired. Smaller RIF balances can reach reward recipients sooner. TasksRunner avoids a permanently eligible split task and spaces out retries of failing auctions. The oracle feeds can accept short-lived signed prices and are prepared for a later move toward publication on protocol demand. RoC users should be able to pay RIF bucket fees in MOC when the replacement provider has a valid price.
 
+---
+
 ## Changer Contract
 
-The `MIP264301FlowUpdate` changer has not yet been assigned a mainnet address in this draft. Its address and verified code link will be added here before the proposal is submitted for voting.
+### The changer contract to vote would be:
+
+| Name                  | Address (and link to verified code in RSK blockscout explorer)                                                                                   |
+| :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MIP264301FlowUpdate` | [`0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa`](https://rootstock.blockscout.com/address/0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa?tab=contract) |
+
+> :information_source: Info: All changes, upgrades, and reconfigurations to existing contracts, including the exact parameter values, can be audited directly in the changer contract, whose [source code is published and verified in the block explorer](https://rootstock.blockscout.com/address/0x768F4ff937C5197738D2EC78d75019CA7D0BBFAa?tab=contract) linked above.
+
