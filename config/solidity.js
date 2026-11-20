@@ -2,6 +2,7 @@ export const npmFilesToBuild = [
   "@moneyonchain/proposals-changers/contracts/changers/mocV1LendingAndBorrowing/MocV1LendingAndBorrowing.sol",
   "@moneyonchain/proposals-changers/contracts/changers/mip26_4001/MIP264001RifUsdSubsidy.sol",
   "@moneyonchain/proposals-changers/contracts/changers/mip26_4301/MIP264301FlowUpdate.sol",
+  "@moneyonchain/proposals-changers/contracts/changers/rewards_program/RewardsProgram.sol",
   "@moc/main/contracts/auxiliary/MocReverseAuction.sol",
   "@moc/main/contracts/governance/InterimGovernor.sol",
   "@moc/lending/contracts/swappers/MocSwapperCoreV1.sol",
@@ -23,4 +24,5 @@ export const npmFilesToBuild = [
   "@moc/oracles/contracts/tasks/lending/TaskTPInjection.sol",
   "@moc/oracles/contracts/tasks/mocFlow/reverseAuction/TaskTriggerOrder.sol",
   "@moc/oracles/contracts/tasks/mocFlow/commissionSplitter/TaskSplit.sol",
+  "@moc/oracles/contracts/tasks/mocFlow/rewards/TaskRewardsStartPeriod.sol",
 ];
